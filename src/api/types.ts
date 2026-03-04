@@ -103,3 +103,64 @@ export interface VisionResult {
     }>;
   };
 }
+
+export interface OcrResult {
+  readResult?: {
+    blocks?: Array<{
+      lines: Array<{
+        text: string;
+        words?: Array<{ text: string; confidence: number }>;
+      }>;
+    }>;
+  };
+  content?: string;
+}
+
+export interface SpeechTranscriptResult {
+  text: string;
+  duration?: number;
+  words?: Array<{
+    word: string;
+    offset: number;
+    duration: number;
+  }>;
+}
+
+export interface SpeechSynthesisResult {
+  audio_data?: string;
+  audio_url?: string;
+  duration_ms?: number;
+  voice?: string;
+}
+
+export interface DocumentAnalysisResult {
+  model_id: string;
+  content?: string;
+  pages?: Array<{
+    page_number: number;
+    lines?: Array<{ content: string }>;
+  }>;
+  paragraphs?: Array<{
+    content: string;
+    role?: string;
+  }>;
+  tables?: Array<{
+    row_count: number;
+    column_count: number;
+    cells: Array<{
+      content: string;
+      row_index: number;
+      column_index: number;
+    }>;
+  }>;
+  key_value_pairs?: Array<{
+    key: string;
+    value: string;
+    confidence: number;
+  }>;
+  fields?: Record<string, {
+    value?: string;
+    confidence?: number;
+    type?: string;
+  }>;
+}

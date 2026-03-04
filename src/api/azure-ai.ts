@@ -1,5 +1,14 @@
 import { api } from './client';
-import type { AzureAIResponse, SentimentResult, EntityResult, VisionResult } from './types';
+import type {
+  AzureAIResponse,
+  SentimentResult,
+  EntityResult,
+  VisionResult,
+  OcrResult,
+  SpeechTranscriptResult,
+  SpeechSynthesisResult,
+  DocumentAnalysisResult,
+} from './types';
 
 export const azureAiApi = {
   // Language
@@ -25,6 +34,24 @@ export const azureAiApi = {
   ocr: (file: File) => {
     const formData = new FormData();
     formData.append('file', file);
-    return api.postForm<AzureAIResponse>('/azure-ai/vision/ocr', formData);
+    return api.postForm<AzureAIResponse<OcrResult>>('/azure-ai/vision/ocr', formData);
+  },
+
+  // Speech
+  transcribe: (file: File) => {
+    const formData = new FormData();
+    formData.append('file', file);
+    return api.postForm<AzureAIResponse<SpeechTranscriptResult>>('/azure-ai/speech/transcribe', formData);
+  },
+
+  textToSpeech: (text: string, voice = 'en-US-JennyNeural') =>
+    api.post<AzureAIResponse<SpeechSynthesisResult>>('/azure-ai/speech/synthesize', { text, voice }),
+
+  // Document Intelligence
+  analyzeDocument: (file: File, modelId = 'prebuilt-read') => {
+    const formData = new FormData();
+    formData.append('file', file);
+    formData.append('model_id', modelId);
+    return api.postForm<AzureAIResponse<DocumentAnalysisResult>>('/azure-ai/document/analyze', formData);
   },
 };

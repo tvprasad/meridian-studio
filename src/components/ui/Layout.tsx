@@ -1,12 +1,44 @@
 import { Outlet, NavLink } from 'react-router-dom';
-import { LayoutDashboard, MessageSquare, Upload, Settings, Github, Linkedin } from 'lucide-react';
+import { LayoutDashboard, MessageSquare, Upload, Settings, Github, Linkedin, Languages, Eye, Mic, ScanSearch } from 'lucide-react';
 
-const navItems = [
+const coreNavItems = [
   { to: '/', icon: LayoutDashboard, label: 'Dashboard' },
   { to: '/query', icon: MessageSquare, label: 'Query' },
   { to: '/upload', icon: Upload, label: 'Upload' },
   { to: '/settings', icon: Settings, label: 'Settings' },
 ];
+
+const aiNavItems = [
+  { to: '/language', icon: Languages, label: 'Language Intelligence' },
+  { to: '/vision', icon: Eye, label: 'Vision Intelligence' },
+  { to: '/speech', icon: Mic, label: 'Speech Services' },
+  { to: '/document', icon: ScanSearch, label: 'Document Intelligence' },
+];
+
+function NavItem({ to, icon: Icon, label }: { to: string; icon: React.ElementType; label: string }) {
+  return (
+    <NavLink
+      to={to}
+      end={to === '/'}
+      className={({ isActive }) =>
+        `flex items-center px-6 py-2.5 text-sm transition-colors ${
+          isActive
+            ? 'bg-white/10 border-l-2 border-violet-400 pl-[22px]'
+            : 'hover:bg-white/5'
+        }`
+      }
+    >
+      {({ isActive }) => (
+        <>
+          <Icon className={`w-4 h-4 mr-3 transition-colors shrink-0 ${isActive ? 'text-white' : 'text-white/40'}`} />
+          <span className={`iridescent-on-hover truncate ${isActive ? 'text-white' : 'text-white/40'}`}>
+            {label}
+          </span>
+        </>
+      )}
+    </NavLink>
+  );
+}
 
 export function Layout() {
   return (
@@ -29,32 +61,21 @@ export function Layout() {
           </div>
         </div>
 
-        <nav className="mt-2 flex-1">
-          {navItems.map(({ to, icon: Icon, label }) => (
-            <NavLink
-              key={to}
-              to={to}
-              className={({ isActive }) =>
-                `flex items-center px-6 py-3 text-sm transition-colors ${
-                  isActive
-                    ? 'bg-white/10 border-l-2 border-violet-400 pl-[22px]'
-                    : 'hover:bg-white/5'
-                }`
-              }
-            >
-              {({ isActive }) => (
-                <>
-                  <Icon className={`w-4 h-4 mr-3 transition-colors ${isActive ? 'text-white' : 'text-white/40'}`} />
-                  <span className={`iridescent-on-hover ${isActive ? 'text-white' : 'text-white/40'}`}>
-                    {label}
-                  </span>
-                </>
-              )}
-            </NavLink>
+        <nav className="mt-2 flex-1 overflow-y-auto">
+          {coreNavItems.map((item) => (
+            <NavItem key={item.to} {...item} />
+          ))}
+
+          <div className="px-6 pt-5 pb-1">
+            <p className="text-[10px] font-semibold uppercase tracking-widest text-white/25">Cognitive AI Services</p>
+          </div>
+
+          {aiNavItems.map((item) => (
+            <NavItem key={item.to} {...item} />
           ))}
         </nav>
 
-        <div className="p-6 border-t border-white/10 space-y-2">
+        <div className="p-6 border-t border-white/10 space-y-2 shrink-0">
           {/* Version → releases */}
           <a
             href="https://github.com/tvprasad/meridian/releases"

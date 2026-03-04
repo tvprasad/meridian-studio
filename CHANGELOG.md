@@ -10,6 +10,13 @@ Versioning follows [Semantic Versioning](https://semver.org/).
 ## [Unreleased]
 
 ### Added
+- **Language Intelligence** page — sentiment analysis, entity recognition, key phrase extraction, and language detection powered by Azure AI Language
+- **Vision Intelligence** page — image analysis (caption, tags, objects) and OCR text extraction powered by Azure AI Vision
+- **Speech Services** page — speech-to-text transcription with word-level timings, and text-to-speech synthesis with voice selection powered by Azure AI Speech
+- **Document Intelligence** page — structured data extraction from documents (invoices, receipts, IDs, layouts) powered by Azure AI Document Intelligence
+- "Cognitive AI Services" nav section in sidebar grouping the four new Azure AI feature pages
+- `SpeechTranscriptResult`, `SpeechSynthesisResult`, `DocumentAnalysisResult`, `OcrResult` types in `api/types.ts`
+- `transcribe`, `textToSpeech`, `analyzeDocument` methods in `azureAiApi`; `ocr` return type strengthened to `OcrResult`
 - Iridescent animated gradient on "Meridian Studio" title and sidebar footer links
 - Animated gradient on nav links (hover/focus only — natural white at rest)
 - Icon micro-animations on Dashboard stat cards (hover)
@@ -18,6 +25,7 @@ Versioning follows [Semantic Versioning](https://semver.org/).
 - Dashboard: live provider config hint with link to Settings
 
 ### Changed
+- Sidebar nav refactored into reusable `NavItem` component with scrollable `overflow-y-auto` region
 - Sidebar background reverted to solid black
 - Dashboard title updated to `h1` with descriptive subtitle
 

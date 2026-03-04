@@ -5,6 +5,10 @@ import { Dashboard } from './pages/Dashboard';
 import { Query } from './pages/Query';
 import { Upload } from './pages/Upload';
 import { Settings } from './pages/Settings';
+import { LanguageIntelligence } from './pages/LanguageIntelligence';
+import { VisionIntelligence } from './pages/VisionIntelligence';
+import { SpeechServices } from './pages/SpeechServices';
+import { DocumentIntelligence } from './pages/DocumentIntelligence';
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -25,6 +29,10 @@ function App() {
             <Route path="query" element={<Query />} />
             <Route path="upload" element={<Upload />} />
             <Route path="settings" element={<Settings />} />
+            <Route path="language" element={<LanguageIntelligence />} />
+            <Route path="vision" element={<VisionIntelligence />} />
+            <Route path="speech" element={<SpeechServices />} />
+            <Route path="document" element={<DocumentIntelligence />} />
           </Route>
         </Routes>
       </BrowserRouter>

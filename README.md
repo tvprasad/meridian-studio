@@ -9,12 +9,23 @@ The operator interface for [Meridian](https://github.com/tvprasad/meridian) — 
 
 ## Overview
 
+### Core
+
 | Page | Purpose |
 |---|---|
 | **Dashboard** | Live snapshot of pipeline status, document count, and active providers |
 | **Query** | Ask questions in plain language; returns a grounded answer with a confidence score |
 | **Upload** | Ingest documents into the configured vector store |
 | **Settings** | Switch LLM and retrieval providers at runtime |
+
+### Cognitive AI Services
+
+| Page | Purpose |
+|---|---|
+| **Language Intelligence** | Sentiment analysis, entity recognition, key phrase extraction, and language detection |
+| **Vision Intelligence** | Image analysis (caption, tags, objects) and OCR text extraction |
+| **Speech Services** | Speech-to-text transcription and text-to-speech synthesis with voice selection |
+| **Document Intelligence** | Structured data extraction from invoices, receipts, IDs, layouts, and more |
 
 ---
 
