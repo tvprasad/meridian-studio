@@ -9,6 +9,10 @@ Versioning follows [Semantic Versioning](https://semver.org/).
 
 ## [Unreleased]
 
+---
+
+## [0.2.0] — 2026-03-04
+
 ### Added
 - **Language Intelligence** page — sentiment analysis, entity recognition, key phrase extraction, and language detection powered by Azure AI Language
 - **Vision Intelligence** page — image analysis (caption, tags, objects) and OCR text extraction powered by Azure AI Vision
@@ -46,5 +50,6 @@ Versioning follows [Semantic Versioning](https://semver.org/).
 - VPL logo in sidebar header
 - GitHub and LinkedIn social links in sidebar footer
 
-[Unreleased]: https://github.com/tvprasad/meridian-studio/compare/v0.1.0...HEAD
+[Unreleased]: https://github.com/tvprasad/meridian-studio/compare/v0.2.0...HEAD
+[0.2.0]: https://github.com/tvprasad/meridian-studio/compare/v0.1.0...v0.2.0
 [0.1.0]: https://github.com/tvprasad/meridian-studio/releases/tag/v0.1.0
