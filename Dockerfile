@@ -9,8 +9,8 @@ RUN npm ci
 COPY . .
 
 # Bake API URLs into the bundle at build time
-ARG VITE_API_BASE_URL=http://localhost:8000
-ARG VITE_MCP_BASE_URL=http://localhost:8001
+ARG VITE_API_BASE_URL=https://api.vplsolutions.com
+ARG VITE_MCP_BASE_URL=https://mcp.vplsolutions.com
 ENV VITE_API_BASE_URL=$VITE_API_BASE_URL
 ENV VITE_MCP_BASE_URL=$VITE_MCP_BASE_URL
 
