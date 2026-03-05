@@ -45,13 +45,13 @@ export const azureAiApi = {
   },
 
   textToSpeech: (text: string, voice = 'en-US-JennyNeural') =>
-    api.post<AzureAIResponse<SpeechSynthesisResult>>('/azure-ai/speech/synthesize', { text, voice }),
+    api.postForBlob('/azure-ai/speech/synthesize', { text, voice }),
 
   // Document Intelligence
   analyzeDocument: (file: File, modelId = 'prebuilt-read') => {
     const formData = new FormData();
     formData.append('file', file);
     formData.append('model_id', modelId);
-    return api.postForm<AzureAIResponse<DocumentAnalysisResult>>('/azure-ai/document/analyze', formData);
+    return api.postForm<DocumentAnalysisResult>('/azure-ai/document/analyze', formData);
   },
 };

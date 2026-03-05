@@ -134,11 +134,23 @@ export interface SpeechSynthesisResult {
 }
 
 export interface DocumentAnalysisResult {
+  status: string;
   model_id: string;
   content?: string;
+  request_id: string;
+  elapsed_ms: number;
   pages?: Array<{
-    page_number: number;
-    lines?: Array<{ content: string }>;
+    pageNumber: number;
+    width?: number;
+    height?: number;
+    lines?: Array<{
+      content: string;
+      polygon?: number[];
+    }>;
+    words?: Array<{
+      content: string;
+      confidence: number;
+    }>;
   }>;
   paragraphs?: Array<{
     content: string;
@@ -158,6 +170,7 @@ export interface DocumentAnalysisResult {
     value: string;
     confidence: number;
   }>;
+  documents?: Array<Record<string, unknown>>;
   fields?: Record<string, {
     value?: string;
     confidence?: number;

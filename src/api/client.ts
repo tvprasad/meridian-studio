@@ -63,4 +63,25 @@ export const api = {
 
   postForm: <T>(endpoint: string, formData: FormData, options?: RequestOptions) =>
     request<T>(endpoint, { ...options, method: 'POST', body: formData }),
+
+  postForBlob: async (endpoint: string, data?: unknown, options?: RequestOptions) => {
+    const { params, baseUrl = config.apiBaseUrl, ...init } = options ?? {};
+    let url = `${baseUrl}${endpoint}`;
+    if (params) url += `?${new URLSearchParams(params).toString()}`;
+    const response = await fetch(url, {
+      ...init,
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', ...init.headers },
+      body: data ? JSON.stringify(data) : undefined,
+    });
+    if (!response.ok) {
+      const errorData = await response.json().catch(() => ({}));
+      throw new ApiError(
+        errorData.detail || `Request failed: ${response.statusText}`,
+        response.status,
+        errorData.request_id,
+      );
+    }
+    return response.blob();
+  },
 };

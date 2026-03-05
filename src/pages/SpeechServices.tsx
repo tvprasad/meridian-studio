@@ -1,9 +1,9 @@
-import { useState, useRef } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import { useMutation } from '@tanstack/react-query';
 import { Card } from '../components/ui/Card';
 import { Button } from '../components/ui/Button';
 import { azureAiApi } from '../api/azure-ai';
-import { Mic, Upload, Volume2, Play } from 'lucide-react';
+import { Mic, Upload, Volume2 } from 'lucide-react';
 
 type Tab = 'transcribe' | 'tts';
 
@@ -29,10 +29,22 @@ export function SpeechServices() {
   const [audioFile, setAudioFile] = useState<File | null>(null);
   const [ttsText, setTtsText] = useState('');
   const [voice, setVoice] = useState('en-US-JennyNeural');
+  const [audioUrl, setAudioUrl] = useState<string | null>(null);
   const audioRef = useRef<HTMLAudioElement | null>(null);
 
   const transcribe = useMutation({ mutationFn: azureAiApi.transcribe });
-  const tts = useMutation({ mutationFn: ({ text, voice }: { text: string; voice: string }) => azureAiApi.textToSpeech(text, voice) });
+  const tts = useMutation({
+    mutationFn: ({ text, voice }: { text: string; voice: string }) => azureAiApi.textToSpeech(text, voice),
+    onSuccess: (blob) => {
+      if (audioUrl) URL.revokeObjectURL(audioUrl);
+      const url = URL.createObjectURL(blob);
+      setAudioUrl(url);
+    },
+  });
+
+  useEffect(() => {
+    return () => { if (audioUrl) URL.revokeObjectURL(audioUrl); };
+  }, [audioUrl]);
 
   const handleAudioChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const f = e.target.files?.[0];
@@ -45,16 +57,6 @@ export function SpeechServices() {
 
   const handleSynthesize = () => {
     if (ttsText.trim()) tts.mutate({ text: ttsText, voice });
-  };
-
-  const handlePlay = () => {
-    const data = tts.data?.data;
-    if (!data?.audio_data && !data?.audio_url) return;
-    const src = data.audio_url ?? `data:audio/wav;base64,${data.audio_data}`;
-    if (audioRef.current) {
-      audioRef.current.src = src;
-      audioRef.current.play();
-    }
   };
 
   return (
@@ -132,23 +134,10 @@ export function SpeechServices() {
           {transcribe.data && (
             <Card className="mt-6">
               <h2 className="text-lg font-semibold mb-4">Transcript</h2>
-              <p className="text-gray-800 leading-relaxed">{transcribe.data.data.text}</p>
-
-              {transcribe.data.data.words && transcribe.data.data.words.length > 0 && (
-                <div className="mt-4">
-                  <p className="text-xs font-medium text-gray-500 uppercase tracking-wide mb-2">Word Timings</p>
-                  <div className="flex flex-wrap gap-2">
-                    {transcribe.data.data.words.map((w, i) => (
-                      <span key={i} className="px-2 py-1 bg-teal-50 text-teal-800 rounded text-sm border border-teal-100" title={`${w.offset}ms – ${w.offset + w.duration}ms`}>
-                        {w.word}
-                      </span>
-                    ))}
-                  </div>
-                </div>
-              )}
+              <p className="text-gray-800 leading-relaxed">{(transcribe.data as Record<string, unknown>).text as string ?? JSON.stringify(transcribe.data)}</p>
 
               <p className="text-xs text-gray-400 mt-4 border-t pt-3">
-                Elapsed: {transcribe.data.elapsed_ms}ms · Request: {transcribe.data.request_id}
+                Request: {(transcribe.data as Record<string, unknown>).request_id as string ?? '—'}
               </p>
             </Card>
           )}
@@ -184,13 +173,7 @@ export function SpeechServices() {
               </div>
             </div>
 
-            <div className="mt-4 flex justify-end gap-2">
-              {tts.data?.data && (
-                <Button variant="secondary" onClick={handlePlay}>
-                  <Play className="w-4 h-4 mr-2" />
-                  Play
-                </Button>
-              )}
+            <div className="mt-4 flex justify-end">
               <Button onClick={handleSynthesize} loading={tts.isPending} disabled={!ttsText.trim()}>
                 <Volume2 className="w-4 h-4 mr-2" />
                 Synthesize
@@ -204,27 +187,12 @@ export function SpeechServices() {
             </Card>
           )}
 
-          {tts.data && (
+          {audioUrl && (
             <Card className="mt-6">
-              <h2 className="text-lg font-semibold mb-4">Synthesis Complete</h2>
-              {tts.data.data.audio_url && (
-                <audio controls className="w-full" src={tts.data.data.audio_url} />
-              )}
-              {tts.data.data.audio_data && !tts.data.data.audio_url && (
-                <audio controls className="w-full" src={`data:audio/wav;base64,${tts.data.data.audio_data}`} />
-              )}
-              <div className="mt-3 text-sm text-gray-600 space-y-1">
-                {tts.data.data.voice && <p>Voice: <span className="font-medium">{tts.data.data.voice}</span></p>}
-                {tts.data.data.duration_ms && <p>Duration: <span className="font-medium">{tts.data.data.duration_ms}ms</span></p>}
-              </div>
-              <p className="text-xs text-gray-400 mt-4 border-t pt-3">
-                Elapsed: {tts.data.elapsed_ms}ms · Request: {tts.data.request_id}
-              </p>
+              <h2 className="text-lg font-semibold mb-4">Synthesized Audio</h2>
+              <audio ref={audioRef} controls className="w-full" src={audioUrl} />
             </Card>
           )}
-
-          {/* Hidden audio element for play button */}
-          <audio ref={audioRef} className="hidden" />
         </>
       )}
     </div>

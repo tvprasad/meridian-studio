@@ -249,10 +249,12 @@ export function DocumentIntelligence() {
         <Card className="mt-6">
           <div className="flex items-center justify-between mb-4">
             <h2 className="text-lg font-semibold">Extraction Result</h2>
-            <span className="text-xs text-gray-400 font-mono">{analyze.data.data.model_id}</span>
+            {analyze.data.model_id && (
+              <span className="text-xs text-gray-400 font-mono">{analyze.data.model_id}</span>
+            )}
           </div>
 
-          <ResultPanel data={analyze.data.data} />
+          <ResultPanel data={analyze.data} />
 
           <p className="text-xs text-gray-400 mt-4 border-t pt-3">
             Elapsed: {analyze.data.elapsed_ms}ms · Request: {analyze.data.request_id}
