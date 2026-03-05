@@ -1,8 +1,8 @@
 import { useState, useEffect } from 'react';
-import { useMutation } from '@tanstack/react-query';
 import { Card } from '../components/ui/Card';
 import { Button } from '../components/ui/Button';
 import { azureAiApi } from '../api/azure-ai';
+import { useTrackedMutation } from '../hooks/useTrackedMutation';
 import { Eye, Upload, Image, FileText } from 'lucide-react';
 
 type Tab = 'analyze' | 'ocr';
@@ -17,8 +17,8 @@ export function VisionIntelligence() {
   const [file, setFile] = useState<File | null>(null);
   const [preview, setPreview] = useState<string | null>(null);
 
-  const analyze = useMutation({ mutationFn: azureAiApi.analyzeImage });
-  const ocr = useMutation({ mutationFn: azureAiApi.ocr });
+  const analyze = useTrackedMutation({ service: 'Vision', operation: 'analyze' }, { mutationFn: azureAiApi.analyzeImage });
+  const ocr = useTrackedMutation({ service: 'Vision', operation: 'ocr' }, { mutationFn: azureAiApi.ocr });
 
   const currentMutation = tab === 'analyze' ? analyze : ocr;
 

@@ -1,5 +1,6 @@
-import { Outlet, NavLink } from 'react-router-dom';
+import { Outlet, NavLink, useLocation } from 'react-router-dom';
 import { LayoutDashboard, MessageSquare, Upload, Settings, Github, Linkedin, Languages, Eye, Mic, ScanSearch } from 'lucide-react';
+import { DiagnosticsPanel } from './DiagnosticsPanel';
 
 const coreNavItems = [
   { to: '/', icon: LayoutDashboard, label: 'Dashboard' },
@@ -40,7 +41,12 @@ function NavItem({ to, icon: Icon, label }: { to: string; icon: React.ElementTyp
   );
 }
 
+const AI_ROUTES = ['/language', '/vision', '/speech', '/document'];
+
 export function Layout() {
+  const { pathname } = useLocation();
+  const showDiagnostics = AI_ROUTES.some((r) => pathname.startsWith(r));
+
   return (
     <div className="min-h-screen flex">
       {/* Sidebar */}
@@ -149,6 +155,9 @@ export function Layout() {
           </p>
         </footer>
       </main>
+
+      {/* Right sidebar — Diagnostics & Governance (AI pages only) */}
+      {showDiagnostics && <DiagnosticsPanel />}
     </div>
   );
 }

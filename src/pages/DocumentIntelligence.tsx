@@ -1,8 +1,8 @@
 import { useState, useEffect } from 'react';
-import { useMutation } from '@tanstack/react-query';
 import { Card } from '../components/ui/Card';
 import { Button } from '../components/ui/Button';
 import { azureAiApi } from '../api/azure-ai';
+import { useTrackedMutation } from '../hooks/useTrackedMutation';
 import { ScanSearch, Upload, FileText } from 'lucide-react';
 import type { DocumentAnalysisResult } from '../api/types';
 
@@ -144,7 +144,7 @@ export function DocumentIntelligence() {
   const [modelId, setModelId] = useState('prebuilt-read');
   const [preview, setPreview] = useState<string | null>(null);
 
-  const analyze = useMutation({
+  const analyze = useTrackedMutation({ service: 'DocIntel', operation: 'analyze' }, {
     mutationFn: ({ file, modelId }: { file: File; modelId: string }) =>
       azureAiApi.analyzeDocument(file, modelId),
   });

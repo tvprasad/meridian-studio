@@ -1,8 +1,8 @@
 import { useState, useRef, useEffect } from 'react';
-import { useMutation } from '@tanstack/react-query';
 import { Card } from '../components/ui/Card';
 import { Button } from '../components/ui/Button';
 import { azureAiApi } from '../api/azure-ai';
+import { useTrackedMutation } from '../hooks/useTrackedMutation';
 import { Mic, Upload, Volume2 } from 'lucide-react';
 
 type Tab = 'transcribe' | 'tts';
@@ -32,8 +32,9 @@ export function SpeechServices() {
   const [audioUrl, setAudioUrl] = useState<string | null>(null);
   const audioRef = useRef<HTMLAudioElement | null>(null);
 
-  const transcribe = useMutation({ mutationFn: azureAiApi.transcribe });
-  const tts = useMutation({
+  const transcribe = useTrackedMutation({ service: 'Speech:STT', operation: 'transcribe' }, { mutationFn: azureAiApi.transcribe });
+
+  const tts = useTrackedMutation({ service: 'Speech:TTS', operation: 'synthesize' }, {
     mutationFn: ({ text, voice }: { text: string; voice: string }) => azureAiApi.textToSpeech(text, voice),
     onSuccess: (blob) => {
       if (audioUrl) URL.revokeObjectURL(audioUrl);

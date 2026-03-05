@@ -27,6 +27,15 @@ The operator interface for [Meridian](https://github.com/tvprasad/meridian) — 
 | **Speech Services** | Speech-to-text transcription and text-to-speech synthesis with voice selection |
 | **Document Intelligence** | Structured data extraction from invoices, receipts, IDs, layouts, and more |
 
+### Diagnostics & Governance
+
+A collapsible right sidebar appears on all Cognitive AI Services pages, providing:
+
+- **Diagnostics** — last API call status, latency, request ID, and estimated cost
+- **Governance** — session totals: call count, cumulative cost estimate, and per-service usage breakdown
+
+State is session-scoped (resets on page refresh) and tracked automatically via the `useTrackedMutation` hook. See [ADR-0002](adr/0002-diagnostics-governance-panel.md) for design rationale.
+
 ---
 
 ## Prerequisites
@@ -92,7 +101,8 @@ The app will be available at `http://localhost:5173`.
 src/
 ├── api/          # API client and type definitions
 ├── components/
-│   └── ui/       # Shared UI components (Card, Button, Layout, …)
+│   └── ui/       # Shared UI components (Card, Button, Layout, DiagnosticsPanel, …)
+├── hooks/        # Custom hooks (useDiagnostics, useTrackedMutation)
 └── pages/        # Route-level page components
 ```
 

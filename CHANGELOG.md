@@ -9,6 +9,19 @@ Versioning follows [Semantic Versioning](https://semver.org/).
 
 ## [Unreleased]
 
+### Added
+- **Diagnostics & Governance** right sidebar panel on all Cognitive AI Services pages
+- `DiagnosticsProvider` React Context for session-level API call tracking
+- `useTrackedMutation` hook — wraps React Query's `useMutation` to auto-record service calls
+- `DiagnosticsPanel` component with collapsible Diagnostics and Governance sections
+- Azure AI pricing estimates (per-service, clearly labeled as approximate)
+- ADR-0002: Diagnostics & Governance Panel architecture decision
+
+### Fixed
+- Document Intelligence crash when accessing `data.data.model_id` on flat API response
+- Speech TTS "not valid JSON" error — switched to `postForBlob` for binary WAV audio
+- Null safety for undefined nested response fields across AI service pages
+
 ---
 
 ## [0.2.0] — 2026-03-04

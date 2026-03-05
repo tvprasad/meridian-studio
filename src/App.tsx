@@ -9,6 +9,7 @@ import { LanguageIntelligence } from './pages/LanguageIntelligence';
 import { VisionIntelligence } from './pages/VisionIntelligence';
 import { SpeechServices } from './pages/SpeechServices';
 import { DocumentIntelligence } from './pages/DocumentIntelligence';
+import { DiagnosticsProvider } from './hooks/useDiagnostics';
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -22,6 +23,7 @@ const queryClient = new QueryClient({
 function App() {
   return (
     <QueryClientProvider client={queryClient}>
+      <DiagnosticsProvider>
       <BrowserRouter>
         <Routes>
           <Route path="/" element={<Layout />}>
@@ -36,6 +38,7 @@ function App() {
           </Route>
         </Routes>
       </BrowserRouter>
+      </DiagnosticsProvider>
     </QueryClientProvider>
   );
 }

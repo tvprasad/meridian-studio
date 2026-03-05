@@ -1,8 +1,8 @@
 import { useState } from 'react';
-import { useMutation } from '@tanstack/react-query';
 import { Card } from '../components/ui/Card';
 import { Button } from '../components/ui/Button';
 import { azureAiApi } from '../api/azure-ai';
+import { useTrackedMutation } from '../hooks/useTrackedMutation';
 import { Languages, Send } from 'lucide-react';
 
 type Tab = 'sentiment' | 'entities' | 'keyphrases' | 'detect';
@@ -38,10 +38,10 @@ export function LanguageIntelligence() {
   const [text, setText] = useState('');
   const [language, setLanguage] = useState('en');
 
-  const sentiment = useMutation({ mutationFn: ({ t, l }: { t: string; l: string }) => azureAiApi.sentiment(t, l) });
-  const entities = useMutation({ mutationFn: ({ t, l }: { t: string; l: string }) => azureAiApi.entities(t, l) });
-  const keyPhrases = useMutation({ mutationFn: ({ t, l }: { t: string; l: string }) => azureAiApi.keyPhrases(t, l) });
-  const detect = useMutation({ mutationFn: (t: string) => azureAiApi.detectLanguage(t) });
+  const sentiment = useTrackedMutation({ service: 'Language', operation: 'sentiment' }, { mutationFn: ({ t, l }: { t: string; l: string }) => azureAiApi.sentiment(t, l) });
+  const entities = useTrackedMutation({ service: 'Language', operation: 'entities' }, { mutationFn: ({ t, l }: { t: string; l: string }) => azureAiApi.entities(t, l) });
+  const keyPhrases = useTrackedMutation({ service: 'Language', operation: 'keyPhrases' }, { mutationFn: ({ t, l }: { t: string; l: string }) => azureAiApi.keyPhrases(t, l) });
+  const detect = useTrackedMutation({ service: 'Language', operation: 'detect' }, { mutationFn: (t: string) => azureAiApi.detectLanguage(t) });
 
   const currentMutation = { sentiment, entities, keyphrases: keyPhrases, detect }[tab];
   const isPending = currentMutation.isPending;
