@@ -1,6 +1,8 @@
+import { useEffect } from 'react';
 import { Outlet, NavLink, useLocation } from 'react-router-dom';
 import { LayoutDashboard, MessageSquare, Upload, Settings, Github, Linkedin, Languages, Eye, Mic, ScanSearch } from 'lucide-react';
 import { DiagnosticsPanel } from './DiagnosticsPanel';
+import { useDiagnostics } from '../../hooks/useDiagnostics';
 
 const coreNavItems = [
   { to: '/', icon: LayoutDashboard, label: 'Dashboard' },
@@ -46,6 +48,12 @@ const AI_ROUTES = ['/language', '/vision', '/speech', '/document'];
 export function Layout() {
   const { pathname } = useLocation();
   const showDiagnostics = AI_ROUTES.some((r) => pathname.startsWith(r));
+  const { reset } = useDiagnostics();
+
+  // Reset diagnostics & governance when navigating between AI service pages
+  useEffect(() => {
+    if (showDiagnostics) reset();
+  }, [pathname, showDiagnostics, reset]);
 
   return (
     <div className="min-h-screen flex">
