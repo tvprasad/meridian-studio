@@ -18,6 +18,10 @@ Versioning follows [Semantic Versioning](https://semver.org/).
 - MCP response fixtures from real backend responses
 - `npm test` and `npm run test:watch` scripts
 
+### Changed
+- Deploy workflow: switch from Azure Static Web Apps to Azure Container Apps (Docker/ACR)
+- Remove PR-trigger and close-staging job (Container Apps doesn't support SWA preview environments)
+
 ### Fixed
 - Query page MCP integration: send correct `query_knowledge_base` tool call payload and map response fields (`confidence` -> `confidence_score`, `reason` -> `refusal_reason`)
 - ESLint `no-unused-vars` error: remove unused `SpeechSynthesisResult` import

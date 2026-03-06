@@ -3,8 +3,6 @@ name: Azure Deploy
 on:
   push:
     branches: [main]
-  pull_request:
-    branches: [main]
 
 env:
   IMAGE_NAME: meridian-studio
@@ -36,33 +34,19 @@ jobs:
             .
 
       - name: Push Docker image
-        if: github.event_name == 'push'
         run: |
           docker push ${{ secrets.ACR_LOGIN_SERVER }}/${{ env.IMAGE_NAME }}:${{ github.sha }}
           docker push ${{ secrets.ACR_LOGIN_SERVER }}/${{ env.IMAGE_NAME }}:latest
 
-      # ── Deploy to Azure Static Web Apps ─────────────────────────────────────
-      - name: Deploy to Azure Static Web Apps
-        uses: azure/static-web-apps-deploy@v1
+      # ── Deploy to Azure Container Apps ─────────────────────────────────────
+      - name: Log in to Azure
+        uses: azure/login@v2
         with:
-          azure_static_web_apps_api_token: ${{ secrets.AZURE_STATIC_WEB_APPS_API_TOKEN_CALM_DESERT_0B5FA280F }}
-          repo_token: ${{ secrets.GITHUB_TOKEN }}
-          action: upload
-          app_location: /
-          skip_app_build: true
-          output_location: dist
-        env:
-          DEPLOYMENT_IMAGE: ${{ secrets.ACR_LOGIN_SERVER }}/${{ env.IMAGE_NAME }}:${{ github.sha }}
+          creds: ${{ secrets.AZURE_CREDENTIALS }}
 
-  # ── Close PR staging environment ──────────────────────────────────────────
-  close-staging:
-    name: Close Staging Environment
-    runs-on: ubuntu-latest
-    if: github.event_name == 'pull_request' && github.event.action == 'closed'
-
-    steps:
-      - name: Close staging environment
-        uses: azure/static-web-apps-deploy@v1
+      - name: Deploy to Container Apps
+        uses: azure/container-apps-deploy-action@v1
         with:
-          azure_static_web_apps_api_token: ${{ secrets.AZURE_STATIC_WEB_APPS_API_TOKEN_CALM_DESERT_0B5FA280F }}
-          action: close
+          containerAppName: meridian-studio
+          resourceGroup: meridian-rg
+          imageToDeploy: ${{ secrets.ACR_LOGIN_SERVER }}/${{ env.IMAGE_NAME }}:${{ github.sha }}
