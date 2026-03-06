@@ -10,6 +10,8 @@ Versioning follows [Semantic Versioning](https://semver.org/).
 ## [Unreleased]
 
 ### Added
+- **Ingestion Pipeline** page replacing Document Upload — pipeline stage visualization (Upload → Chunk → Embed → Index), multi-file support, 120s timeout for large documents
+- `meridianApi.ingest` API function with `IngestResponse` type
 - Vitest + MSW + Testing Library test framework (ADR-0003)
 - API contract tests for `meridianApi.query` (payload shape, REFUSED/OK response mapping)
 - API contract test for `meridianApi.health`

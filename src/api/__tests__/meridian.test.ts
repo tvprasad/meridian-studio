@@ -6,6 +6,7 @@ import { meridianApi } from '../meridian';
 import mcpQueryRefused from '../../__fixtures__/mcp-query-refused.json';
 import mcpQueryOk from '../../__fixtures__/mcp-query-ok.json';
 import healthFixture from '../../__fixtures__/health.json';
+import ingestFixture from '../../__fixtures__/ingest-success.json';
 
 // ── MSW server ──────────────────────────────────────────────────────────────
 
@@ -86,6 +87,29 @@ describe('meridianApi.health', () => {
       llm_provider: 'azure',
       retrieval_provider: 'azure',
       retrieval_threshold: 0.6,
+    });
+  });
+});
+
+// ── Ingest API tests ─────────────────────────────────────────────────────────
+
+describe('meridianApi.ingest', () => {
+  it('sends FormData to /ingest and returns ingestion result', async () => {
+    server.use(
+      http.post('http://localhost:8000/ingest', async () => {
+        return HttpResponse.json(ingestFixture);
+      }),
+    );
+
+    const formData = new FormData();
+    formData.append('files', new Blob(['hello'], { type: 'text/plain' }), 'test.txt');
+
+    const result = await meridianApi.ingest(formData);
+
+    expect(result).toEqual({
+      ingested: 1,
+      chunks: 5,
+      message: '1 documents ingested (5 chunks)',
     });
   });
 });

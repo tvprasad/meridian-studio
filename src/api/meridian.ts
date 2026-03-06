@@ -1,6 +1,6 @@
 import { api } from './client';
 import { config } from '../config';
-import type { QueryResponse, McpQueryResult, HealthResponse, McpTool, UpdateSettingsPayload } from './types';
+import type { QueryResponse, McpQueryResult, HealthResponse, McpTool, UpdateSettingsPayload, IngestResponse } from './types';
 
 export const meridianApi = {
   // Routes to MCP server (port 8001)
@@ -26,6 +26,10 @@ export const meridianApi = {
 
   mcpTools: () =>
     api.get<{ tools: McpTool[] }>('/mcp/tools'),
+
+  // POST /ingest — upload documents for ingestion into the knowledge base
+  ingest: (formData: FormData) =>
+    api.postForm<IngestResponse>('/ingest', formData, { timeoutMs: 120_000 }),
 
   // POST /settings — backend must expose this to accept runtime config changes
   updateSettings: (payload: UpdateSettingsPayload) =>

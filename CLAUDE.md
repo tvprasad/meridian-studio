@@ -1,7 +1,7 @@
 # Meridian Studio — Project Context
 
 ## What is this?
-React frontend for the Meridian RAG knowledge engine. Provides a Query console, document upload, Cognitive AI Services (Language, Vision, Speech, Document Intelligence), and a Settings page.
+React frontend for the Meridian RAG knowledge engine. Provides a Query console, Ingestion Pipeline (document chunking, embedding, indexing), Cognitive AI Services (Language, Vision, Speech, Document Intelligence), and a Settings page.
 
 ## Tech Stack
 - **Framework**: React 19 + TypeScript + Vite 7

@@ -42,6 +42,12 @@ export interface McpTool {
   inputSchema?: Record<string, unknown>;
 }
 
+export interface IngestResponse {
+  ingested: number;
+  chunks: number;
+  message?: string;
+}
+
 // ===========================================
 // Azure AI Types
 // ===========================================
