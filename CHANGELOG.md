@@ -10,6 +10,7 @@ Versioning follows [Semantic Versioning](https://semver.org/).
 ## [Unreleased]
 
 ### Fixed
+- Query page MCP integration: send correct `query_knowledge_base` tool call payload and map response fields (`confidence` -> `confidence_score`, `reason` -> `refusal_reason`)
 - ESLint `no-unused-vars` error: remove unused `SpeechSynthesisResult` import
 - ESLint `react-refresh/only-export-components` error: split diagnostics into separate context, provider, and hook files
 - TypeScript build errors: update `useTrackedMutation` to TanStack Query v5 4-arg callback signatures

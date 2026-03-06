@@ -13,6 +13,15 @@ export interface QueryResponse {
   threshold?: number;
 }
 
+export interface McpQueryResult {
+  status: string;
+  trace_id: string;
+  confidence: number;
+  answer?: string;
+  reason?: string;
+  threshold?: number;
+}
+
 export interface HealthResponse {
   status: string;
   document_count: number;
