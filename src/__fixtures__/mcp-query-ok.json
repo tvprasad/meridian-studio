@@ -1,0 +1,9 @@
+{
+  "result": {
+    "status": "OK",
+    "trace_id": "a1b2c3d4-e5f6-7890-abcd-ef1234567890",
+    "confidence": 0.87,
+    "answer": "Meridian is a RAG-powered knowledge engine.",
+    "threshold": 0.6
+  }
+}

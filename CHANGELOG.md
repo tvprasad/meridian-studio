@@ -9,6 +9,13 @@ Versioning follows [Semantic Versioning](https://semver.org/).
 
 ## [Unreleased]
 
+### Added
+- Vitest + MSW + Testing Library test framework (ADR-0003)
+- API contract tests for `meridianApi.query` (payload shape, REFUSED/OK response mapping)
+- API contract test for `meridianApi.health`
+- MCP response fixtures from real backend responses
+- `npm test` and `npm run test:watch` scripts
+
 ### Fixed
 - Query page MCP integration: send correct `query_knowledge_base` tool call payload and map response fields (`confidence` -> `confidence_score`, `reason` -> `refusal_reason`)
 - ESLint `no-unused-vars` error: remove unused `SpeechSynthesisResult` import

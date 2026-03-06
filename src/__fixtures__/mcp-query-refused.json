@@ -1,0 +1,9 @@
+{
+  "result": {
+    "status": "REFUSED",
+    "trace_id": "3d41b36c-dd37-40c7-9394-c70b40b28187",
+    "confidence": 0.51432025,
+    "reason": "Retrieval confidence below threshold",
+    "threshold": 0.6
+  }
+}

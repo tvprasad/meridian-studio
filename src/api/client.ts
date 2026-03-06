@@ -12,31 +12,48 @@ export class ApiError extends Error {
   }
 }
 
+const DEFAULT_TIMEOUT_MS = 30_000;
+
 interface RequestOptions extends RequestInit {
   params?: Record<string, string>;
   baseUrl?: string;
+  timeoutMs?: number;
 }
 
 async function request<T>(
   endpoint: string,
   options: RequestOptions = {}
 ): Promise<T> {
-  const { params, baseUrl = config.apiBaseUrl, ...init } = options;
+  const { params, baseUrl = config.apiBaseUrl, timeoutMs = DEFAULT_TIMEOUT_MS, ...init } = options;
 
   let url = `${baseUrl}${endpoint}`;
-  
+
   if (params) {
     const searchParams = new URLSearchParams(params);
     url += `?${searchParams.toString()}`;
   }
 
-  const response = await fetch(url, {
-    ...init,
-    headers: {
-      ...(!(init.body instanceof FormData) && { 'Content-Type': 'application/json' }),
-      ...init.headers,
-    },
-  });
+  const controller = new AbortController();
+  const timeout = setTimeout(() => controller.abort(), timeoutMs);
+
+  let response: Response;
+  try {
+    response = await fetch(url, {
+      ...init,
+      signal: init.signal ?? controller.signal,
+      headers: {
+        ...(!(init.body instanceof FormData) && { 'Content-Type': 'application/json' }),
+        ...init.headers,
+      },
+    });
+  } catch (err) {
+    if (err instanceof Error && err.name === 'AbortError') {
+      throw new ApiError(`Request timed out after ${timeoutMs}ms`, 0);
+    }
+    throw err;
+  } finally {
+    clearTimeout(timeout);
+  }
 
   if (!response.ok) {
     const errorData = await response.json().catch(() => ({}));
@@ -65,15 +82,31 @@ export const api = {
     request<T>(endpoint, { ...options, method: 'POST', body: formData }),
 
   postForBlob: async (endpoint: string, data?: unknown, options?: RequestOptions) => {
-    const { params, baseUrl = config.apiBaseUrl, ...init } = options ?? {};
+    const { params, baseUrl = config.apiBaseUrl, timeoutMs = DEFAULT_TIMEOUT_MS, ...init } = options ?? {};
     let url = `${baseUrl}${endpoint}`;
     if (params) url += `?${new URLSearchParams(params).toString()}`;
-    const response = await fetch(url, {
-      ...init,
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json', ...init.headers },
-      body: data ? JSON.stringify(data) : undefined,
-    });
+
+    const controller = new AbortController();
+    const timeout = setTimeout(() => controller.abort(), timeoutMs);
+
+    let response: Response;
+    try {
+      response = await fetch(url, {
+        ...init,
+        signal: init.signal ?? controller.signal,
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', ...init.headers },
+        body: data ? JSON.stringify(data) : undefined,
+      });
+    } catch (err) {
+      if (err instanceof Error && err.name === 'AbortError') {
+        throw new ApiError(`Request timed out after ${timeoutMs}ms`, 0);
+      }
+      throw err;
+    } finally {
+      clearTimeout(timeout);
+    }
+
     if (!response.ok) {
       const errorData = await response.json().catch(() => ({}));
       throw new ApiError(
