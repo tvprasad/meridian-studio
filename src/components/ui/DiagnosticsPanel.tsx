@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { useDiagnostics } from '../../hooks/useDiagnostics';
+import { useDiagnostics } from '../../hooks/useDiagnosticsHook';
 import { ChevronRight, ChevronDown, Activity, BarChart3, RotateCcw } from 'lucide-react';
 
 function formatCost(cost: number): string {

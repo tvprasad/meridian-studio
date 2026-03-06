@@ -1,46 +1,13 @@
-import { createContext, useContext, useCallback, useState, type ReactNode } from 'react';
+import { useCallback, useState, type ReactNode } from 'react';
+import {
+  DiagnosticsContext,
+  initial,
+  PRICING,
+  type CallRecord,
+  type DiagnosticsState,
+} from './DiagnosticsContext';
 
-// ── Azure pricing estimates (per-unit, USD) ─────────────────────────────────
-const PRICING: Record<string, number> = {
-  Language:  0.001,   // ~$1 per 1,000 text records
-  Vision:    0.001,   // ~$1 per 1,000 images
-  'Speech:STT': 0.0167, // ~$1 per 60 min → $0.0167/min (est. per call)
-  'Speech:TTS': 0.000016, // ~$16 per 1M chars → $0.000016/char (est. per call)
-  DocIntel:  0.001,   // ~$1 per 1,000 pages (Read model)
-};
-
-export interface CallRecord {
-  service: string;
-  operation: string;
-  status: number | 'ok' | 'error';
-  latencyMs: number;
-  requestId?: string;
-  timestamp: number;
-  estimatedCost: number;
-}
-
-interface DiagnosticsState {
-  lastCall: CallRecord | null;
-  calls: CallRecord[];
-  totalCalls: number;
-  totalCost: number;
-  callsByService: Record<string, { count: number; cost: number }>;
-}
-
-interface DiagnosticsContextValue extends DiagnosticsState {
-  recordCall: (call: Omit<CallRecord, 'timestamp' | 'estimatedCost'> & { estimatedCost?: number }) => void;
-  reset: () => void;
-}
-
-const initial: DiagnosticsState = {
-  lastCall: null,
-  calls: [],
-  totalCalls: 0,
-  totalCost: 0,
-  callsByService: {},
-};
-
-const DiagnosticsContext = createContext<DiagnosticsContextValue | null>(null);
+export { type CallRecord } from './DiagnosticsContext';
 
 export function DiagnosticsProvider({ children }: { children: ReactNode }) {
   const [state, setState] = useState<DiagnosticsState>(initial);
@@ -77,10 +44,4 @@ export function DiagnosticsProvider({ children }: { children: ReactNode }) {
       {children}
     </DiagnosticsContext.Provider>
   );
-}
-
-export function useDiagnostics() {
-  const ctx = useContext(DiagnosticsContext);
-  if (!ctx) throw new Error('useDiagnostics must be used within DiagnosticsProvider');
-  return ctx;
 }

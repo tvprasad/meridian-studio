@@ -9,6 +9,12 @@ Versioning follows [Semantic Versioning](https://semver.org/).
 
 ## [Unreleased]
 
+### Fixed
+- ESLint `no-unused-vars` error: remove unused `SpeechSynthesisResult` import
+- ESLint `react-refresh/only-export-components` error: split diagnostics into separate context, provider, and hook files
+- TypeScript build errors: update `useTrackedMutation` to TanStack Query v5 4-arg callback signatures
+- TypeScript build errors: fix unsafe type cast in Speech Services transcript display
+
 ---
 
 ## [0.2.1] — 2026-03-05

@@ -6,7 +6,6 @@ import type {
   VisionResult,
   OcrResult,
   SpeechTranscriptResult,
-  SpeechSynthesisResult,
   DocumentAnalysisResult,
 } from './types';
 

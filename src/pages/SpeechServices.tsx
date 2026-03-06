@@ -135,10 +135,10 @@ export function SpeechServices() {
           {transcribe.data && (
             <Card className="mt-6">
               <h2 className="text-lg font-semibold mb-4">Transcript</h2>
-              <p className="text-gray-800 leading-relaxed">{(transcribe.data as Record<string, unknown>).text as string ?? JSON.stringify(transcribe.data)}</p>
+              <p className="text-gray-800 leading-relaxed">{(transcribe.data as unknown as Record<string, unknown>).text as string ?? JSON.stringify(transcribe.data)}</p>
 
               <p className="text-xs text-gray-400 mt-4 border-t pt-3">
-                Request: {(transcribe.data as Record<string, unknown>).request_id as string ?? '—'}
+                Request: {(transcribe.data as unknown as Record<string, unknown>).request_id as string ?? '—'}
               </p>
             </Card>
           )}

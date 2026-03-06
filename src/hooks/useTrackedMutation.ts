@@ -1,5 +1,5 @@
 import { useMutation, type UseMutationOptions } from '@tanstack/react-query';
-import { useDiagnostics } from './useDiagnostics';
+import { useDiagnostics } from './useDiagnosticsHook';
 
 interface TrackingMeta {
   service: string;
@@ -10,20 +10,20 @@ interface TrackingMeta {
  * Wraps useMutation to automatically record calls to the Diagnostics panel.
  * Expects the response to have optional `elapsed_ms` and `request_id` fields.
  */
-export function useTrackedMutation<TData = unknown, TError = Error, TVariables = void>(
+export function useTrackedMutation<TData = unknown, TError = Error, TVariables = void, TOnMutateResult = unknown>(
   meta: TrackingMeta,
-  options: UseMutationOptions<TData, TError, TVariables>,
+  options: UseMutationOptions<TData, TError, TVariables, TOnMutateResult>,
 ) {
   const { recordCall } = useDiagnostics();
   const start = { current: 0 };
 
-  return useMutation<TData, TError, TVariables>({
+  return useMutation<TData, TError, TVariables, TOnMutateResult>({
     ...options,
-    onMutate: (...args) => {
+    onMutate: (variables, context) => {
       start.current = performance.now();
-      return options.onMutate?.(...args);
+      return options.onMutate?.(variables, context) as TOnMutateResult | Promise<TOnMutateResult>;
     },
-    onSuccess: (data, variables, context) => {
+    onSuccess: (data, variables, onMutateResult, context) => {
       const elapsed = Math.round(performance.now() - start.current);
       const resp = data as Record<string, unknown> | null;
       recordCall({
@@ -33,9 +33,9 @@ export function useTrackedMutation<TData = unknown, TError = Error, TVariables =
         latencyMs: (resp?.elapsed_ms as number) ?? elapsed,
         requestId: resp?.request_id as string | undefined,
       });
-      return options.onSuccess?.(data, variables, context);
+      return options.onSuccess?.(data, variables, onMutateResult, context);
     },
-    onError: (error, variables, context) => {
+    onError: (error, variables, onMutateResult, context) => {
       const elapsed = Math.round(performance.now() - start.current);
       recordCall({
         service: meta.service,
@@ -43,7 +43,7 @@ export function useTrackedMutation<TData = unknown, TError = Error, TVariables =
         status: 'error',
         latencyMs: elapsed,
       });
-      return options.onError?.(error, variables, context);
+      return options.onError?.(error, variables, onMutateResult, context);
     },
   });
 }

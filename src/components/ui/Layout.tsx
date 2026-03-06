@@ -2,7 +2,7 @@ import { useEffect } from 'react';
 import { Outlet, NavLink, useLocation } from 'react-router-dom';
 import { LayoutDashboard, MessageSquare, Upload, Settings, Github, Linkedin, Languages, Eye, Mic, ScanSearch } from 'lucide-react';
 import { DiagnosticsPanel } from './DiagnosticsPanel';
-import { useDiagnostics } from '../../hooks/useDiagnostics';
+import { useDiagnostics } from '../../hooks/useDiagnosticsHook';
 
 const coreNavItems = [
   { to: '/', icon: LayoutDashboard, label: 'Dashboard' },
