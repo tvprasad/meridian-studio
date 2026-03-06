@@ -9,6 +9,10 @@ Versioning follows [Semantic Versioning](https://semver.org/).
 
 ## [Unreleased]
 
+---
+
+## [0.2.1] — 2026-03-05
+
 ### Added
 - **Diagnostics & Governance** right sidebar panel on all Cognitive AI Services pages
 - `DiagnosticsProvider` React Context for session-level API call tracking
@@ -16,6 +20,7 @@ Versioning follows [Semantic Versioning](https://semver.org/).
 - `DiagnosticsPanel` component with collapsible Diagnostics and Governance sections
 - Azure AI pricing estimates (per-service, clearly labeled as approximate)
 - ADR-0002: Diagnostics & Governance Panel architecture decision
+- Auto-reset diagnostics on AI service page navigation
 
 ### Fixed
 - Document Intelligence crash when accessing `data.data.model_id` on flat API response
@@ -63,6 +68,7 @@ Versioning follows [Semantic Versioning](https://semver.org/).
 - VPL logo in sidebar header
 - GitHub and LinkedIn social links in sidebar footer
 
-[Unreleased]: https://github.com/tvprasad/meridian-studio/compare/v0.2.0...HEAD
+[Unreleased]: https://github.com/tvprasad/meridian-studio/compare/v0.2.1...HEAD
+[0.2.1]: https://github.com/tvprasad/meridian-studio/compare/v0.2.0...v0.2.1
 [0.2.0]: https://github.com/tvprasad/meridian-studio/compare/v0.1.0...v0.2.0
 [0.1.0]: https://github.com/tvprasad/meridian-studio/releases/tag/v0.1.0
