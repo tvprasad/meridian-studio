@@ -11,6 +11,9 @@ Versioning follows [Semantic Versioning](https://semver.org/).
 
 ### Added
 - **Ingestion Pipeline** page replacing Document Upload — pipeline stage visualization (Upload → Chunk → Embed → Index), multi-file support, 120s timeout for large documents
+- Collapsible "What should I ingest?" guidance on Ingestion Pipeline page
+- Icons and inline descriptions for all Settings fields (LLM Provider, Retrieval Provider, Retrieval Threshold)
+- Icons for all Cognitive AI Services entries on Settings page
 - `meridianApi.ingest` API function with `IngestResponse` type
 - Vitest + MSW + Testing Library test framework (ADR-0003)
 - API contract tests for `meridianApi.query` (payload shape, REFUSED/OK response mapping)
@@ -21,8 +24,12 @@ Versioning follows [Semantic Versioning](https://semver.org/).
 ### Changed
 - Deploy workflow: switch from Azure Static Web Apps to Azure Container Apps (Docker/ACR)
 - Remove PR-trigger and close-staging job (Container Apps doesn't support SWA preview environments)
+- Settings: rename "Azure AI Services" to "Cognitive AI Services", mark all 4 services as active
+- Settings: updated page subtitle with descriptive text
+- Document Intelligence icon unified to `FileSearch` across sidebar nav and Settings page
 
 ### Fixed
+- Settings: Retrieval Threshold description moved below label row (was incorrectly inside flex justify-between)
 - Query page MCP integration: send correct `query_knowledge_base` tool call payload and map response fields (`confidence` -> `confidence_score`, `reason` -> `refusal_reason`)
 - ESLint `no-unused-vars` error: remove unused `SpeechSynthesisResult` import
 - ESLint `react-refresh/only-export-components` error: split diagnostics into separate context, provider, and hook files

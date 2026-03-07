@@ -7,7 +7,7 @@ import { Card } from '../components/ui/Card';
 import { Button } from '../components/ui/Button';
 import { meridianApi } from '../api/meridian';
 import { type HealthResponse } from '../api/types';
-import { CheckCircle, AlertCircle } from 'lucide-react';
+import { CheckCircle, AlertCircle, BrainCircuit, Database, SlidersHorizontal, Languages, Eye, AudioLines, FileSearch } from 'lucide-react';
 
 const settingsSchema = z.object({
   llm_provider: z.enum(['local', 'azure']),
@@ -66,7 +66,7 @@ export function Settings() {
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-2xl font-bold text-gray-900">Settings</h1>
-          <p className="text-gray-600 mt-1">Platform configuration</p>
+          <p className="text-gray-500 mt-1">Choose your LLM and retrieval providers, adjust the confidence threshold, and review Cognitive AI service status.</p>
         </div>
         {isDirty && (
           <span className="text-xs text-amber-600 font-medium px-2.5 py-1 bg-amber-50 rounded-full ring-1 ring-amber-200">
@@ -81,9 +81,11 @@ export function Settings() {
 
           <div className="space-y-6">
             <div>
-              <label htmlFor="llm_provider" className="block text-sm font-medium text-gray-700">
+              <label htmlFor="llm_provider" className="flex items-center gap-1.5 text-sm font-medium text-gray-700">
+                <BrainCircuit className="w-4 h-4 text-gray-400" />
                 LLM Provider
               </label>
+              <p className="text-xs text-gray-400 mt-0.5">The large language model that generates answers from retrieved context.</p>
               <select
                 id="llm_provider"
                 {...form.register('llm_provider')}
@@ -95,9 +97,11 @@ export function Settings() {
             </div>
 
             <div>
-              <label htmlFor="retrieval_provider" className="block text-sm font-medium text-gray-700">
+              <label htmlFor="retrieval_provider" className="flex items-center gap-1.5 text-sm font-medium text-gray-700">
+                <Database className="w-4 h-4 text-gray-400" />
                 Retrieval Provider
               </label>
+              <p className="text-xs text-gray-400 mt-0.5">The vector store used to find relevant document passages for each query.</p>
               <select
                 id="retrieval_provider"
                 {...form.register('retrieval_provider')}
@@ -110,13 +114,15 @@ export function Settings() {
 
             <div>
               <div className="flex items-center justify-between">
-                <label htmlFor="retrieval_threshold" className="block text-sm font-medium text-gray-700">
+                <label htmlFor="retrieval_threshold" className="flex items-center gap-1.5 text-sm font-medium text-gray-700">
+                  <SlidersHorizontal className="w-4 h-4 text-gray-400" />
                   Retrieval Threshold
                 </label>
                 <span className="text-sm font-semibold tabular-nums text-gray-900">
                   {(threshold * 100).toFixed(0)}%
                 </span>
               </div>
+              <p className="text-xs text-gray-400 mt-0.5">Minimum similarity score for a passage to be included. Higher values mean stricter matching — the model may refuse to answer if no passages meet the threshold.</p>
               <input
                 id="retrieval_threshold"
                 type="range"
@@ -167,26 +173,31 @@ export function Settings() {
       </form>
 
       <Card className="mt-6">
-        <h2 className="text-lg font-semibold mb-4">Azure AI Services</h2>
+        <h2 className="text-lg font-semibold mb-4">Cognitive AI Services</h2>
         <p className="text-sm text-gray-600">
-          Configure Azure endpoints in the backend .env file.
+          Standalone Azure AI capabilities available alongside the RAG engine.
+          These services are configured via backend environment variables and do not affect query behavior.
         </p>
         <ul className="mt-4 space-y-2 text-sm">
-          <li className="flex items-center">
-            <span className="w-2 h-2 bg-green-500 rounded-full mr-2"></span>
+          <li className="flex items-center gap-2">
+            <span className="w-2 h-2 bg-green-500 rounded-full"></span>
+            <Languages className="w-4 h-4 text-gray-400" />
             Language Service
           </li>
-          <li className="flex items-center">
-            <span className="w-2 h-2 bg-green-500 rounded-full mr-2"></span>
+          <li className="flex items-center gap-2">
+            <span className="w-2 h-2 bg-green-500 rounded-full"></span>
+            <Eye className="w-4 h-4 text-gray-400" />
             Vision Service
           </li>
-          <li className="flex items-center">
-            <span className="w-2 h-2 bg-gray-300 rounded-full mr-2"></span>
-            Speech Service (Coming Soon)
+          <li className="flex items-center gap-2">
+            <span className="w-2 h-2 bg-green-500 rounded-full"></span>
+            <AudioLines className="w-4 h-4 text-gray-400" />
+            Speech Service
           </li>
-          <li className="flex items-center">
-            <span className="w-2 h-2 bg-gray-300 rounded-full mr-2"></span>
-            Document Intelligence (Coming Soon)
+          <li className="flex items-center gap-2">
+            <span className="w-2 h-2 bg-green-500 rounded-full"></span>
+            <FileSearch className="w-4 h-4 text-gray-400" />
+            Document Intelligence
           </li>
         </ul>
       </Card>

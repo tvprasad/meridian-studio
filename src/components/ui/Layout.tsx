@@ -1,6 +1,6 @@
 import { useEffect } from 'react';
 import { Outlet, NavLink, useLocation } from 'react-router-dom';
-import { LayoutDashboard, MessageSquare, Database, Settings, Github, Linkedin, Languages, Eye, Mic, ScanSearch } from 'lucide-react';
+import { LayoutDashboard, MessageSquare, Database, Settings, Github, Linkedin, Languages, Eye, Mic, FileSearch } from 'lucide-react';
 import { DiagnosticsPanel } from './DiagnosticsPanel';
 import { useDiagnostics } from '../../hooks/useDiagnosticsHook';
 
@@ -15,7 +15,7 @@ const aiNavItems = [
   { to: '/language', icon: Languages, label: 'Language Intelligence' },
   { to: '/vision', icon: Eye, label: 'Vision Intelligence' },
   { to: '/speech', icon: Mic, label: 'Speech Services' },
-  { to: '/document', icon: ScanSearch, label: 'Document Intelligence' },
+  { to: '/document', icon: FileSearch, label: 'Document Intelligence' },
 ];
 
 function NavItem({ to, icon: Icon, label }: { to: string; icon: React.ElementType; label: string }) {

@@ -4,7 +4,7 @@ import { Link } from 'react-router-dom';
 import { Card } from '../components/ui/Card';
 import { Button } from '../components/ui/Button';
 import { meridianApi } from '../api/meridian';
-import { FileText, Settings, Upload, CheckCircle2, Circle, Loader2, AlertCircle, Database, Scissors, Binary } from 'lucide-react';
+import { FileText, Settings, Upload, CheckCircle2, Circle, Loader2, AlertCircle, Database, Scissors, Binary, Info, ChevronRight } from 'lucide-react';
 
 type PipelineStage = 'idle' | 'uploading' | 'chunking' | 'embedding' | 'indexing' | 'done' | 'error';
 
@@ -173,6 +173,26 @@ export function Ingest() {
           </Link>
         </p>
       )}
+
+      <details className="mt-6 group bg-blue-50 border border-blue-200 rounded-lg text-sm text-blue-800">
+        <summary className="flex items-center gap-3 p-4 cursor-pointer select-none list-none [&::-webkit-details-marker]:hidden">
+          <Info className="w-5 h-5 text-blue-500 shrink-0" />
+          <span className="font-medium flex-1">What should I ingest?</span>
+          <ChevronRight className="w-4 h-4 text-blue-400 transition-transform group-open:rotate-90" />
+        </summary>
+        <div className="px-4 pb-4 pl-12">
+          <p className="text-blue-700">
+            Upload documents that contain knowledge you want Meridian to reference when answering questions.
+            Good examples: product manuals, policy documents, FAQs, technical specs, research papers, or meeting notes.
+            Each file is split into passages, converted to vector embeddings, and stored in your configured index
+            so the RAG engine can retrieve relevant context at query time.
+          </p>
+          <p className="mt-2 text-blue-600">
+            Supported formats: <span className="font-medium">PDF, TXT, Markdown, DOCX</span>.
+            For best results, use text-rich documents — scanned images without OCR text will produce poor results.
+          </p>
+        </div>
+      </details>
 
       <div className="mt-8 grid grid-cols-1 lg:grid-cols-3 gap-6">
         {/* Left: File selection + action */}
