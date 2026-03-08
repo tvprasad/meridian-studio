@@ -33,8 +33,8 @@ function NavItem({ to, icon: Icon, label }: { to: string; icon: React.ElementTyp
     >
       {({ isActive }) => (
         <>
-          <Icon className={`w-4 h-4 mr-3 transition-colors shrink-0 ${isActive ? 'text-white' : 'text-white/40'}`} />
-          <span className={`iridescent-on-hover truncate ${isActive ? 'text-white' : 'text-white/40'}`}>
+          <Icon className={`w-4 h-4 mr-3 transition-colors shrink-0 ${isActive ? 'text-white' : 'text-white/65'}`} />
+          <span className={`iridescent-on-hover truncate ${isActive ? 'text-white' : 'text-white/65'}`}>
             {label}
           </span>
         </>
