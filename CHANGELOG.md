@@ -30,6 +30,7 @@ Versioning follows [Semantic Versioning](https://semver.org/).
 - Document Intelligence icon unified to `FileSearch` across sidebar nav and Settings page
 
 ### Fixed
+- Query: increase MCP timeout from 30s to 90s to survive cold-start when meridian-mcp scales from zero replicas
 - Sidebar: increase inactive nav link opacity (white/40 → white/65) for legibility on MacBook displays
 - Settings: Retrieval Threshold description moved below label row (was incorrectly inside flex justify-between)
 - Query page MCP integration: send correct `query_knowledge_base` tool call payload and map response fields (`confidence` -> `confidence_score`, `reason` -> `refusal_reason`)

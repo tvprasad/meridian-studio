@@ -8,7 +8,7 @@ export const meridianApi = {
     const raw = await api.post<{ result: McpQueryResult }>('/tools/call', {
       name: 'query_knowledge_base',
       arguments: { question },
-    }, { baseUrl: config.mcpBaseUrl });
+    }, { baseUrl: config.mcpBaseUrl, timeoutMs: 90_000 });
     const r = raw.result;
     return {
       status: r.status as QueryResponse['status'],
