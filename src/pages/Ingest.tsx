@@ -102,13 +102,7 @@ export function Ingest() {
       // Stage 1: Upload
       setCurrentStage('uploading');
       const formData = new FormData();
-      filesToIngest.forEach((f) => {
-        // Azure AI Search keys forbid dots; replace any char outside [a-zA-Z0-9_\-=] in the
-        // filename stem so the backend can use it as a document key without modification.
-        const safeName = f.name.replace(/[^a-zA-Z0-9_\-=]/g, '_');
-        const file = safeName === f.name ? f : new File([f], safeName, { type: f.type });
-        formData.append('files', file);
-      });
+      filesToIngest.forEach((f) => formData.append('files', f));
 
       // The backend will handle chunk → embed → index.
       // We simulate stage progression based on timing since the backend

@@ -29,7 +29,6 @@ Versioning follows [Semantic Versioning](https://semver.org/).
 - Document Intelligence icon unified to `FileSearch` across sidebar nav and Settings page
 
 ### Fixed
-- Ingest: sanitize uploaded filenames before sending to backend — Azure AI Search rejects document keys containing dots or special characters (e.g. `faqs.txt` → `faqs_txt`); workaround until backend key sanitization is implemented in `azure_search_adapter.py`
 - Settings: Retrieval Threshold description moved below label row (was incorrectly inside flex justify-between)
 - Query page MCP integration: send correct `query_knowledge_base` tool call payload and map response fields (`confidence` -> `confidence_score`, `reason` -> `refusal_reason`)
 - ESLint `no-unused-vars` error: remove unused `SpeechSynthesisResult` import
