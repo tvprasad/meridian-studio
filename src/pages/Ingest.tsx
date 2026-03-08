@@ -1,10 +1,10 @@
 import { useState } from 'react';
-import { useMutation, useQuery } from '@tanstack/react-query';
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { Link } from 'react-router-dom';
 import { Card } from '../components/ui/Card';
 import { Button } from '../components/ui/Button';
 import { meridianApi } from '../api/meridian';
-import { FileText, Settings, Upload, CheckCircle2, Circle, Loader2, AlertCircle, Database, Scissors, Binary, Info, ChevronRight } from 'lucide-react';
+import { FileText, FileCode, FileType2, Settings, Upload, CheckCircle2, Circle, Loader2, AlertCircle, Database, Scissors, Binary, Info, ChevronRight, ArrowRight } from 'lucide-react';
 
 type PipelineStage = 'idle' | 'uploading' | 'chunking' | 'embedding' | 'indexing' | 'done' | 'error';
 
@@ -28,6 +28,22 @@ const RETRIEVAL_LABELS: Record<string, string> = {
 };
 
 const ACCEPTED_TYPES = '.pdf,.txt,.md,.docx';
+
+function getFileIcon(filename: string): { Icon: React.ElementType; color: string } {
+  const ext = filename.split('.').pop()?.toLowerCase();
+  switch (ext) {
+    case 'pdf':  return { Icon: FileType2, color: 'text-red-400' };
+    case 'md':
+    case 'markdown': return { Icon: FileCode, color: 'text-purple-400' };
+    case 'docx':
+    case 'doc':  return { Icon: FileText, color: 'text-blue-400' };
+    default:     return { Icon: FileText, color: 'text-gray-400' };
+  }
+}
+
+function plural(count: number, word: string) {
+  return `${count} ${word}${count === 1 ? '' : 's'}`;
+}
 
 function StageIndicator({ stage, currentStage, errorStage }: {
   stage: StageConfig;
@@ -92,6 +108,7 @@ export function Ingest() {
   const [errorStage, setErrorStage] = useState<PipelineStage | null>(null);
   const [result, setResult] = useState<{ ingested: number; chunks: number; message?: string } | null>(null);
 
+  const queryClient = useQueryClient();
   const { data: health } = useQuery({ queryKey: ['health'], queryFn: meridianApi.health });
 
   const ingest = useMutation({
@@ -128,6 +145,7 @@ export function Ingest() {
     },
     onSuccess: (data) => {
       setResult(data);
+      queryClient.invalidateQueries({ queryKey: ['health'] });
     },
     onError: () => {
       setErrorStage(currentStage);
@@ -165,7 +183,7 @@ export function Ingest() {
         <p className="mt-2 text-xs text-gray-400 flex items-center gap-1.5">
           Documents will be indexed into
           <span className="font-medium text-gray-600">{RETRIEVAL_LABELS[health.retrieval_provider] ?? health.retrieval_provider}</span>
-          ({health.document_count} documents indexed)
+          ({plural(health.document_count, 'document')} indexed)
           —
           <Link to="/settings" className="inline-flex items-center gap-0.5 text-primary-600 hover:text-primary-700 transition-colors">
             <Settings className="w-3 h-3" />
@@ -218,16 +236,19 @@ export function Ingest() {
 
             {files.length > 0 && (
               <div className="mt-6 space-y-2">
-                <p className="text-sm font-medium text-gray-700">{files.length} file{files.length > 1 ? 's' : ''} selected</p>
-                {files.map((f) => (
-                  <div key={f.name} className="flex items-center gap-3 p-3 bg-gray-50 rounded-lg">
-                    <FileText className="w-5 h-5 text-gray-400 shrink-0" />
-                    <div className="flex-1 min-w-0">
-                      <p className="text-sm font-medium truncate">{f.name}</p>
-                      <p className="text-xs text-gray-400">{(f.size / 1024).toFixed(1)} KB</p>
+                <p className="text-sm font-medium text-gray-700">{plural(files.length, 'file')} selected</p>
+                {files.map((f) => {
+                  const { Icon, color } = getFileIcon(f.name);
+                  return (
+                    <div key={f.name} className="flex items-center gap-3 p-3 bg-gray-50 rounded-lg">
+                      <Icon className={`w-5 h-5 shrink-0 ${color}`} />
+                      <div className="flex-1 min-w-0">
+                        <p className="text-sm font-medium truncate">{f.name}</p>
+                        <p className="text-xs text-gray-400">{(f.size / 1024).toFixed(1)} KB</p>
+                      </div>
                     </div>
-                  </div>
-                ))}
+                  );
+                })}
 
                 <div className="flex gap-3 pt-4">
                   <Button
@@ -259,10 +280,25 @@ export function Ingest() {
           {result && (
             <Card className="mt-4 border-emerald-200 bg-emerald-50">
               <h3 className="font-semibold text-emerald-800">Ingestion Complete</h3>
-              <div className="mt-2 text-sm text-emerald-700 space-y-1">
-                <p>Documents ingested: {result.ingested}</p>
-                <p>Chunks created: {result.chunks}</p>
-                {result.message && <p>{result.message}</p>}
+              <div className="mt-3 grid grid-cols-2 gap-3">
+                <div className="bg-white rounded-lg px-4 py-3 border border-emerald-100">
+                  <p className="text-2xl font-bold text-emerald-700">{result.ingested}</p>
+                  <p className="text-xs text-emerald-600 mt-0.5">{result.ingested === 1 ? 'document' : 'documents'} ingested</p>
+                </div>
+                <div className="bg-white rounded-lg px-4 py-3 border border-emerald-100">
+                  <p className="text-2xl font-bold text-emerald-700">{result.chunks}</p>
+                  <p className="text-xs text-emerald-600 mt-0.5">{result.chunks === 1 ? 'chunk' : 'chunks'} indexed — each chunk is a retrievable passage</p>
+                </div>
+              </div>
+              <div className="mt-3 flex items-center justify-between">
+                {result.message && <p className="text-xs text-emerald-600">{result.message}</p>}
+                <Link
+                  to="/query"
+                  className="inline-flex items-center gap-1.5 text-sm font-medium text-emerald-700 hover:text-emerald-900 transition-colors ml-auto"
+                >
+                  Query the knowledge base
+                  <ArrowRight className="w-4 h-4" />
+                </Link>
               </div>
             </Card>
           )}
