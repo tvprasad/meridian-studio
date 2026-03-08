@@ -95,14 +95,14 @@ export function Layout() {
             href="https://github.com/tvprasad/meridian/releases"
             target="_blank"
             rel="noreferrer"
-            className="block text-xs opacity-50 hover:opacity-100 transition-opacity iridescent-text"
+            className="block text-xs opacity-70 hover:opacity-100 transition-opacity iridescent-text"
           >
             v0.2.1
           </a>
 
           {/* Name + social icons */}
           <div className="flex items-center justify-between">
-            <span className="text-xs opacity-50 iridescent-text">
+            <span className="text-xs opacity-70 iridescent-text">
               Prasad Thiriveedi
             </span>
             <div className="flex items-center gap-2">
@@ -110,7 +110,7 @@ export function Layout() {
                 href="https://github.com/tvprasad/"
                 target="_blank"
                 rel="noreferrer"
-                className="opacity-30 hover:opacity-80 transition-opacity"
+                className="opacity-60 hover:opacity-100 transition-opacity"
                 style={{ color: '#a78bfa' }}
                 title="GitHub"
               >
@@ -120,7 +120,7 @@ export function Layout() {
                 href="https://www.linkedin.com/in/-prasad"
                 target="_blank"
                 rel="noreferrer"
-                className="opacity-30 hover:opacity-80 transition-opacity"
+                className="opacity-60 hover:opacity-100 transition-opacity"
                 style={{ color: '#2dd4bf' }}
                 title="LinkedIn"
               >
@@ -135,16 +135,16 @@ export function Layout() {
               href="https://github.com/tvprasad/meridian"
               target="_blank"
               rel="noreferrer"
-              className="opacity-30 hover:opacity-80 transition-opacity iridescent-text"
+              className="opacity-60 hover:opacity-100 transition-opacity iridescent-text"
             >
               meridian
             </a>
-            <span className="text-white/20">·</span>
+            <span className="text-white/50">·</span>
             <a
               href="https://github.com/tvprasad/meridian-studio"
               target="_blank"
               rel="noreferrer"
-              className="opacity-30 hover:opacity-80 transition-opacity iridescent-text"
+              className="opacity-60 hover:opacity-100 transition-opacity iridescent-text"
             >
               studio
             </a>
