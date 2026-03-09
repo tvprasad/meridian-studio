@@ -154,7 +154,7 @@ export function Layout() {
               rel="noreferrer"
               className="block text-xs opacity-70 hover:opacity-100 transition-opacity iridescent-text"
             >
-              v0.2.1
+              v0.4.0
             </a>
 
             {/* Name + social icons */}
