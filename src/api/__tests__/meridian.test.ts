@@ -7,6 +7,9 @@ import queryRefused from '../../__fixtures__/query-refused.json';
 import queryOk from '../../__fixtures__/query-ok.json';
 import healthFixture from '../../__fixtures__/health.json';
 import ingestFixture from '../../__fixtures__/ingest-success.json';
+import snowStatusConfigured from '../../__fixtures__/servicenow-status-configured.json';
+import snowStatusUnconfigured from '../../__fixtures__/servicenow-status-unconfigured.json';
+import snowIngestFixture from '../../__fixtures__/servicenow-ingest-success.json';
 
 // ── MSW server ──────────────────────────────────────────────────────────────
 
@@ -20,6 +23,13 @@ const server = setupServer(
   }),
   http.get('http://localhost:8000/health', () => {
     return HttpResponse.json(healthFixture);
+  }),
+  http.get('http://localhost:8000/ingest/servicenow/status', () => {
+    return HttpResponse.json(snowStatusConfigured);
+  }),
+  http.post('http://localhost:8000/ingest/servicenow', async ({ request }) => {
+    capturedBody = await request.json();
+    return HttpResponse.json(snowIngestFixture);
   }),
 );
 
@@ -136,5 +146,91 @@ describe('meridianApi.ingest', () => {
       chunks: 5,
       message: '1 documents ingested (5 chunks)',
     });
+  });
+});
+
+// ── ServiceNow Status API tests ─────────────────────────────────────────────
+
+describe('meridianApi.serviceNowStatus', () => {
+  it('returns configured status with last sync info', async () => {
+    const result = await meridianApi.serviceNowStatus();
+
+    expect(result).toEqual(snowStatusConfigured);
+    expect(result.configured).toBe(true);
+    expect(result.last_sync).not.toBeNull();
+    expect(result.last_sync?.ingested).toBe(15);
+  });
+
+  it('returns unconfigured status when credentials are missing', async () => {
+    server.use(
+      http.get('http://localhost:8000/ingest/servicenow/status', () => {
+        return HttpResponse.json(snowStatusUnconfigured);
+      }),
+    );
+
+    const result = await meridianApi.serviceNowStatus();
+
+    expect(result.configured).toBe(false);
+    expect(result.last_sync).toBeNull();
+    expect(result.history).toEqual([]);
+  });
+});
+
+// ── ServiceNow Ingest API tests ─────────────────────────────────────────────
+
+describe('meridianApi.ingestServiceNow', () => {
+  it('sends filters to /ingest/servicenow and returns ingestion result', async () => {
+    const result = await meridianApi.ingestServiceNow({
+      kb_name: 'IT Knowledge Base',
+      category: 'Networking',
+      limit: 50,
+    });
+
+    expect(capturedBody).toEqual({
+      kb_name: 'IT Knowledge Base',
+      category: 'Networking',
+      limit: 50,
+    });
+    expect(result).toEqual({
+      ingested: 15,
+      chunks: 87,
+      message: '15 ServiceNow articles ingested (87 chunks)',
+    });
+  });
+
+  it('sends empty object when no filters are provided', async () => {
+    await meridianApi.ingestServiceNow({});
+
+    expect(capturedBody).toEqual({});
+  });
+
+  it('throws ApiError with 502 when ServiceNow is unreachable', async () => {
+    server.use(
+      http.post('http://localhost:8000/ingest/servicenow', () => {
+        return HttpResponse.json(
+          { detail: 'Failed to connect to ServiceNow instance' },
+          { status: 502 },
+        );
+      }),
+    );
+
+    await expect(
+      meridianApi.ingestServiceNow({ kb_name: 'IT KB' }),
+    ).rejects.toThrow('Failed to connect to ServiceNow instance');
+  });
+
+  it('throws ApiError with 400 when credentials are missing', async () => {
+    server.use(
+      http.post('http://localhost:8000/ingest/servicenow', () => {
+        return HttpResponse.json(
+          { detail: 'ServiceNow credentials required.' },
+          { status: 400 },
+        );
+      }),
+    );
+
+    await expect(
+      meridianApi.ingestServiceNow({}),
+    ).rejects.toThrow('ServiceNow credentials required.');
   });
 });

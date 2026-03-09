@@ -18,19 +18,19 @@ Add a **ServiceNow tab** to the existing Ingestion Pipeline page rather than cre
 
 - **Source tabs** on the Ingest page: `File Upload` (existing) | `ServiceNow` (new)
 - **ServiceNow tab** provides:
-  - Test Connection button (calls `POST /ingest/servicenow/test`)
+  - Check Status button (calls `GET /ingest/servicenow/status`)
   - Optional filters: Knowledge Base name, Category, Article Limit
   - Sync Articles button (calls `POST /ingest/servicenow`)
   - Result display: ingested count, chunks count, message
   - Error handling with friendly messages for 502 (unreachable)
-- **Types**: `ServiceNowIngestRequest` (filters only), `ServiceNowIngestResponse`
-- **API methods**: `meridianApi.ingestServiceNow()`, `meridianApi.testServiceNowConnection()`
+- **Types**: `ServiceNowIngestRequest`, `ServiceNowIngestResponse`, `ServiceNowStatusResponse`
+- **API methods**: `meridianApi.ingestServiceNow()`, `meridianApi.serviceNowStatus()`
 
 ### Backend contract
 
 | Endpoint | Method | Body | Response |
 |----------|--------|------|----------|
-| `/ingest/servicenow/test` | POST | (empty) | `{ status: string }` |
+| `/ingest/servicenow/status` | GET | — | `{ configured, last_sync, history }` |
 | `/ingest/servicenow` | POST | `{ kb_name?, category?, limit? }` | `{ ingested, chunks, message? }` |
 
 ### Why tabs, not a separate page

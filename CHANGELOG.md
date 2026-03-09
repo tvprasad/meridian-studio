@@ -11,8 +11,9 @@ Versioning follows [Semantic Versioning](https://semver.org/).
 
 ### Added
 - **Dark mode toggle** — sun/moon button in sidebar, persisted in localStorage; dark: variants applied across every page and shared component
-- **ServiceNow connector** (ADR-0006) — new "ServiceNow" source tab on the Ingestion Pipeline page with server-side credentials, Test Connection button, optional filters (KB name, category, article limit), Sync Articles action, and result/error display
+- **ServiceNow connector** (ADR-0006) — new "ServiceNow" source tab on the Ingestion Pipeline page with server-side credentials, Check Status button, optional filters (KB name, category, article limit), Sync Articles action, and result/error display
 - **AI/GenAI suggested questions** — updated example questions to include generative AI policy, Azure OpenAI access, approved AI tools, and data classification topics
+- **ServiceNow API contract tests** — 6 tests covering status (configured/unconfigured), ingest (filters, empty payload), and error cases (502 unreachable, 400 missing credentials)
 
 ### Changed
 - Rename "Retrieval Details" to **Citations** in collapsible panel header
@@ -20,6 +21,7 @@ Versioning follows [Semantic Versioning](https://semver.org/).
 - Widen Citations panel and follow-up prompts to span full chat width (no longer constrained by message bubble width)
 
 ### Fixed
+- ServiceNow connector: use `GET /ingest/servicenow/status` (actual backend endpoint) instead of non-existent `POST /ingest/servicenow/test`
 - Follow-up prompts and Citations panel no longer leave empty whitespace on right side
 
 ---

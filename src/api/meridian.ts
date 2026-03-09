@@ -1,6 +1,6 @@
 import { api, ApiError } from './client';
 import { config } from '../config';
-import type { QueryResponse, HealthResponse, McpTool, UpdateSettingsPayload, IngestResponse, ServiceNowIngestRequest, ServiceNowIngestResponse } from './types';
+import type { QueryResponse, HealthResponse, McpTool, UpdateSettingsPayload, IngestResponse, ServiceNowIngestRequest, ServiceNowIngestResponse, ServiceNowStatusResponse } from './types';
 
 export interface ChatMessage {
   role: 'user' | 'assistant';
@@ -57,7 +57,7 @@ export const meridianApi = {
   ingestServiceNow: (payload: ServiceNowIngestRequest) =>
     api.post<ServiceNowIngestResponse>('/ingest/servicenow', payload, { timeoutMs: 120_000 }),
 
-  // POST /ingest/servicenow/test — verify backend can reach ServiceNow
-  testServiceNowConnection: () =>
-    api.post<{ status: string }>('/ingest/servicenow/test'),
+  // GET /ingest/servicenow/status — check connection state and sync history
+  serviceNowStatus: () =>
+    api.get<ServiceNowStatusResponse>('/ingest/servicenow/status'),
 };

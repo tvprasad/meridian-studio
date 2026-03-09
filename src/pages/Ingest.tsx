@@ -5,7 +5,7 @@ import { Card } from '../components/ui/Card';
 import { Button } from '../components/ui/Button';
 import { meridianApi } from '../api/meridian';
 import { ApiError } from '../api/client';
-import type { ServiceNowIngestResponse } from '../api/types';
+import type { ServiceNowIngestResponse, ServiceNowStatusResponse } from '../api/types';
 import { FileText, FileCode, FileType2, FileSearch, Settings, Upload, CheckCircle2, Circle, Loader2, AlertCircle, Database, Scissors, Binary, Info, ChevronRight, ArrowRight, Globe, CheckCircle, XCircle } from 'lucide-react';
 
 type IngestSource = 'file' | 'servicenow';
@@ -120,20 +120,13 @@ function ServiceNowTab({ onSyncSuccess }: { onSyncSuccess: () => void }) {
   const [kbName, setKbName] = useState('');
   const [category, setCategory] = useState('');
   const [limit, setLimit] = useState('');
-  const [connectionStatus, setConnectionStatus] = useState<'idle' | 'success' | 'error'>('idle');
-  const [connectionMsg, setConnectionMsg] = useState('');
   const [result, setResult] = useState<ServiceNowIngestResponse | null>(null);
+  const [statusData, setStatusData] = useState<ServiceNowStatusResponse | null>(null);
 
-  const testConnection = useMutation({
-    mutationFn: () => meridianApi.testServiceNowConnection(),
-    onSuccess: () => {
-      setConnectionStatus('success');
-      setConnectionMsg('Connection successful.');
-    },
-    onError: (err) => {
-      setConnectionStatus('error');
-      setConnectionMsg(friendlySnowError(err));
-    },
+  const checkStatus = useMutation({
+    mutationFn: () => meridianApi.serviceNowStatus(),
+    onSuccess: (data) => setStatusData(data),
+    onError: () => setStatusData(null),
   });
 
   const sync = useMutation({
@@ -152,8 +145,8 @@ function ServiceNowTab({ onSyncSuccess }: { onSyncSuccess: () => void }) {
   const resetForm = () => {
     setResult(null);
     sync.reset();
-    setConnectionStatus('idle');
-    setConnectionMsg('');
+    setStatusData(null);
+    checkStatus.reset();
   };
 
   return (
@@ -166,28 +159,34 @@ function ServiceNowTab({ onSyncSuccess }: { onSyncSuccess: () => void }) {
               <Globe className="w-4 h-4" />
               ServiceNow Connection
             </h3>
-            <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">Credentials are configured on the backend. Use Test Connection to verify.</p>
+            <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">Credentials are configured on the backend. Use Check Status to verify.</p>
           </div>
           <div className="flex items-center gap-3">
-            {connectionStatus === 'success' && (
+            {statusData?.configured === true && (
               <span className="inline-flex items-center gap-1.5 text-sm text-emerald-600 dark:text-emerald-400">
                 <CheckCircle className="w-4 h-4" />
-                {connectionMsg}
+                Configured
               </span>
             )}
-            {connectionStatus === 'error' && (
+            {statusData?.configured === false && (
+              <span className="inline-flex items-center gap-1.5 text-sm text-amber-600 dark:text-amber-400">
+                <XCircle className="w-4 h-4" />
+                Not configured — set credentials on the backend
+              </span>
+            )}
+            {checkStatus.isError && (
               <span className="inline-flex items-center gap-1.5 text-sm text-red-600 dark:text-red-400">
                 <XCircle className="w-4 h-4" />
-                {connectionMsg}
+                {friendlySnowError(checkStatus.error)}
               </span>
             )}
             <Button
               variant="secondary"
               size="sm"
-              onClick={() => testConnection.mutate()}
-              loading={testConnection.isPending}
+              onClick={() => checkStatus.mutate()}
+              loading={checkStatus.isPending}
             >
-              Test Connection
+              Check Status
             </Button>
           </div>
         </div>

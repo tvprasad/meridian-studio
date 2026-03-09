@@ -62,6 +62,20 @@ export interface ServiceNowIngestResponse {
   message?: string;
 }
 
+export interface ServiceNowStatusResponse {
+  configured: boolean;
+  last_sync: {
+    started_at: string;
+    completed_at?: string;
+    status: string;
+    ingested: number;
+    chunks: number;
+    delta: boolean;
+    error: string | null;
+  } | null;
+  history: Array<Record<string, unknown>>;
+}
+
 // ===========================================
 // Azure AI Types
 // ===========================================

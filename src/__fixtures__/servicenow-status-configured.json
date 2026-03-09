@@ -1,0 +1,23 @@
+{
+  "configured": true,
+  "last_sync": {
+    "started_at": "2026-03-09T14:30:00Z",
+    "completed_at": "2026-03-09T14:30:12Z",
+    "status": "success",
+    "ingested": 15,
+    "chunks": 87,
+    "delta": false,
+    "error": null
+  },
+  "history": [
+    {
+      "started_at": "2026-03-09T14:30:00Z",
+      "completed_at": "2026-03-09T14:30:12Z",
+      "status": "success",
+      "ingested": 15,
+      "chunks": 87,
+      "delta": false,
+      "error": null
+    }
+  ]
+}
