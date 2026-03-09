@@ -1,0 +1,9 @@
+{
+  "trace_id": "3d41b36c-dd37-40c7-9394-c70b40b28187",
+  "status": "REFUSED",
+  "answer": null,
+  "confidence_score": 0.51432025,
+  "threshold": 0.6,
+  "retrieval_scores": [0.51432025, 0.48, 0.42],
+  "refusal_reason": "Retrieval confidence below threshold"
+}

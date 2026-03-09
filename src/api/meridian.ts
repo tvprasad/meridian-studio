@@ -1,23 +1,10 @@
 import { api } from './client';
-import { config } from '../config';
-import type { QueryResponse, McpQueryResult, HealthResponse, McpTool, UpdateSettingsPayload, IngestResponse } from './types';
+import type { QueryResponse, HealthResponse, McpTool, UpdateSettingsPayload, IngestResponse } from './types';
 
 export const meridianApi = {
-  // Routes to MCP server (port 8001)
+  // Routes to Meridian API (port 8000) — direct query, no MCP indirection
   query: async (question: string): Promise<QueryResponse> => {
-    const raw = await api.post<{ result: McpQueryResult }>('/tools/call', {
-      name: 'query_knowledge_base',
-      arguments: { question },
-    }, { baseUrl: config.mcpBaseUrl });
-    const r = raw.result;
-    return {
-      status: r.status as QueryResponse['status'],
-      trace_id: r.trace_id,
-      confidence_score: r.confidence,
-      answer: r.answer,
-      refusal_reason: r.reason,
-      threshold: r.threshold,
-    };
+    return api.post<QueryResponse>('/query', { question }, { timeoutMs: 90_000 });
   },
 
   // Routes to Meridian API (port 8000)
