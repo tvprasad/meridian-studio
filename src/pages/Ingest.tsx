@@ -38,7 +38,7 @@ function getFileIcon(filename: string): { Icon: React.ElementType; color: string
     case 'markdown': return { Icon: FileCode, color: 'text-purple-400' };
     case 'docx':
     case 'doc':  return { Icon: FileText, color: 'text-blue-400' };
-    default:     return { Icon: FileText, color: 'text-gray-400' };
+    default:     return { Icon: FileText, color: 'text-gray-400 dark:text-gray-500' };
   }
 }
 
@@ -62,10 +62,10 @@ function StageIndicator({ stage, currentStage, errorStage }: {
 
   return (
     <div className={`flex items-center gap-3 px-4 py-3 rounded-lg transition-all ${
-      isError ? 'bg-red-50 border border-red-200' :
-      isActive ? 'bg-primary-50 border border-primary-200' :
-      isDone ? 'bg-emerald-50 border border-emerald-200' :
-      'bg-gray-50 border border-gray-100'
+      isError ? 'bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800' :
+      isActive ? 'bg-primary-50 dark:bg-primary-900/20 border border-primary-200 dark:border-primary-800' :
+      isDone ? 'bg-emerald-50 dark:bg-emerald-900/20 border border-emerald-200 dark:border-emerald-800' :
+      'bg-gray-50 dark:bg-white/5 border border-gray-100 dark:border-white/10'
     }`}>
       <div className="shrink-0">
         {isError ? (
@@ -75,28 +75,28 @@ function StageIndicator({ stage, currentStage, errorStage }: {
         ) : isDone ? (
           <CheckCircle2 className="w-5 h-5 text-emerald-600" />
         ) : (
-          <Circle className="w-5 h-5 text-gray-300" />
+          <Circle className="w-5 h-5 text-gray-300 dark:text-gray-600" />
         )}
       </div>
       <div className="flex-1 min-w-0">
         <div className="flex items-center gap-2">
           <Icon className={`w-4 h-4 ${
             isError ? 'text-red-500' :
-            isActive ? 'text-primary-600' :
-            isDone ? 'text-emerald-600' :
-            'text-gray-400'
+            isActive ? 'text-primary-600 dark:text-primary-400' :
+            isDone ? 'text-emerald-600 dark:text-emerald-400' :
+            'text-gray-400 dark:text-gray-500'
           }`} />
           <span className={`text-sm font-medium ${
-            isError ? 'text-red-700' :
-            isActive ? 'text-primary-700' :
-            isDone ? 'text-emerald-700' :
-            'text-gray-500'
+            isError ? 'text-red-700 dark:text-red-400' :
+            isActive ? 'text-primary-700 dark:text-primary-400' :
+            isDone ? 'text-emerald-700 dark:text-emerald-400' :
+            'text-gray-500 dark:text-gray-400'
           }`}>{stage.label}</span>
         </div>
         <p className={`text-xs mt-0.5 ${
           isError ? 'text-red-500' :
-          isActive || isDone ? 'text-gray-500' :
-          'text-gray-400'
+          isActive || isDone ? 'text-gray-500 dark:text-gray-400' :
+          'text-gray-400 dark:text-gray-500'
         }`}>{stage.description}</p>
       </div>
     </div>
@@ -181,35 +181,35 @@ export function Ingest() {
 
   return (
     <div>
-      <h1 className="text-2xl font-bold text-gray-900">Ingestion Pipeline</h1>
-      <p className="text-gray-500 mt-1">Ingest documents into the knowledge base. Files are chunked, embedded, and indexed so Meridian can reference them when answering questions.</p>
+      <h1 className="text-2xl font-bold text-gray-900 dark:text-white">Ingestion Pipeline</h1>
+      <p className="text-gray-500 dark:text-gray-400 mt-1">Ingest documents into the knowledge base. Files are chunked, embedded, and indexed so Meridian can reference them when answering questions.</p>
       {health && (
-        <p className="mt-2 text-xs text-gray-400 flex items-center gap-1.5">
+        <p className="mt-2 text-xs text-gray-400 dark:text-gray-500 flex items-center gap-1.5">
           Documents will be indexed into
-          <span className="font-medium text-gray-600">{RETRIEVAL_LABELS[health.retrieval_provider] ?? health.retrieval_provider}</span>
+          <span className="font-medium text-gray-600 dark:text-gray-300">{RETRIEVAL_LABELS[health.retrieval_provider] ?? health.retrieval_provider}</span>
           ({plural(health.document_count, 'document')} indexed)
           —
-          <Link to="/settings" className="inline-flex items-center gap-0.5 text-primary-600 hover:text-primary-700 transition-colors">
+          <Link to="/settings" className="inline-flex items-center gap-0.5 text-primary-600 dark:text-primary-400 hover:text-primary-700 transition-colors">
             <Settings className="w-3 h-3" />
             change in Settings
           </Link>
         </p>
       )}
 
-      <details className="mt-6 group bg-blue-50 border border-blue-200 rounded-lg text-sm text-blue-800">
+      <details className="mt-6 group bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg text-sm text-blue-800 dark:text-blue-300">
         <summary className="flex items-center gap-3 p-4 cursor-pointer select-none list-none [&::-webkit-details-marker]:hidden">
           <Info className="w-5 h-5 text-blue-500 shrink-0" />
           <span className="font-medium flex-1">What should I ingest?</span>
           <ChevronRight className="w-4 h-4 text-blue-400 transition-transform group-open:rotate-90" />
         </summary>
         <div className="px-4 pb-4 pl-12">
-          <p className="text-blue-700">
+          <p className="text-blue-700 dark:text-blue-400">
             Upload documents that contain knowledge you want Meridian to reference when answering questions.
             Good examples: product manuals, policy documents, FAQs, technical specs, research papers, or meeting notes.
             Each file is split into passages, converted to vector embeddings, and stored in your configured index
             so the RAG engine can retrieve relevant context at query time.
           </p>
-          <p className="mt-2 text-blue-600">
+          <p className="mt-2 text-blue-600 dark:text-blue-400">
             Supported formats: <span className="font-medium">PDF, TXT, Markdown, DOCX</span>.
             For best results, use text-rich documents — scanned images without OCR text will produce poor results.
           </p>
@@ -220,7 +220,7 @@ export function Ingest() {
         {/* Left: File selection + action */}
         <div className="lg:col-span-2">
           <Card>
-            <div className="border-2 border-dashed border-gray-300 rounded-lg p-8 text-center hover:border-primary-300 transition-colors">
+            <div className="border-2 border-dashed border-gray-300 dark:border-white/15 rounded-lg p-8 text-center hover:border-primary-300 dark:hover:border-primary-700 transition-colors">
               <input
                 type="file"
                 id="file-ingest"
@@ -230,25 +230,25 @@ export function Ingest() {
                 onChange={handleFileChange}
               />
               <label htmlFor="file-ingest" className="cursor-pointer">
-                <Upload className="w-12 h-12 text-gray-400 mx-auto" />
-                <p className="mt-4 text-gray-600">
-                  <span className="text-primary-600 font-medium">Select documents</span> to ingest
+                <Upload className="w-12 h-12 text-gray-400 dark:text-gray-500 mx-auto" />
+                <p className="mt-4 text-gray-600 dark:text-gray-300">
+                  <span className="text-primary-600 dark:text-primary-400 font-medium">Select documents</span> to ingest
                 </p>
-                <p className="text-sm text-gray-400 mt-1">PDF, TXT, Markdown, DOCX — multiple files supported</p>
+                <p className="text-sm text-gray-400 dark:text-gray-500 mt-1">PDF, TXT, Markdown, DOCX — multiple files supported</p>
               </label>
             </div>
 
             {files.length > 0 && (
               <div className="mt-6 space-y-2">
-                <p className="text-sm font-medium text-gray-700">{plural(files.length, 'file')} selected</p>
+                <p className="text-sm font-medium text-gray-700 dark:text-gray-200">{plural(files.length, 'file')} selected</p>
                 {files.map((f) => {
                   const { Icon, color } = getFileIcon(f.name);
                   return (
-                    <div key={f.name} className="flex items-center gap-3 p-3 bg-gray-50 rounded-lg">
+                    <div key={f.name} className="flex items-center gap-3 p-3 bg-gray-50 dark:bg-white/5 rounded-lg">
                       <Icon className={`w-5 h-5 shrink-0 ${color}`} />
                       <div className="flex-1 min-w-0">
                         <p className="text-sm font-medium truncate">{f.name}</p>
-                        <p className="text-xs text-gray-400">{(f.size / 1024).toFixed(1)} KB</p>
+                        <p className="text-xs text-gray-400 dark:text-gray-500">{(f.size / 1024).toFixed(1)} KB</p>
                       </div>
                     </div>
                   );
@@ -275,30 +275,30 @@ export function Ingest() {
 
           {/* Error display */}
           {ingest.isError && (
-            <Card className="mt-4 border-red-200 bg-red-50">
-              <p className="text-red-800 text-sm">{(ingest.error as Error).message}</p>
+            <Card className="mt-4 border-red-200 dark:border-red-800 bg-red-50 dark:bg-red-900/20">
+              <p className="text-red-800 dark:text-red-300 text-sm">{(ingest.error as Error).message}</p>
             </Card>
           )}
 
           {/* Success result */}
           {result && (
-            <Card className="mt-4 border-emerald-200 bg-emerald-50">
-              <h3 className="font-semibold text-emerald-800">Ingestion Complete</h3>
+            <Card className="mt-4 border-emerald-200 dark:border-emerald-800 bg-emerald-50 dark:bg-emerald-900/20">
+              <h3 className="font-semibold text-emerald-800 dark:text-emerald-300">Ingestion Complete</h3>
               <div className="mt-3 grid grid-cols-2 gap-3">
-                <div className="bg-white rounded-lg px-4 py-3 border border-emerald-100">
-                  <p className="text-2xl font-bold text-emerald-700">{result.ingested}</p>
-                  <p className="text-xs text-emerald-600 mt-0.5">{result.ingested === 1 ? 'document' : 'documents'} ingested</p>
+                <div className="bg-white dark:bg-white/5 rounded-lg px-4 py-3 border border-emerald-100 dark:border-emerald-800">
+                  <p className="text-2xl font-bold text-emerald-700 dark:text-emerald-400">{result.ingested}</p>
+                  <p className="text-xs text-emerald-600 dark:text-emerald-400 mt-0.5">{result.ingested === 1 ? 'document' : 'documents'} ingested</p>
                 </div>
-                <div className="bg-white rounded-lg px-4 py-3 border border-emerald-100">
-                  <p className="text-2xl font-bold text-emerald-700">{result.chunks}</p>
-                  <p className="text-xs text-emerald-600 mt-0.5">{result.chunks === 1 ? 'chunk' : 'chunks'} indexed — each chunk is a retrievable passage</p>
+                <div className="bg-white dark:bg-white/5 rounded-lg px-4 py-3 border border-emerald-100 dark:border-emerald-800">
+                  <p className="text-2xl font-bold text-emerald-700 dark:text-emerald-400">{result.chunks}</p>
+                  <p className="text-xs text-emerald-600 dark:text-emerald-400 mt-0.5">{result.chunks === 1 ? 'chunk' : 'chunks'} indexed — each chunk is a retrievable passage</p>
                 </div>
               </div>
               <div className="mt-3 flex items-center justify-between">
-                {result.message && <p className="text-xs text-emerald-600">{result.message}</p>}
+                {result.message && <p className="text-xs text-emerald-600 dark:text-emerald-400">{result.message}</p>}
                 <Link
                   to="/query"
-                  className="inline-flex items-center gap-1.5 text-sm font-medium text-emerald-700 hover:text-emerald-900 transition-colors ml-auto"
+                  className="inline-flex items-center gap-1.5 text-sm font-medium text-emerald-700 dark:text-emerald-400 hover:text-emerald-900 dark:hover:text-emerald-300 transition-colors ml-auto"
                 >
                   Query the knowledge base
                   <ArrowRight className="w-4 h-4" />
@@ -311,7 +311,7 @@ export function Ingest() {
         {/* Right: Pipeline stages */}
         <div>
           <Card>
-            <h3 className="text-sm font-semibold text-gray-700 mb-4">Pipeline Stages</h3>
+            <h3 className="text-sm font-semibold text-gray-700 dark:text-gray-200 mb-4">Pipeline Stages</h3>
             <div className="space-y-2">
               {STAGES.map((stage) => (
                 <StageIndicator

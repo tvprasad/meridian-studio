@@ -149,7 +149,7 @@ function RetrievalPanel({ metadata }: { metadata: QueryResponse }) {
         </span>
       </button>
       {open && (
-        <div className="px-4 pb-3 space-y-2 border-t border-gray-100">
+        <div className="px-4 pb-3 space-y-2 border-t border-gray-100 dark:border-white/10">
           {/* Trackbars */}
           <div className="space-y-1.5 pt-2">
             {scores.map((score, i) => (
@@ -157,7 +157,7 @@ function RetrievalPanel({ metadata }: { metadata: QueryResponse }) {
             ))}
           </div>
           {/* Summary stats */}
-          <div className="flex items-center gap-4 pt-2 border-t border-gray-100 text-[11px] text-gray-400">
+          <div className="flex items-center gap-4 pt-2 border-t border-gray-100 dark:border-white/10 text-[11px] text-gray-400">
             <span className="flex items-center gap-1">
               <Fingerprint className="w-3 h-3" />
               {metadata.trace_id}
@@ -197,59 +197,59 @@ function AssistantMessage({ msg, isLatest, onSuggestionClick }: {
   const score = msg.metadata?.confidence_score;
 
   return (
-    <div className="flex items-start gap-3 max-w-3xl">
-      <div className="shrink-0 w-8 h-8 rounded-full bg-primary-100 dark:bg-primary-900/30 flex items-center justify-center mt-0.5">
-        <BrainCircuit className="w-4 h-4 text-primary-600 dark:text-primary-400" />
-      </div>
-      <div className="flex-1 min-w-0">
-        {isRefused ? (
-          <div className="bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-700 rounded-2xl rounded-tl-sm px-4 py-3">
-            <div className="flex items-center gap-2 mb-1">
-              <AlertTriangle className="w-4 h-4 text-amber-500 shrink-0" />
-              <span className="text-xs font-medium text-amber-700 dark:text-amber-400">Could not answer</span>
+    <div>
+      <div className="flex items-start gap-3 max-w-3xl">
+        <div className="shrink-0 w-8 h-8 rounded-full bg-primary-100 dark:bg-primary-900/30 flex items-center justify-center mt-0.5">
+          <BrainCircuit className="w-4 h-4 text-primary-600 dark:text-primary-400" />
+        </div>
+        <div className="flex-1 min-w-0">
+          {isRefused ? (
+            <div className="bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-700 rounded-2xl rounded-tl-sm px-4 py-3">
+              <div className="flex items-center gap-2 mb-1">
+                <AlertTriangle className="w-4 h-4 text-amber-500 shrink-0" />
+                <span className="text-xs font-medium text-amber-700 dark:text-amber-400">Could not answer</span>
+              </div>
+              <p className="text-sm text-amber-800 dark:text-amber-300">{msg.metadata?.refusal_reason ?? 'Retrieval confidence below threshold.'}</p>
+              {score != null && threshold != null && (
+                <p className="text-xs text-amber-600 dark:text-amber-400/80 mt-2">
+                  Confidence was {(score * 100).toFixed(1)}% — the minimum threshold is {(threshold * 100).toFixed(0)}%.
+                  Try rephrasing with more specific terms or ask about a different topic.
+                </p>
+              )}
             </div>
-            <p className="text-sm text-amber-800 dark:text-amber-300">{msg.metadata?.refusal_reason ?? 'Retrieval confidence below threshold.'}</p>
-            {score != null && threshold != null && (
-              <p className="text-xs text-amber-600 dark:text-amber-400/80 mt-2">
-                Confidence was {(score * 100).toFixed(1)}% — the minimum threshold is {(threshold * 100).toFixed(0)}%.
-                Try rephrasing with more specific terms or ask about a different topic.
-              </p>
-            )}
-          </div>
-        ) : (
-          <div className="bg-white dark:bg-white/10 border border-gray-200 dark:border-white/10 rounded-2xl rounded-tl-sm px-4 py-3 shadow-sm">
-            <div className="text-sm text-gray-800 dark:text-gray-200 leading-relaxed prose prose-sm prose-gray dark:prose-invert max-w-none">
-              <ReactMarkdown>{msg.content}</ReactMarkdown>
+          ) : (
+            <div className="bg-white dark:bg-white/10 border border-gray-200 dark:border-white/10 rounded-2xl rounded-tl-sm px-4 py-3 shadow-sm">
+              <div className="text-sm text-gray-800 dark:text-gray-200 leading-relaxed prose prose-sm prose-gray dark:prose-invert max-w-none">
+                <ReactMarkdown>{msg.content}</ReactMarkdown>
+              </div>
             </div>
-          </div>
-        )}
-        {msg.metadata && (
-          <>
+          )}
+          {msg.metadata && (
             <div className="flex items-center gap-3 mt-1.5 px-1">
               <ConfidencePill score={msg.metadata.confidence_score} threshold={msg.metadata.threshold} />
               {msg.content && <CopyButton text={msg.content} />}
             </div>
-            <RetrievalPanel metadata={msg.metadata} />
-          </>
-        )}
-        {showFollowUps && (
-          <div className="flex flex-col items-end gap-2 mt-4">
-            <div className="flex items-center gap-1.5 mr-1">
-              <MessageCircle className="w-3 h-3 text-gray-400 dark:text-gray-500" />
-              <p className="text-xs text-gray-400 dark:text-gray-500">Keep the conversation going:</p>
-            </div>
-            {FOLLOW_UP_PROMPTS.map((q) => (
-              <button
-                key={q}
-                onClick={() => onSuggestionClick(q)}
-                className="text-left text-sm px-4 py-2.5 rounded-2xl rounded-tr-sm border border-primary-200 dark:border-primary-700 text-primary-700 dark:text-primary-300 bg-primary-50 dark:bg-primary-900/30 hover:bg-primary-600 hover:text-white hover:border-primary-600 transition-colors shadow-sm cursor-pointer"
-              >
-                {q}
-              </button>
-            ))}
-          </div>
-        )}
+          )}
+        </div>
       </div>
+      {msg.metadata && <RetrievalPanel metadata={msg.metadata} />}
+      {showFollowUps && (
+        <div className="flex flex-wrap gap-2 mt-4 justify-center">
+          <div className="w-full flex items-center justify-center gap-1.5 mb-1">
+            <MessageCircle className="w-3 h-3 text-gray-400 dark:text-gray-500" />
+            <p className="text-xs text-gray-400 dark:text-gray-500">Keep the conversation going:</p>
+          </div>
+          {FOLLOW_UP_PROMPTS.map((q) => (
+            <button
+              key={q}
+              onClick={() => onSuggestionClick(q)}
+              className="text-sm px-4 py-2.5 rounded-2xl border border-primary-200 dark:border-primary-700 text-primary-700 dark:text-primary-300 bg-primary-50 dark:bg-primary-900/30 hover:bg-primary-600 hover:text-white hover:border-primary-600 transition-colors shadow-sm cursor-pointer"
+            >
+              {q}
+            </button>
+          ))}
+        </div>
+      )}
     </div>
   );
 }
@@ -270,11 +270,11 @@ function ThinkingIndicator() {
       <div className="shrink-0 w-8 h-8 rounded-full bg-primary-100 dark:bg-primary-900/30 flex items-center justify-center mt-0.5">
         <BrainCircuit className="w-4 h-4 text-primary-600 dark:text-primary-400" />
       </div>
-      <div className="bg-white border border-gray-200 rounded-2xl rounded-tl-sm px-4 py-3 shadow-sm">
+      <div className="bg-white dark:bg-white/10 border border-gray-200 dark:border-white/10 rounded-2xl rounded-tl-sm px-4 py-3 shadow-sm">
         <div className="flex items-center gap-1.5">
-          <span className="w-2 h-2 bg-gray-400 rounded-full animate-bounce [animation-delay:0ms]" />
-          <span className="w-2 h-2 bg-gray-400 rounded-full animate-bounce [animation-delay:150ms]" />
-          <span className="w-2 h-2 bg-gray-400 rounded-full animate-bounce [animation-delay:300ms]" />
+          <span className="w-2 h-2 bg-gray-400 dark:bg-gray-500 rounded-full animate-bounce [animation-delay:0ms]" />
+          <span className="w-2 h-2 bg-gray-400 dark:bg-gray-500 rounded-full animate-bounce [animation-delay:150ms]" />
+          <span className="w-2 h-2 bg-gray-400 dark:bg-gray-500 rounded-full animate-bounce [animation-delay:300ms]" />
         </div>
       </div>
     </div>

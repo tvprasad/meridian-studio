@@ -10,11 +10,15 @@ Versioning follows [Semantic Versioning](https://semver.org/).
 ## [Unreleased]
 
 ### Added
-- **Dark mode toggle** — sun/moon button in sidebar, persisted in localStorage; applied to Layout chrome and Ask Meridian page (body, input bar, message bubbles, chips, banners, retrieval panel)
+- **Dark mode toggle** — sun/moon button in sidebar, persisted in localStorage; dark: variants applied across every page and shared component
 
 ### Changed
 - Rename "Retrieval Details" to **Citations** in collapsible panel header
 - Move "Keep the conversation going" follow-up prompts below confidence pill and Citations panel
+- Widen Citations panel and follow-up prompts to span full chat width (no longer constrained by message bubble width)
+
+### Fixed
+- Follow-up prompts and Citations panel no longer leave empty whitespace on right side
 
 ---
 

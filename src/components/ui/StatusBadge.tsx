@@ -8,11 +8,11 @@ interface StatusBadgeProps {
 
 export function StatusBadge({ status }: StatusBadgeProps) {
   const styles: Record<StatusBadgeStatus, string> = {
-    OK: 'bg-emerald-50 text-emerald-700 ring-1 ring-emerald-200',
-    REFUSED: 'bg-amber-50 text-amber-700 ring-1 ring-amber-200',
-    UNINITIALIZED: 'bg-gray-100 text-gray-600 ring-1 ring-gray-200',
-    error: 'bg-red-50 text-red-700 ring-1 ring-red-200',
-    loading: 'bg-blue-50 text-blue-700 ring-1 ring-blue-200',
+    OK: 'bg-emerald-50 dark:bg-emerald-900/30 text-emerald-700 dark:text-emerald-400 ring-1 ring-emerald-200 dark:ring-emerald-800',
+    REFUSED: 'bg-amber-50 dark:bg-amber-900/30 text-amber-700 dark:text-amber-400 ring-1 ring-amber-200 dark:ring-amber-800',
+    UNINITIALIZED: 'bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-400 ring-1 ring-gray-200 dark:ring-gray-700',
+    error: 'bg-red-50 dark:bg-red-900/30 text-red-700 dark:text-red-400 ring-1 ring-red-200 dark:ring-red-800',
+    loading: 'bg-blue-50 dark:bg-blue-900/30 text-blue-700 dark:text-blue-400 ring-1 ring-blue-200 dark:ring-blue-800',
   };
 
   const dots: Record<StatusBadgeStatus, string> = {

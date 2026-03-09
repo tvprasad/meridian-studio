@@ -65,11 +65,11 @@ export function Settings() {
     <div>
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900">Settings</h1>
-          <p className="text-gray-500 mt-1">Choose your LLM and retrieval providers, adjust the confidence threshold, and review Cognitive AI service status.</p>
+          <h1 className="text-2xl font-bold text-gray-900 dark:text-white">Settings</h1>
+          <p className="text-gray-500 dark:text-gray-400 mt-1">Choose your LLM and retrieval providers, adjust the confidence threshold, and review Cognitive AI service status.</p>
         </div>
         {isDirty && (
-          <span className="text-xs text-amber-600 font-medium px-2.5 py-1 bg-amber-50 rounded-full ring-1 ring-amber-200">
+          <span className="text-xs text-amber-600 dark:text-amber-400 font-medium px-2.5 py-1 bg-amber-50 dark:bg-amber-900/20 rounded-full ring-1 ring-amber-200 dark:ring-amber-800">
             Unsaved changes
           </span>
         )}
@@ -77,19 +77,19 @@ export function Settings() {
 
       <form onSubmit={onSubmit}>
         <Card className="mt-8">
-          <h2 className="text-lg font-semibold mb-4">Provider Configuration</h2>
+          <h2 className="text-lg font-semibold dark:text-white mb-4">Provider Configuration</h2>
 
           <div className="space-y-6">
             <div>
-              <label htmlFor="llm_provider" className="flex items-center gap-1.5 text-sm font-medium text-gray-700">
-                <BrainCircuit className="w-4 h-4 text-gray-400" />
+              <label htmlFor="llm_provider" className="flex items-center gap-1.5 text-sm font-medium text-gray-700 dark:text-gray-200">
+                <BrainCircuit className="w-4 h-4 text-gray-400 dark:text-gray-500" />
                 LLM Provider
               </label>
-              <p className="text-xs text-gray-400 mt-0.5">The large language model that generates answers from retrieved context.</p>
+              <p className="text-xs text-gray-400 dark:text-gray-500 mt-0.5">The large language model that generates answers from retrieved context.</p>
               <select
                 id="llm_provider"
                 {...form.register('llm_provider')}
-                className="mt-1 block w-full rounded-lg border-gray-300 shadow-sm focus:border-primary-500 focus:ring-primary-500 border p-2"
+                className="mt-1 block w-full rounded-lg border-gray-300 dark:border-white/15 shadow-sm focus:border-primary-500 focus:ring-primary-500 border p-2 dark:bg-gray-900 dark:text-gray-200"
               >
                 <option value="local">Local (Ollama)</option>
                 <option value="azure">Azure OpenAI</option>
@@ -97,15 +97,15 @@ export function Settings() {
             </div>
 
             <div>
-              <label htmlFor="retrieval_provider" className="flex items-center gap-1.5 text-sm font-medium text-gray-700">
-                <Database className="w-4 h-4 text-gray-400" />
+              <label htmlFor="retrieval_provider" className="flex items-center gap-1.5 text-sm font-medium text-gray-700 dark:text-gray-200">
+                <Database className="w-4 h-4 text-gray-400 dark:text-gray-500" />
                 Retrieval Provider
               </label>
-              <p className="text-xs text-gray-400 mt-0.5">The vector store used to find relevant document passages for each query.</p>
+              <p className="text-xs text-gray-400 dark:text-gray-500 mt-0.5">The vector store used to find relevant document passages for each query.</p>
               <select
                 id="retrieval_provider"
                 {...form.register('retrieval_provider')}
-                className="mt-1 block w-full rounded-lg border-gray-300 shadow-sm focus:border-primary-500 focus:ring-primary-500 border p-2"
+                className="mt-1 block w-full rounded-lg border-gray-300 dark:border-white/15 shadow-sm focus:border-primary-500 focus:ring-primary-500 border p-2 dark:bg-gray-900 dark:text-gray-200"
               >
                 <option value="chroma">Local (Chroma)</option>
                 <option value="azure">Azure AI Search</option>
@@ -114,15 +114,15 @@ export function Settings() {
 
             <div>
               <div className="flex items-center justify-between">
-                <label htmlFor="retrieval_threshold" className="flex items-center gap-1.5 text-sm font-medium text-gray-700">
-                  <SlidersHorizontal className="w-4 h-4 text-gray-400" />
+                <label htmlFor="retrieval_threshold" className="flex items-center gap-1.5 text-sm font-medium text-gray-700 dark:text-gray-200">
+                  <SlidersHorizontal className="w-4 h-4 text-gray-400 dark:text-gray-500" />
                   Retrieval Threshold
                 </label>
-                <span className="text-sm font-semibold tabular-nums text-gray-900">
+                <span className="text-sm font-semibold tabular-nums text-gray-900 dark:text-white">
                   {(threshold * 100).toFixed(0)}%
                 </span>
               </div>
-              <p className="text-xs text-gray-400 mt-0.5">Minimum similarity score for a passage to be included. Higher values mean stricter matching — the model may refuse to answer if no passages meet the threshold.</p>
+              <p className="text-xs text-gray-400 dark:text-gray-500 mt-0.5">Minimum similarity score for a passage to be included. Higher values mean stricter matching — the model may refuse to answer if no passages meet the threshold.</p>
               <input
                 id="retrieval_threshold"
                 type="range"
@@ -132,25 +132,25 @@ export function Settings() {
                 {...form.register('retrieval_threshold', { valueAsNumber: true })}
                 className="mt-2 block w-full accent-primary-600"
               />
-              <div className="flex justify-between text-xs text-gray-400 mt-1">
+              <div className="flex justify-between text-xs text-gray-400 dark:text-gray-500 mt-1">
                 <span>0%</span>
                 <span>100%</span>
               </div>
             </div>
           </div>
 
-          <div className="mt-6 pt-6 border-t flex items-center justify-between">
+          <div className="mt-6 pt-6 border-t dark:border-white/10 flex items-center justify-between">
             <div className="flex items-center gap-2 text-sm">
               {mutation.isSuccess && (
                 <>
                   <CheckCircle className="w-4 h-4 text-emerald-500" />
-                  <span className="text-emerald-600">Settings saved</span>
+                  <span className="text-emerald-600 dark:text-emerald-400">Settings saved</span>
                 </>
               )}
               {mutation.isError && (
                 <>
                   <AlertCircle className="w-4 h-4 text-red-500" />
-                  <span className="text-red-600">{(mutation.error as Error).message}</span>
+                  <span className="text-red-600 dark:text-red-400">{(mutation.error as Error).message}</span>
                 </>
               )}
             </div>
@@ -173,25 +173,25 @@ export function Settings() {
       </form>
 
       <Card className="mt-6">
-        <h2 className="text-lg font-semibold mb-4">Cognitive AI Services</h2>
-        <p className="text-sm text-gray-600">
+        <h2 className="text-lg font-semibold dark:text-white mb-4">Cognitive AI Services</h2>
+        <p className="text-sm text-gray-600 dark:text-gray-300">
           Standalone Azure AI capabilities available alongside the RAG engine.
           These services are configured via backend environment variables and do not affect query behavior.
         </p>
         <ul className="mt-4 space-y-2 text-sm">
           <li className="flex items-center gap-2">
             <span className="w-2 h-2 bg-green-500 rounded-full"></span>
-            <Languages className="w-4 h-4 text-gray-400" />
+            <Languages className="w-4 h-4 text-gray-400 dark:text-gray-500" />
             Language Service
           </li>
           <li className="flex items-center gap-2">
             <span className="w-2 h-2 bg-green-500 rounded-full"></span>
-            <Eye className="w-4 h-4 text-gray-400" />
+            <Eye className="w-4 h-4 text-gray-400 dark:text-gray-500" />
             Vision Service
           </li>
           <li className="flex items-center gap-2">
             <span className="w-2 h-2 bg-green-500 rounded-full"></span>
-            <AudioLines className="w-4 h-4 text-gray-400" />
+            <AudioLines className="w-4 h-4 text-gray-400 dark:text-gray-500" />
             Speech Service
           </li>
         </ul>
