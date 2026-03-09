@@ -10,6 +10,7 @@ Versioning follows [Semantic Versioning](https://semver.org/).
 ## [Unreleased]
 
 ### Added
+- **Query Console** redesigned as a chat interface — persistent message history, user/assistant bubbles, typing indicator, example question chips, auto-scroll, Enter to send, confidence pill and trace ID shown inline per response
 - **Ingestion Pipeline** page replacing Document Upload — pipeline stage visualization (Upload → Chunk → Embed → Index), multi-file support, 120s timeout for large documents
 - Collapsible "What should I ingest?" guidance on Ingestion Pipeline page
 - Icons and inline descriptions for all Settings fields (LLM Provider, Retrieval Provider, Retrieval Threshold)
@@ -29,6 +30,8 @@ Versioning follows [Semantic Versioning](https://semver.org/).
 - Document Intelligence icon unified to `FileSearch` across sidebar nav and Settings page
 
 ### Fixed
+- Query: increase MCP timeout from 30s to 90s to survive cold-start when meridian-mcp scales from zero replicas
+- Sidebar: increase inactive nav link opacity (white/40 → white/65) for legibility on MacBook displays
 - Settings: Retrieval Threshold description moved below label row (was incorrectly inside flex justify-between)
 - Query page MCP integration: send correct `query_knowledge_base` tool call payload and map response fields (`confidence` -> `confidence_score`, `reason` -> `refusal_reason`)
 - ESLint `no-unused-vars` error: remove unused `SpeechSynthesisResult` import
