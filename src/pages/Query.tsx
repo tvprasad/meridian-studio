@@ -47,7 +47,7 @@ function ConfidencePill({ score, threshold }: { score: number; threshold?: numbe
   const passes = threshold == null || score >= threshold;
   return (
     <span className={`inline-flex items-center gap-1 text-xs font-medium px-2 py-0.5 rounded-full ${
-      passes ? 'bg-emerald-50 text-emerald-700' : 'bg-red-50 text-red-600'
+      passes ? 'bg-emerald-50 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-400' : 'bg-red-50 text-red-600 dark:bg-red-900/30 dark:text-red-400'
     }`}>
       {pct}% confidence
     </span>
@@ -67,7 +67,7 @@ function CopyButton({ text }: { text: string }) {
     <button
       onClick={handleCopy}
       title="Copy answer"
-      className="inline-flex items-center gap-1 text-xs text-gray-400 hover:text-gray-600 transition-colors"
+      className="inline-flex items-center gap-1 text-xs text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 transition-colors"
     >
       {copied ? <Check className="w-3.5 h-3.5 text-emerald-500" /> : <Copy className="w-3.5 h-3.5" />}
       {copied ? 'Copied' : 'Copy'}
@@ -84,9 +84,9 @@ function RetrievalScoreBar({ score, threshold, index }: { score: number; thresho
     <div className="flex items-center gap-3">
       <div className="flex items-center gap-1.5 w-20 shrink-0">
         <FileText className="w-3.5 h-3.5 text-gray-400" />
-        <span className="text-xs text-gray-500">Chunk {index + 1}</span>
+        <span className="text-xs text-gray-500 dark:text-gray-400">Chunk {index + 1}</span>
       </div>
-      <div className="flex-1 relative h-5 bg-gray-100 rounded-full overflow-hidden">
+      <div className="flex-1 relative h-5 bg-gray-100 dark:bg-gray-800 rounded-full overflow-hidden">
         {/* Threshold marker */}
         <div
           className="absolute top-0 bottom-0 w-px bg-gray-400 z-10"
@@ -127,13 +127,13 @@ function RetrievalPanel({ metadata }: { metadata: QueryResponse }) {
   if (scores.length === 0) return null;
 
   return (
-    <div className="mt-2 border border-gray-150 rounded-xl overflow-hidden bg-gray-50/50">
+    <div className="mt-2 border border-gray-150 dark:border-white/10 rounded-xl overflow-hidden bg-gray-50/50 dark:bg-white/[0.03]">
       <button
         onClick={() => setOpen(!open)}
-        className="w-full flex items-center gap-2 px-3 py-2 text-xs text-gray-500 hover:bg-gray-100 transition-colors"
+        className="w-full flex items-center gap-2 px-3 py-2 text-xs text-gray-500 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-white/5 transition-colors"
       >
         {open ? <ChevronDown className="w-3.5 h-3.5" /> : <ChevronRight className="w-3.5 h-3.5" />}
-        <span className="font-medium">Retrieval Details</span>
+        <span className="font-medium">Citations</span>
         <span className="text-gray-400">
           {scores.length} chunk{scores.length !== 1 ? 's' : ''} retrieved
         </span>
@@ -177,7 +177,7 @@ function RetrievalPanel({ metadata }: { metadata: QueryResponse }) {
 
 function OfflineBanner() {
   return (
-    <div className="flex items-center gap-2 px-4 py-2 bg-amber-50 border border-amber-200 rounded-xl text-sm text-amber-700">
+    <div className="flex items-center gap-2 px-4 py-2 bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-700 rounded-xl text-sm text-amber-700 dark:text-amber-400">
       <WifiOff className="w-4 h-4 shrink-0" />
       <span>Unable to reach Meridian API. Check your connection or verify the backend is running.</span>
     </div>
@@ -198,49 +198,30 @@ function AssistantMessage({ msg, isLatest, onSuggestionClick }: {
 
   return (
     <div className="flex items-start gap-3 max-w-3xl">
-      <div className="shrink-0 w-8 h-8 rounded-full bg-primary-100 flex items-center justify-center mt-0.5">
-        <BrainCircuit className="w-4 h-4 text-primary-600" />
+      <div className="shrink-0 w-8 h-8 rounded-full bg-primary-100 dark:bg-primary-900/30 flex items-center justify-center mt-0.5">
+        <BrainCircuit className="w-4 h-4 text-primary-600 dark:text-primary-400" />
       </div>
       <div className="flex-1 min-w-0">
         {isRefused ? (
-          <div className="bg-amber-50 border border-amber-200 rounded-2xl rounded-tl-sm px-4 py-3">
+          <div className="bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-700 rounded-2xl rounded-tl-sm px-4 py-3">
             <div className="flex items-center gap-2 mb-1">
               <AlertTriangle className="w-4 h-4 text-amber-500 shrink-0" />
-              <span className="text-xs font-medium text-amber-700">Could not answer</span>
+              <span className="text-xs font-medium text-amber-700 dark:text-amber-400">Could not answer</span>
             </div>
-            <p className="text-sm text-amber-800">{msg.metadata?.refusal_reason ?? 'Retrieval confidence below threshold.'}</p>
+            <p className="text-sm text-amber-800 dark:text-amber-300">{msg.metadata?.refusal_reason ?? 'Retrieval confidence below threshold.'}</p>
             {score != null && threshold != null && (
-              <p className="text-xs text-amber-600 mt-2">
+              <p className="text-xs text-amber-600 dark:text-amber-400/80 mt-2">
                 Confidence was {(score * 100).toFixed(1)}% — the minimum threshold is {(threshold * 100).toFixed(0)}%.
                 Try rephrasing with more specific terms or ask about a different topic.
               </p>
             )}
           </div>
         ) : (
-          <>
-            <div className="bg-white border border-gray-200 rounded-2xl rounded-tl-sm px-4 py-3 shadow-sm">
-              <div className="text-sm text-gray-800 leading-relaxed prose prose-sm prose-gray max-w-none">
-                <ReactMarkdown>{msg.content}</ReactMarkdown>
-              </div>
+          <div className="bg-white dark:bg-white/10 border border-gray-200 dark:border-white/10 rounded-2xl rounded-tl-sm px-4 py-3 shadow-sm">
+            <div className="text-sm text-gray-800 dark:text-gray-200 leading-relaxed prose prose-sm prose-gray dark:prose-invert max-w-none">
+              <ReactMarkdown>{msg.content}</ReactMarkdown>
             </div>
-            {showFollowUps && (
-              <div className="flex flex-col items-end gap-2 mt-4">
-                <div className="flex items-center gap-1.5 mr-1">
-                  <MessageCircle className="w-3 h-3 text-gray-400" />
-                  <p className="text-xs text-gray-400">Keep the conversation going:</p>
-                </div>
-                {FOLLOW_UP_PROMPTS.map((q) => (
-                  <button
-                    key={q}
-                    onClick={() => onSuggestionClick(q)}
-                    className="text-left text-sm px-4 py-2.5 rounded-2xl rounded-tr-sm border border-primary-200 text-primary-700 bg-primary-50 hover:bg-primary-600 hover:text-white hover:border-primary-600 transition-colors shadow-sm cursor-pointer"
-                  >
-                    {q}
-                  </button>
-                ))}
-              </div>
-            )}
-          </>
+          </div>
         )}
         {msg.metadata && (
           <>
@@ -250,6 +231,23 @@ function AssistantMessage({ msg, isLatest, onSuggestionClick }: {
             </div>
             <RetrievalPanel metadata={msg.metadata} />
           </>
+        )}
+        {showFollowUps && (
+          <div className="flex flex-col items-end gap-2 mt-4">
+            <div className="flex items-center gap-1.5 mr-1">
+              <MessageCircle className="w-3 h-3 text-gray-400 dark:text-gray-500" />
+              <p className="text-xs text-gray-400 dark:text-gray-500">Keep the conversation going:</p>
+            </div>
+            {FOLLOW_UP_PROMPTS.map((q) => (
+              <button
+                key={q}
+                onClick={() => onSuggestionClick(q)}
+                className="text-left text-sm px-4 py-2.5 rounded-2xl rounded-tr-sm border border-primary-200 dark:border-primary-700 text-primary-700 dark:text-primary-300 bg-primary-50 dark:bg-primary-900/30 hover:bg-primary-600 hover:text-white hover:border-primary-600 transition-colors shadow-sm cursor-pointer"
+              >
+                {q}
+              </button>
+            ))}
+          </div>
         )}
       </div>
     </div>
@@ -269,8 +267,8 @@ function UserMessage({ content }: { content: string }) {
 function ThinkingIndicator() {
   return (
     <div className="flex items-start gap-3">
-      <div className="shrink-0 w-8 h-8 rounded-full bg-primary-100 flex items-center justify-center mt-0.5">
-        <BrainCircuit className="w-4 h-4 text-primary-600" />
+      <div className="shrink-0 w-8 h-8 rounded-full bg-primary-100 dark:bg-primary-900/30 flex items-center justify-center mt-0.5">
+        <BrainCircuit className="w-4 h-4 text-primary-600 dark:text-primary-400" />
       </div>
       <div className="bg-white border border-gray-200 rounded-2xl rounded-tl-sm px-4 py-3 shadow-sm">
         <div className="flex items-center gap-1.5">
@@ -401,24 +399,24 @@ export function Query() {
       {/* Header */}
       <div className="shrink-0">
         <div className="flex items-center justify-between">
-          <h1 className="text-2xl font-bold text-gray-900">Ask Meridian</h1>
+          <h1 className="text-2xl font-bold text-gray-900 dark:text-white">Ask Meridian</h1>
           {!isEmpty && (
             <button
               onClick={handleNewChat}
-              className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium text-gray-500 hover:text-gray-700 hover:bg-gray-100 transition-colors"
+              className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-white hover:bg-gray-100 dark:hover:bg-white/10 transition-colors"
             >
               <RotateCcw className="w-3.5 h-3.5" />
               New chat
             </button>
           )}
         </div>
-        <p className="text-gray-500 mt-1">Ask questions in plain language — Meridian searches your documents and returns a grounded answer.</p>
+        <p className="text-gray-500 dark:text-gray-400 mt-1">Ask questions in plain language — Meridian searches your documents and returns a grounded answer.</p>
         {health && (
           <p className="mt-2 text-xs text-gray-400 flex items-center gap-1.5">
             Using
-            <span className="font-medium text-gray-600">{PROVIDER_LABELS[health.llm_provider] ?? health.llm_provider}</span>
+            <span className="font-medium text-gray-600 dark:text-gray-300">{PROVIDER_LABELS[health.llm_provider] ?? health.llm_provider}</span>
             and
-            <span className="font-medium text-gray-600">{PROVIDER_LABELS[health.retrieval_provider] ?? health.retrieval_provider}</span>
+            <span className="font-medium text-gray-600 dark:text-gray-300">{PROVIDER_LABELS[health.retrieval_provider] ?? health.retrieval_provider}</span>
             —
             <Link to="/settings" className="inline-flex items-center gap-0.5 text-primary-600 hover:text-primary-700 transition-colors">
               <Settings className="w-3 h-3" />
@@ -439,24 +437,24 @@ export function Query() {
       <div className="flex-1 mt-6 overflow-y-auto min-h-0">
         {isEmpty ? (
           <div className="flex flex-col items-center justify-center h-full py-16 text-center">
-            <div className="w-14 h-14 rounded-full bg-primary-50 flex items-center justify-center mb-4">
-              <BrainCircuit className="w-7 h-7 text-primary-500" />
+            <div className="w-14 h-14 rounded-full bg-primary-50 dark:bg-primary-900/30 flex items-center justify-center mb-4">
+              <BrainCircuit className="w-7 h-7 text-primary-500 dark:text-primary-400" />
             </div>
-            <h3 className="text-gray-700 font-medium">Ask anything about your documents</h3>
-            <p className="text-sm text-gray-400 mt-1 mb-6">Meridian will search the knowledge base and ground its answer in your content.</p>
+            <h3 className="text-gray-700 dark:text-gray-200 font-medium">Ask anything about your documents</h3>
+            <p className="text-sm text-gray-400 dark:text-gray-500 mt-1 mb-6">Meridian will search the knowledge base and ground its answer in your content.</p>
             <div className="flex flex-wrap gap-2 justify-center max-w-lg">
               {exampleQuestions.map((q) => (
                 <button
                   key={q}
                   onClick={() => { setInput(q); textareaRef.current?.focus(); }}
-                  className="text-xs px-3 py-1.5 rounded-full border border-gray-200 text-gray-600 hover:border-primary-300 hover:text-primary-600 transition-colors bg-white"
+                  className="text-xs px-3 py-1.5 rounded-full border border-gray-200 dark:border-white/15 text-gray-600 dark:text-gray-300 hover:border-primary-300 hover:text-primary-600 dark:hover:text-primary-400 transition-colors bg-white dark:bg-white/5"
                 >
                   {q}
                 </button>
               ))}
             </div>
             <p className="text-xs text-gray-300 mt-8">
-              <kbd className="px-1.5 py-0.5 rounded border border-gray-200 bg-gray-50 text-gray-400 font-mono text-[10px]">Ctrl+K</kbd>
+              <kbd className="px-1.5 py-0.5 rounded border border-gray-200 dark:border-white/15 bg-gray-50 dark:bg-white/5 text-gray-400 font-mono text-[10px]">Ctrl+K</kbd>
               {' '}to focus input
             </p>
           </div>
@@ -477,12 +475,12 @@ export function Query() {
                   />
                   {isLatest && msg.metadata?.status === 'REFUSED' && exampleQuestions.length > 0 && (
                     <div className="flex flex-col items-end gap-2 mt-4">
-                      <p className="text-xs text-gray-400 mr-1">Try one of these instead:</p>
+                      <p className="text-xs text-gray-400 dark:text-gray-500 mr-1">Try one of these instead:</p>
                       {exampleQuestions.map((q) => (
                         <button
                           key={q}
                           onClick={() => handleChipClick(q)}
-                          className="max-w-2xl text-left text-sm px-4 py-2.5 rounded-2xl rounded-tr-sm border border-primary-200 text-primary-700 bg-primary-50 hover:bg-primary-600 hover:text-white hover:border-primary-600 transition-colors shadow-sm cursor-pointer"
+                          className="max-w-2xl text-left text-sm px-4 py-2.5 rounded-2xl rounded-tr-sm border border-primary-200 dark:border-primary-700 text-primary-700 dark:text-primary-300 bg-primary-50 dark:bg-primary-900/30 hover:bg-primary-600 hover:text-white hover:border-primary-600 transition-colors shadow-sm cursor-pointer"
                         >
                           {q}
                         </button>
@@ -499,11 +497,11 @@ export function Query() {
       </div>
 
       {/* Input bar */}
-      <div className="shrink-0 mt-4 bg-white border border-gray-200 rounded-2xl shadow-sm focus-within:border-primary-400 focus-within:ring-2 focus-within:ring-primary-100 transition-all">
+      <div className="shrink-0 mt-4 bg-white dark:bg-white/[0.05] border border-gray-200 dark:border-white/15 rounded-2xl shadow-sm focus-within:border-primary-400 focus-within:ring-2 focus-within:ring-primary-100 dark:focus-within:ring-primary-900/30 transition-all">
         <textarea
           ref={textareaRef}
           rows={1}
-          className="block w-full resize-none rounded-2xl px-4 pt-3 pb-2 text-sm text-gray-800 placeholder-gray-400 focus:outline-none bg-transparent"
+          className="block w-full resize-none rounded-2xl px-4 pt-3 pb-2 text-sm text-gray-800 dark:text-gray-200 placeholder-gray-400 dark:placeholder-gray-600 focus:outline-none bg-transparent"
           placeholder="Ask a question… (Enter to send, Shift+Enter for new line, Esc to clear)"
           value={input}
           onChange={handleInput}
@@ -523,7 +521,7 @@ export function Query() {
       </div>
 
       {/* Disclaimer */}
-      <p className="shrink-0 text-center text-[10px] text-gray-400 mt-2 leading-relaxed">
+      <p className="shrink-0 text-center text-[10px] text-gray-400 dark:text-gray-600 mt-2 leading-relaxed">
         AI-generated, document-grounded answers. Useful as a co-pilot, not a replacement for your judgment.
       </p>
     </div>

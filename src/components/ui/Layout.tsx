@@ -1,10 +1,11 @@
 import { useEffect, useState, useCallback } from 'react';
 import { Outlet, NavLink, useLocation } from 'react-router-dom';
-import { LayoutDashboard, MessageSquare, Database, Settings, Github, Linkedin, Languages, Eye, Mic, FileSearch, Pin, PinOff } from 'lucide-react';
+import { LayoutDashboard, MessageSquare, Database, Settings, Github, Linkedin, Languages, Eye, Mic, FileSearch, Pin, PinOff, Sun, Moon } from 'lucide-react';
 import { DiagnosticsPanel } from './DiagnosticsPanel';
 import { useDiagnostics } from '../../hooks/useDiagnosticsHook';
 
 const SIDEBAR_PINNED_KEY = 'meridian-sidebar-pinned';
+const THEME_KEY = 'meridian-theme';
 
 const coreNavItems = [
   { to: '/', icon: LayoutDashboard, label: 'Dashboard' },
@@ -75,6 +76,16 @@ export function Layout() {
   // Sidebar is expanded when pinned OR hovered (while unpinned)
   const expanded = pinned || hovered;
 
+  // Dark mode — persisted in localStorage, applied on <html>
+  const [dark, setDark] = useState(() => localStorage.getItem(THEME_KEY) === 'dark');
+
+  useEffect(() => {
+    document.documentElement.classList.toggle('dark', dark);
+    localStorage.setItem(THEME_KEY, dark ? 'dark' : 'light');
+  }, [dark]);
+
+  const toggleTheme = useCallback(() => setDark((prev) => !prev), []);
+
   // Reset diagnostics & governance when navigating between AI service pages
   useEffect(() => {
     if (showDiagnostics) reset();
@@ -125,8 +136,8 @@ export function Layout() {
           ))}
         </nav>
 
-        {/* Pin/Unpin button */}
-        <div className={`border-t border-white/10 ${expanded ? 'px-6 py-3' : 'py-3 flex justify-center'}`}>
+        {/* Pin + Theme toggles */}
+        <div className={`border-t border-white/10 ${expanded ? 'px-6 py-3 flex items-center justify-between' : 'py-3 flex flex-col items-center gap-2'}`}>
           <button
             onClick={togglePin}
             title={pinned ? 'Unpin sidebar' : 'Pin sidebar'}
@@ -141,6 +152,23 @@ export function Layout() {
               <>
                 <PinOff className="w-3.5 h-3.5 shrink-0" />
                 {expanded && <span>Unpinned</span>}
+              </>
+            )}
+          </button>
+          <button
+            onClick={toggleTheme}
+            title={dark ? 'Switch to light mode' : 'Switch to dark mode'}
+            className="flex items-center gap-2 text-xs text-white/50 hover:text-white/90 transition-colors"
+          >
+            {dark ? (
+              <>
+                <Sun className="w-3.5 h-3.5 shrink-0" />
+                {expanded && <span>Light</span>}
+              </>
+            ) : (
+              <>
+                <Moon className="w-3.5 h-3.5 shrink-0" />
+                {expanded && <span>Dark</span>}
               </>
             )}
           </button>
@@ -212,12 +240,12 @@ export function Layout() {
       </aside>
 
       {/* Main content */}
-      <main className="flex-1 overflow-auto flex flex-col">
+      <main className="flex-1 overflow-auto flex flex-col bg-gray-50 dark:bg-gray-950">
         <div className="flex-1 p-8">
           <Outlet />
         </div>
-        <footer className="px-8 py-3 border-t border-gray-100">
-          <p className="text-[8px] text-gray-400/70 leading-relaxed">
+        <footer className="px-8 py-3 border-t border-gray-100 dark:border-white/10">
+          <p className="text-[8px] text-gray-400/70 dark:text-gray-600 leading-relaxed">
             Microsoft Azure, Amazon Web Services (AWS), and all other third-party product names, logos, and brands are trademarks or registered trademarks of their respective owners. Their use here does not imply endorsement or affiliation.
           </p>
         </footer>
