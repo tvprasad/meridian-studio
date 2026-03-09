@@ -66,7 +66,7 @@ describe('Query page — empty state', () => {
 
     // Should show backend-provided suggested questions from health fixture
     expect(screen.getByText('What topics are covered in the knowledge base?')).toBeInTheDocument();
-    expect(screen.getByText('How do I rollback a deployment?')).toBeInTheDocument();
+    expect(screen.getByText('How do I reset my password?')).toBeInTheDocument();
   });
 
   it('populates input when an example question chip is clicked', async () => {
@@ -74,12 +74,12 @@ describe('Query page — empty state', () => {
     renderQuery();
 
     await waitFor(() => {
-      expect(screen.getByText('How do I rollback a deployment?')).toBeInTheDocument();
+      expect(screen.getByText('How do I reset my password?')).toBeInTheDocument();
     });
 
-    await user.click(screen.getByText('How do I rollback a deployment?'));
+    await user.click(screen.getByText('How do I reset my password?'));
 
-    expect(screen.getByRole('textbox')).toHaveValue('How do I rollback a deployment?');
+    expect(screen.getByRole('textbox')).toHaveValue('How do I reset my password?');
   });
 });
 
@@ -185,10 +185,10 @@ describe('Query page — REFUSED response', () => {
 
     // Find the suggestion section and click a chip within it
     const suggestionSection = screen.getByText('Try one of these instead:').closest('div')!.parentElement!;
-    const chip = within(suggestionSection).getByText('How do I rollback a deployment?');
+    const chip = within(suggestionSection).getByText('How do I reset my password?');
     await user.click(chip);
 
-    expect(screen.getByRole('textbox')).toHaveValue('How do I rollback a deployment?');
+    expect(screen.getByRole('textbox')).toHaveValue('How do I reset my password?');
   });
 
   it('does not show follow-up prompts on a REFUSED response', async () => {

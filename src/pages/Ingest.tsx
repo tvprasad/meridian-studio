@@ -107,10 +107,9 @@ function StageIndicator({ stage, currentStage, errorStage }: {
   );
 }
 
-function friendlyError(err: unknown): string {
+function friendlySnowError(err: unknown): string {
   if (err instanceof ApiError) {
-    if (err.status === 400) return 'Missing or invalid credentials. Please check your Instance URL, username, and password.';
-    if (err.status === 502) return 'Could not reach the ServiceNow instance. Verify the URL is correct and the instance is accessible.';
+    if (err.status === 502) return 'Could not reach the ServiceNow instance. Check the backend configuration.';
     return err.message;
   }
   if (err instanceof Error) return err.message;
@@ -118,9 +117,6 @@ function friendlyError(err: unknown): string {
 }
 
 function ServiceNowTab({ onSyncSuccess }: { onSyncSuccess: () => void }) {
-  const [instanceUrl, setInstanceUrl] = useState('');
-  const [username, setUsername] = useState('');
-  const [password, setPassword] = useState('');
   const [kbName, setKbName] = useState('');
   const [category, setCategory] = useState('');
   const [limit, setLimit] = useState('');
@@ -128,30 +124,21 @@ function ServiceNowTab({ onSyncSuccess }: { onSyncSuccess: () => void }) {
   const [connectionMsg, setConnectionMsg] = useState('');
   const [result, setResult] = useState<ServiceNowIngestResponse | null>(null);
 
-  const hasCredentials = instanceUrl.trim() && username.trim() && password.trim();
-
   const testConnection = useMutation({
-    mutationFn: () => meridianApi.testServiceNowConnection({
-      instance_url: instanceUrl.trim(),
-      username: username.trim(),
-      password: password.trim(),
-    }),
+    mutationFn: () => meridianApi.testServiceNowConnection(),
     onSuccess: () => {
       setConnectionStatus('success');
       setConnectionMsg('Connection successful.');
     },
     onError: (err) => {
       setConnectionStatus('error');
-      setConnectionMsg(friendlyError(err));
+      setConnectionMsg(friendlySnowError(err));
     },
   });
 
   const sync = useMutation({
     mutationFn: () =>
       meridianApi.ingestServiceNow({
-        instance_url: instanceUrl.trim(),
-        username: username.trim(),
-        password: password.trim(),
         ...(kbName.trim() && { kb_name: kbName.trim() }),
         ...(category.trim() && { category: category.trim() }),
         ...(limit && Number(limit) > 0 && { limit: Number(limit) }),
@@ -172,53 +159,16 @@ function ServiceNowTab({ onSyncSuccess }: { onSyncSuccess: () => void }) {
   return (
     <div className="mt-8">
       <Card>
-        {/* Connection */}
-        <div>
-          <h3 className="text-sm font-semibold text-gray-700 dark:text-gray-200 mb-4 flex items-center gap-2">
-            <Globe className="w-4 h-4" />
-            Connection
-          </h3>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            <div>
-              <label className="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-1">Instance URL</label>
-              <input
-                type="url"
-                placeholder="https://yourinstance.service-now.com"
-                value={instanceUrl}
-                onChange={(e) => { setInstanceUrl(e.target.value); setConnectionStatus('idle'); }}
-                className="block w-full rounded-lg border border-gray-300 dark:border-white/15 p-2.5 text-sm dark:bg-gray-900 dark:text-gray-200 focus:border-primary-500 focus:outline-none"
-              />
-            </div>
-            <div>
-              <label className="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-1">Username</label>
-              <input
-                type="text"
-                placeholder="admin"
-                value={username}
-                onChange={(e) => { setUsername(e.target.value); setConnectionStatus('idle'); }}
-                className="block w-full rounded-lg border border-gray-300 dark:border-white/15 p-2.5 text-sm dark:bg-gray-900 dark:text-gray-200 focus:border-primary-500 focus:outline-none"
-              />
-            </div>
-            <div>
-              <label className="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-1">Password</label>
-              <input
-                type="password"
-                value={password}
-                onChange={(e) => { setPassword(e.target.value); setConnectionStatus('idle'); }}
-                className="block w-full rounded-lg border border-gray-300 dark:border-white/15 p-2.5 text-sm dark:bg-gray-900 dark:text-gray-200 focus:border-primary-500 focus:outline-none"
-              />
-            </div>
+        {/* Connection test */}
+        <div className="flex items-center justify-between">
+          <div>
+            <h3 className="text-sm font-semibold text-gray-700 dark:text-gray-200 flex items-center gap-2">
+              <Globe className="w-4 h-4" />
+              ServiceNow Connection
+            </h3>
+            <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">Credentials are configured on the backend. Use Test Connection to verify.</p>
           </div>
-          <div className="mt-3 flex items-center gap-3">
-            <Button
-              variant="secondary"
-              size="sm"
-              onClick={() => testConnection.mutate()}
-              loading={testConnection.isPending}
-              disabled={!hasCredentials}
-            >
-              Test Connection
-            </Button>
+          <div className="flex items-center gap-3">
             {connectionStatus === 'success' && (
               <span className="inline-flex items-center gap-1.5 text-sm text-emerald-600 dark:text-emerald-400">
                 <CheckCircle className="w-4 h-4" />
@@ -231,6 +181,14 @@ function ServiceNowTab({ onSyncSuccess }: { onSyncSuccess: () => void }) {
                 {connectionMsg}
               </span>
             )}
+            <Button
+              variant="secondary"
+              size="sm"
+              onClick={() => testConnection.mutate()}
+              loading={testConnection.isPending}
+            >
+              Test Connection
+            </Button>
           </div>
         </div>
 
@@ -277,7 +235,7 @@ function ServiceNowTab({ onSyncSuccess }: { onSyncSuccess: () => void }) {
           <Button
             onClick={() => sync.mutate()}
             loading={sync.isPending}
-            disabled={!hasCredentials || !!result}
+            disabled={!!result}
           >
             <Database className="w-4 h-4 mr-2" />
             Sync Articles
@@ -293,7 +251,7 @@ function ServiceNowTab({ onSyncSuccess }: { onSyncSuccess: () => void }) {
       {/* Error */}
       {sync.isError && (
         <Card className="mt-4 border-red-200 dark:border-red-800 bg-red-50 dark:bg-red-900/20">
-          <p className="text-red-800 dark:text-red-300 text-sm">{friendlyError(sync.error)}</p>
+          <p className="text-red-800 dark:text-red-300 text-sm">{friendlySnowError(sync.error)}</p>
         </Card>
       )}
 

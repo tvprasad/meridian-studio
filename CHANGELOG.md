@@ -11,7 +11,8 @@ Versioning follows [Semantic Versioning](https://semver.org/).
 
 ### Added
 - **Dark mode toggle** — sun/moon button in sidebar, persisted in localStorage; dark: variants applied across every page and shared component
-- **ServiceNow connector** — new "ServiceNow" tab on the Ingestion Pipeline page with connection form (instance URL, username, password), optional filters (KB name, category, article limit), Test Connection button, Sync Articles action, and result/error display with friendly messages for 400/502 errors
+- **ServiceNow connector** (ADR-0006) — new "ServiceNow" source tab on the Ingestion Pipeline page with server-side credentials, Test Connection button, optional filters (KB name, category, article limit), Sync Articles action, and result/error display
+- **AI/GenAI suggested questions** — updated example questions to include generative AI policy, Azure OpenAI access, approved AI tools, and data classification topics
 
 ### Changed
 - Rename "Retrieval Details" to **Citations** in collapsible panel header

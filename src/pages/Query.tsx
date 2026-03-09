@@ -28,9 +28,11 @@ const PROVIDER_LABELS: Record<string, string> = {
 
 const FALLBACK_QUESTIONS = [
   'What topics are covered in the knowledge base?',
-  'Summarize the key points from the ingested documents.',
-  'What is the main purpose of this system?',
-  'How do I rollback a deployment?',
+  'How do I reset my password?',
+  'What is our company\'s policy on using generative AI tools?',
+  'How do I get access to Azure OpenAI for my project?',
+  'What are the approved AI tools for internal use?',
+  'What data classification rules apply to AI model training?',
 ];
 
 const FOLLOW_UP_PROMPTS = [

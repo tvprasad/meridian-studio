@@ -51,9 +51,6 @@ export interface IngestResponse {
 }
 
 export interface ServiceNowIngestRequest {
-  instance_url: string;
-  username: string;
-  password: string;
   kb_name?: string;
   category?: string;
   limit?: number;

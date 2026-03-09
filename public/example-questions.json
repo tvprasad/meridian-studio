@@ -1,6 +1,14 @@
 [
   "What topics are covered in the knowledge base?",
-  "Summarize the key points from the ingested documents.",
-  "What is the main purpose of this system?",
-  "How do I rollback a deployment?"
+  "How do I reset my password?",
+  "How do I connect to the VPN?",
+  "What is the process for requesting new hardware?",
+  "What is our company's policy on using generative AI tools?",
+  "How do I get access to Azure OpenAI for my project?",
+  "What are the approved AI tools for internal use?",
+  "How do I submit a change request for a production deployment?",
+  "What data classification rules apply to AI model training?",
+  "How do I set up multi-factor authentication?",
+  "What is the incident escalation process?",
+  "How do I request access to a shared mailbox?"
 ]

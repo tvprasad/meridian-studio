@@ -108,7 +108,9 @@ describe('meridianApi.health', () => {
       retrieval_threshold: 0.6,
       suggested_questions: [
         'What topics are covered in the knowledge base?',
-        'How do I rollback a deployment?',
+        'How do I reset my password?',
+        "What is our company's policy on using generative AI tools?",
+        'How do I get access to Azure OpenAI for my project?',
       ],
     });
   });

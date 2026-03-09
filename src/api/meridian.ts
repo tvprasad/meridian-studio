@@ -57,7 +57,7 @@ export const meridianApi = {
   ingestServiceNow: (payload: ServiceNowIngestRequest) =>
     api.post<ServiceNowIngestResponse>('/ingest/servicenow', payload, { timeoutMs: 120_000 }),
 
-  // POST /ingest/servicenow with dry-run to test connection
-  testServiceNowConnection: (payload: Pick<ServiceNowIngestRequest, 'instance_url' | 'username' | 'password'>) =>
-    api.post<{ status: string }>('/ingest/servicenow/test', payload),
+  // POST /ingest/servicenow/test — verify backend can reach ServiceNow
+  testServiceNowConnection: () =>
+    api.post<{ status: string }>('/ingest/servicenow/test'),
 };
