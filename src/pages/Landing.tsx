@@ -12,7 +12,7 @@ import {
   Linkedin,
 } from 'lucide-react';
 
-const CAPABILITIES = [
+const CORE_CAPABILITIES = [
   {
     icon: BrainCircuit,
     title: 'Ask Meridian',
@@ -29,6 +29,14 @@ const CAPABILITIES = [
     desc: 'Every query is traced, scored, and auditable. Refusals are transparent with confidence thresholds.',
   },
   {
+    icon: FileSearch,
+    title: 'Document Intelligence',
+    desc: 'Structured extraction from invoices, receipts, IDs, and layouts.',
+  },
+];
+
+const LAB_CAPABILITIES = [
+  {
     icon: Languages,
     title: 'Language Intelligence',
     desc: 'Sentiment analysis, entity recognition, key phrases, and language detection.',
@@ -42,11 +50,6 @@ const CAPABILITIES = [
     icon: Mic,
     title: 'Speech Services',
     desc: 'Speech-to-text transcription with word timings and text-to-speech synthesis.',
-  },
-  {
-    icon: FileSearch,
-    title: 'Document Intelligence',
-    desc: 'Structured extraction from invoices, receipts, IDs, and layouts.',
   },
 ];
 
@@ -121,13 +124,13 @@ export function Landing() {
         </div>
       </section>
 
-      {/* Capabilities grid */}
-      <section className="max-w-6xl mx-auto w-full px-6 pb-24">
+      {/* Core capabilities */}
+      <section className="max-w-6xl mx-auto w-full px-6 pb-16">
         <h2 className="text-center text-2xl font-bold text-white/90 mb-12">
           Everything you need for enterprise AI
         </h2>
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
-          {CAPABILITIES.map(({ icon: Icon, title, desc }) => (
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
+          {CORE_CAPABILITIES.map(({ icon: Icon, title, desc }) => (
             <div
               key={title}
               className="group rounded-2xl border border-white/10 bg-white/[0.03] p-6 hover:border-violet-500/30 hover:bg-white/[0.06] transition-all"
@@ -137,6 +140,29 @@ export function Landing() {
               </div>
               <h3 className="font-semibold text-white/90 mb-1.5">{title}</h3>
               <p className="text-sm text-white/50 leading-relaxed">{desc}</p>
+            </div>
+          ))}
+        </div>
+      </section>
+
+      {/* AI Lab — Preview */}
+      <section className="max-w-6xl mx-auto w-full px-6 pb-24">
+        <div className="flex items-center justify-center gap-3 mb-10">
+          <h2 className="text-xl font-bold text-white/70">AI Lab</h2>
+          <span className="text-[10px] font-semibold uppercase tracking-wide px-2 py-0.5 rounded-full bg-violet-500/20 text-violet-400">Preview</span>
+        </div>
+        <p className="text-center text-sm text-white/40 -mt-8 mb-10">Interactive playgrounds to explore Azure AI capabilities directly.</p>
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-5">
+          {LAB_CAPABILITIES.map(({ icon: Icon, title, desc }) => (
+            <div
+              key={title}
+              className="group rounded-2xl border border-white/10 border-dashed bg-white/[0.02] p-6 hover:border-violet-500/30 hover:bg-white/[0.05] transition-all"
+            >
+              <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-violet-600/15 to-teal-500/15 flex items-center justify-center mb-4 group-hover:from-violet-600/25 group-hover:to-teal-500/25 transition-colors">
+                <Icon className="w-5 h-5 text-violet-400/70" />
+              </div>
+              <h3 className="font-semibold text-white/75 mb-1.5">{title}</h3>
+              <p className="text-sm text-white/40 leading-relaxed">{desc}</p>
             </div>
           ))}
         </div>

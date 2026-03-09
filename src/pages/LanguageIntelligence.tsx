@@ -63,7 +63,10 @@ export function LanguageIntelligence() {
           <Languages className="w-5 h-5 text-violet-600" />
         </div>
         <div>
-          <h1 className="text-2xl font-bold text-gray-900">Language Intelligence</h1>
+          <div className="flex items-center gap-3">
+            <h1 className="text-2xl font-bold text-gray-900">Language Intelligence</h1>
+            <span className="text-[10px] font-semibold uppercase tracking-wide px-2 py-0.5 rounded-full bg-violet-100 text-violet-600">AI Lab — Preview</span>
+          </div>
           <p className="text-gray-500 text-sm mt-0.5">Sentiment analysis, entity recognition, key phrase extraction, and language detection.</p>
         </div>
       </div>

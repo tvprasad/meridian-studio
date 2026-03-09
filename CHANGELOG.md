@@ -7,6 +7,17 @@ Versioning follows [Semantic Versioning](https://semver.org/).
 
 ---
 
+## [Unreleased]
+
+### Changed
+- Rebrand Cognitive AI Services sidebar section to **AI Lab — Preview** with violet badge
+- Add "AI Lab — Preview" pill next to page headings on Language, Vision, and Speech pages
+- Landing page: split capabilities into Core (4 cards) and AI Lab — Preview (3 dashed-border cards)
+- Shorten sidebar AI nav labels to "Language", "Vision", "Speech"
+- Update AI disclaimer to co-pilot framing
+
+---
+
 ## [0.4.0] — 2026-03-09
 
 ### Added

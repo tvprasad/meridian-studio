@@ -15,9 +15,9 @@ const coreNavItems = [
 ];
 
 const aiNavItems = [
-  { to: '/language', icon: Languages, label: 'Language Intelligence' },
-  { to: '/vision', icon: Eye, label: 'Vision Intelligence' },
-  { to: '/speech', icon: Mic, label: 'Speech Services' },
+  { to: '/language', icon: Languages, label: 'Language' },
+  { to: '/vision', icon: Eye, label: 'Vision' },
+  { to: '/speech', icon: Mic, label: 'Speech' },
 ];
 
 function NavItem({ to, icon: Icon, label, collapsed }: { to: string; icon: React.ElementType; label: string; collapsed: boolean }) {
@@ -112,8 +112,9 @@ export function Layout() {
           ))}
 
           {expanded ? (
-            <div className="px-6 pt-5 pb-1">
-              <p className="text-[10px] font-semibold uppercase tracking-widest text-white/25">Cognitive AI Services</p>
+            <div className="px-6 pt-5 pb-1 flex items-center gap-2">
+              <p className="text-[10px] font-semibold uppercase tracking-widest text-white/25">AI Lab</p>
+              <span className="text-[9px] font-semibold uppercase tracking-wide px-1.5 py-0.5 rounded-full bg-violet-500/20 text-violet-400">Preview</span>
             </div>
           ) : (
             <div className="mx-2 my-3 border-t border-white/10" />

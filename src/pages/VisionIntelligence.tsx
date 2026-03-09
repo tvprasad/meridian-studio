@@ -52,7 +52,10 @@ export function VisionIntelligence() {
           <Eye className="w-5 h-5 text-blue-600" />
         </div>
         <div>
-          <h1 className="text-2xl font-bold text-gray-900">Vision Intelligence</h1>
+          <div className="flex items-center gap-3">
+            <h1 className="text-2xl font-bold text-gray-900">Vision Intelligence</h1>
+            <span className="text-[10px] font-semibold uppercase tracking-wide px-2 py-0.5 rounded-full bg-violet-100 text-violet-600">AI Lab — Preview</span>
+          </div>
           <p className="text-gray-500 text-sm mt-0.5">Analyze images for captions, tags, objects, and extract text via OCR.</p>
         </div>
       </div>
