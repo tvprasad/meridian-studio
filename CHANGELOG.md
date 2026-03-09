@@ -9,6 +9,10 @@ Versioning follows [Semantic Versioning](https://semver.org/).
 
 ## [Unreleased]
 
+---
+
+## [0.3.0] — 2026-03-09
+
 ### Added
 - **Multi-turn chat** in Query Console — conversation history is sent with each query so follow-up questions ("What is so great about #1?") work naturally (ADR-0005)
 - **Dynamic example questions** — Query Console loads suggested questions from backend `/health` endpoint, falls back to `public/example-questions.json`, then hardcoded defaults
@@ -107,7 +111,8 @@ Versioning follows [Semantic Versioning](https://semver.org/).
 - VPL logo in sidebar header
 - GitHub and LinkedIn social links in sidebar footer
 
-[Unreleased]: https://github.com/tvprasad/meridian-studio/compare/v0.2.1...HEAD
+[Unreleased]: https://github.com/tvprasad/meridian-studio/compare/v0.3.0...HEAD
+[0.3.0]: https://github.com/tvprasad/meridian-studio/compare/v0.2.1...v0.3.0
 [0.2.1]: https://github.com/tvprasad/meridian-studio/compare/v0.2.0...v0.2.1
 [0.2.0]: https://github.com/tvprasad/meridian-studio/compare/v0.1.0...v0.2.0
 [0.1.0]: https://github.com/tvprasad/meridian-studio/releases/tag/v0.1.0
