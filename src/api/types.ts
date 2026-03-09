@@ -11,6 +11,7 @@ export interface QueryResponse {
   answer?: string;
   refusal_reason?: string;
   threshold?: number;
+  retrieval_scores?: number[];
 }
 
 export interface McpQueryResult {

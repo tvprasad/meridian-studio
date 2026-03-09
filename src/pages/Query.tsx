@@ -6,7 +6,8 @@ import { meridianApi, type ChatMessage } from '../api/meridian';
 import type { QueryResponse } from '../api/types';
 import {
   Send, Settings, BrainCircuit, AlertTriangle, MessageCircle,
-  RotateCcw, Copy, Check, WifiOff,
+  RotateCcw, Copy, Check, WifiOff, ChevronDown, ChevronRight,
+  FileText, ShieldCheck, ShieldAlert, Fingerprint,
 } from 'lucide-react';
 
 // ── Types & Constants ────────────────────────────────────────────────────────
@@ -71,6 +72,106 @@ function CopyButton({ text }: { text: string }) {
       {copied ? <Check className="w-3.5 h-3.5 text-emerald-500" /> : <Copy className="w-3.5 h-3.5" />}
       {copied ? 'Copied' : 'Copy'}
     </button>
+  );
+}
+
+function RetrievalScoreBar({ score, threshold, index }: { score: number; threshold: number; index: number }) {
+  const pct = score * 100;
+  const threshPct = threshold * 100;
+  const passes = score >= threshold;
+
+  return (
+    <div className="flex items-center gap-3">
+      <div className="flex items-center gap-1.5 w-20 shrink-0">
+        <FileText className="w-3.5 h-3.5 text-gray-400" />
+        <span className="text-xs text-gray-500">Chunk {index + 1}</span>
+      </div>
+      <div className="flex-1 relative h-5 bg-gray-100 rounded-full overflow-hidden">
+        {/* Threshold marker */}
+        <div
+          className="absolute top-0 bottom-0 w-px bg-gray-400 z-10"
+          style={{ left: `${threshPct}%` }}
+          title={`Threshold: ${threshPct.toFixed(0)}%`}
+        />
+        {/* Score bar */}
+        <div
+          className={`h-full rounded-full transition-all duration-500 ${
+            passes
+              ? 'bg-gradient-to-r from-emerald-400 to-emerald-500'
+              : 'bg-gradient-to-r from-red-300 to-red-400'
+          }`}
+          style={{ width: `${pct}%` }}
+        />
+        {/* Threshold label */}
+        <span
+          className="absolute top-0.5 text-[9px] text-gray-500 pointer-events-none"
+          style={{ left: `${threshPct + 1}%` }}
+        >
+          {threshPct.toFixed(0)}%
+        </span>
+      </div>
+      <span className={`text-xs font-medium w-14 text-right ${passes ? 'text-emerald-600' : 'text-red-500'}`}>
+        {pct.toFixed(1)}%
+      </span>
+    </div>
+  );
+}
+
+function RetrievalPanel({ metadata }: { metadata: QueryResponse }) {
+  const [open, setOpen] = useState(false);
+  const scores = metadata.retrieval_scores ?? [];
+  const threshold = metadata.threshold ?? 0.6;
+  const passing = scores.filter((s) => s >= threshold).length;
+  const isOk = metadata.status === 'OK';
+
+  if (scores.length === 0) return null;
+
+  return (
+    <div className="mt-2 border border-gray-150 rounded-xl overflow-hidden bg-gray-50/50">
+      <button
+        onClick={() => setOpen(!open)}
+        className="w-full flex items-center gap-2 px-3 py-2 text-xs text-gray-500 hover:bg-gray-100 transition-colors"
+      >
+        {open ? <ChevronDown className="w-3.5 h-3.5" /> : <ChevronRight className="w-3.5 h-3.5" />}
+        <span className="font-medium">Retrieval Details</span>
+        <span className="text-gray-400">
+          {scores.length} chunk{scores.length !== 1 ? 's' : ''} retrieved
+        </span>
+        <span className="ml-auto flex items-center gap-1">
+          {isOk ? (
+            <ShieldCheck className="w-3.5 h-3.5 text-emerald-500" />
+          ) : (
+            <ShieldAlert className="w-3.5 h-3.5 text-red-400" />
+          )}
+          <span className={isOk ? 'text-emerald-600' : 'text-red-500'}>
+            {passing}/{scores.length} above threshold
+          </span>
+        </span>
+      </button>
+      {open && (
+        <div className="px-4 pb-3 space-y-2 border-t border-gray-100">
+          {/* Trackbars */}
+          <div className="space-y-1.5 pt-2">
+            {scores.map((score, i) => (
+              <RetrievalScoreBar key={i} score={score} threshold={threshold} index={i} />
+            ))}
+          </div>
+          {/* Summary stats */}
+          <div className="flex items-center gap-4 pt-2 border-t border-gray-100 text-[11px] text-gray-400">
+            <span className="flex items-center gap-1">
+              <Fingerprint className="w-3 h-3" />
+              {metadata.trace_id}
+            </span>
+            <span>
+              Best: {(Math.max(...scores) * 100).toFixed(1)}%
+            </span>
+            <span>
+              Avg: {((scores.reduce((a, b) => a + b, 0) / scores.length) * 100).toFixed(1)}%
+            </span>
+          </div>
+        </div>
+      )}
+    </div>
   );
 }
 
@@ -142,11 +243,13 @@ function AssistantMessage({ msg, isLatest, onSuggestionClick }: {
           </>
         )}
         {msg.metadata && (
-          <div className="flex items-center gap-3 mt-1.5 px-1">
-            <ConfidencePill score={msg.metadata.confidence_score} threshold={msg.metadata.threshold} />
-            <span className="text-xs text-gray-400 font-mono truncate">{msg.metadata.trace_id}</span>
-            {msg.content && <CopyButton text={msg.content} />}
-          </div>
+          <>
+            <div className="flex items-center gap-3 mt-1.5 px-1">
+              <ConfidencePill score={msg.metadata.confidence_score} threshold={msg.metadata.threshold} />
+              {msg.content && <CopyButton text={msg.content} />}
+            </div>
+            <RetrievalPanel metadata={msg.metadata} />
+          </>
         )}
       </div>
     </div>

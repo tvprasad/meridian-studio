@@ -9,11 +9,18 @@ Versioning follows [Semantic Versioning](https://semver.org/).
 
 ## [Unreleased]
 
+### Added
+- **Retrieval Details panel** — collapsible panel under each response with per-chunk confidence trackbars, threshold markers, shield pass/fail icons, best/avg stats, and trace ID
+- `retrieval_scores` field in `QueryResponse` type
+
 ### Changed
 - Rebrand Cognitive AI Services sidebar section to **AI Lab — Preview** with violet badge
-- Add "AI Lab — Preview" pill next to page headings on Language, Vision, and Speech pages
+- Add "AI Lab — Preview" pill next to page headings on Language, Vision, Speech, and Document Intelligence pages
+- Move Document Intelligence from Core to AI Lab section in sidebar
+- Enable Diagnostics & Governance panel on Document Intelligence page
+- Rename Document Intelligence page heading from "Document Preview" to "Document Intelligence"
 - Landing page: split capabilities into Core (4 cards) and AI Lab — Preview (3 dashed-border cards)
-- Shorten sidebar AI nav labels to "Language", "Vision", "Speech"
+- Shorten sidebar AI nav labels to "Language", "Vision", "Speech", "Document"
 - Update AI disclaimer to co-pilot framing
 
 ---

@@ -10,7 +10,6 @@ const coreNavItems = [
   { to: '/', icon: LayoutDashboard, label: 'Dashboard' },
   { to: '/query', icon: MessageSquare, label: 'Ask Meridian' },
   { to: '/ingest', icon: Database, label: 'Ingest' },
-  { to: '/document', icon: FileSearch, label: 'Document Preview' },
   { to: '/settings', icon: Settings, label: 'Settings' },
 ];
 
@@ -18,6 +17,7 @@ const aiNavItems = [
   { to: '/language', icon: Languages, label: 'Language' },
   { to: '/vision', icon: Eye, label: 'Vision' },
   { to: '/speech', icon: Mic, label: 'Speech' },
+  { to: '/document', icon: FileSearch, label: 'Document' },
 ];
 
 function NavItem({ to, icon: Icon, label, collapsed }: { to: string; icon: React.ElementType; label: string; collapsed: boolean }) {
@@ -50,7 +50,7 @@ function NavItem({ to, icon: Icon, label, collapsed }: { to: string; icon: React
   );
 }
 
-const AI_ROUTES = ['/language', '/vision', '/speech'];
+const AI_ROUTES = ['/language', '/vision', '/speech', '/document'];
 
 export function Layout() {
   const { pathname } = useLocation();
