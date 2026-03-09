@@ -9,6 +9,15 @@ Versioning follows [Semantic Versioning](https://semver.org/).
 
 ## [Unreleased]
 
+### Added
+- **Pin/Unpin sidebar** — collapsible sidebar with icon-only mode; expands on hover when unpinned; state persisted in localStorage
+- **REFUSED response UX** — confidence explanation ("Confidence was X% — minimum threshold is Y%"), suggestion chips ("Try one of these instead") on refused queries
+- **Follow-up prompts** — "Keep the conversation going" chips (Tell me more, Give an example, Key takeaways, Compare to alternatives) after successful OK responses
+- **Query page component tests** — 7 tests covering empty state, OK response follow-ups, REFUSED suggestion chips, and chip interactions
+
+### Changed
+- Rename "Query Console" to "Ask Meridian" in sidebar nav and page heading
+
 ---
 
 ## [0.3.0] — 2026-03-09

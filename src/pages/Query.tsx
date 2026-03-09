@@ -3,7 +3,7 @@ import { useMutation, useQuery } from '@tanstack/react-query';
 import { Link } from 'react-router-dom';
 import { meridianApi, type ChatMessage } from '../api/meridian';
 import type { QueryResponse } from '../api/types';
-import { Send, Settings, BrainCircuit, AlertTriangle } from 'lucide-react';
+import { Send, Settings, BrainCircuit, AlertTriangle, MessageCircle } from 'lucide-react';
 
 interface Message {
   role: 'user' | 'assistant';
@@ -24,6 +24,13 @@ const FALLBACK_QUESTIONS = [
   'How do I rollback a deployment?',
 ];
 
+const FOLLOW_UP_PROMPTS = [
+  'Tell me more about this',
+  'Can you give me an example?',
+  'What are the key takeaways?',
+  'How does this compare to alternatives?',
+];
+
 function ConfidencePill({ score, threshold }: { score: number; threshold?: number }) {
   const pct = (score * 100).toFixed(1);
   const passes = threshold == null || score >= threshold;
@@ -36,8 +43,16 @@ function ConfidencePill({ score, threshold }: { score: number; threshold?: numbe
   );
 }
 
-function AssistantMessage({ msg }: { msg: Message }) {
+function AssistantMessage({ msg, isLatest, suggestions, onSuggestionClick }: {
+  msg: Message;
+  isLatest: boolean;
+  suggestions: string[];
+  onSuggestionClick: (q: string) => void;
+}) {
   const isRefused = msg.metadata?.status === 'REFUSED';
+  const showFollowUps = isLatest && !isRefused;
+  const threshold = msg.metadata?.threshold;
+  const score = msg.metadata?.confidence_score;
 
   return (
     <div className="flex items-start gap-3 max-w-3xl">
@@ -46,17 +61,62 @@ function AssistantMessage({ msg }: { msg: Message }) {
       </div>
       <div className="flex-1 min-w-0">
         {isRefused ? (
-          <div className="bg-amber-50 border border-amber-200 rounded-2xl rounded-tl-sm px-4 py-3">
-            <div className="flex items-center gap-2 mb-1">
-              <AlertTriangle className="w-4 h-4 text-amber-500 shrink-0" />
-              <span className="text-xs font-medium text-amber-700">Could not answer</span>
+          <>
+            <div className="bg-amber-50 border border-amber-200 rounded-2xl rounded-tl-sm px-4 py-3">
+              <div className="flex items-center gap-2 mb-1">
+                <AlertTriangle className="w-4 h-4 text-amber-500 shrink-0" />
+                <span className="text-xs font-medium text-amber-700">Could not answer</span>
+              </div>
+              <p className="text-sm text-amber-800">{msg.metadata?.refusal_reason ?? 'Retrieval confidence below threshold.'}</p>
+              {score != null && threshold != null && (
+                <p className="text-xs text-amber-600 mt-2">
+                  Confidence was {(score * 100).toFixed(1)}% — the minimum threshold is {(threshold * 100).toFixed(0)}%.
+                  Try rephrasing with more specific terms or ask about a different topic.
+                </p>
+              )}
             </div>
-            <p className="text-sm text-amber-800">{msg.metadata?.refusal_reason ?? 'Retrieval confidence below threshold.'}</p>
-          </div>
+            {isLatest && suggestions.length > 0 && (
+              <div className="mt-3 px-1">
+                <p className="text-xs text-gray-400 mb-2">Try one of these instead:</p>
+                <div className="flex flex-wrap gap-1.5">
+                  {suggestions.map((q) => (
+                    <button
+                      key={q}
+                      onClick={() => onSuggestionClick(q)}
+                      className="text-xs px-3 py-1.5 rounded-full border border-amber-200 text-amber-700 hover:border-primary-300 hover:text-primary-600 transition-colors bg-white"
+                    >
+                      {q}
+                    </button>
+                  ))}
+                </div>
+              </div>
+            )}
+          </>
         ) : (
-          <div className="bg-white border border-gray-200 rounded-2xl rounded-tl-sm px-4 py-3 shadow-sm">
-            <p className="text-sm text-gray-800 whitespace-pre-wrap leading-relaxed">{msg.content}</p>
-          </div>
+          <>
+            <div className="bg-white border border-gray-200 rounded-2xl rounded-tl-sm px-4 py-3 shadow-sm">
+              <p className="text-sm text-gray-800 whitespace-pre-wrap leading-relaxed">{msg.content}</p>
+            </div>
+            {showFollowUps && (
+              <div className="mt-3 px-1">
+                <div className="flex items-center gap-1.5 mb-2">
+                  <MessageCircle className="w-3 h-3 text-gray-400" />
+                  <p className="text-xs text-gray-400">Keep the conversation going:</p>
+                </div>
+                <div className="flex flex-wrap gap-1.5">
+                  {FOLLOW_UP_PROMPTS.map((q) => (
+                    <button
+                      key={q}
+                      onClick={() => onSuggestionClick(q)}
+                      className="text-xs px-3 py-1.5 rounded-full border border-primary-100 text-primary-600 hover:border-primary-300 hover:bg-primary-50 transition-colors bg-white"
+                    >
+                      {q}
+                    </button>
+                  ))}
+                </div>
+              </div>
+            )}
+          </>
         )}
         {msg.metadata && (
           <div className="flex items-center gap-3 mt-1.5 px-1">
@@ -179,7 +239,7 @@ export function Query() {
     <div className="flex flex-col h-full">
       {/* Header */}
       <div className="shrink-0">
-        <h1 className="text-2xl font-bold text-gray-900">Query Console</h1>
+        <h1 className="text-2xl font-bold text-gray-900">Ask Meridian</h1>
         <p className="text-gray-500 mt-1">Ask questions in plain language — Meridian searches your documents and returns a grounded answer.</p>
         {health && (
           <p className="mt-2 text-xs text-gray-400 flex items-center gap-1.5">
@@ -222,7 +282,13 @@ export function Query() {
             {messages.map((msg, i) =>
               msg.role === 'user'
                 ? <UserMessage key={i} content={msg.content} />
-                : <AssistantMessage key={i} msg={msg} />
+                : <AssistantMessage
+                    key={i}
+                    msg={msg}
+                    isLatest={i === messages.length - 1}
+                    suggestions={exampleQuestions}
+                    onSuggestionClick={(q) => { setInput(q); textareaRef.current?.focus(); }}
+                  />
             )}
             {mutation.isPending && <ThinkingIndicator />}
             <div ref={bottomRef} />

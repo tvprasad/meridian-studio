@@ -1,12 +1,14 @@
-import { useEffect } from 'react';
+import { useEffect, useState, useCallback } from 'react';
 import { Outlet, NavLink, useLocation } from 'react-router-dom';
-import { LayoutDashboard, MessageSquare, Database, Settings, Github, Linkedin, Languages, Eye, Mic, FileSearch } from 'lucide-react';
+import { LayoutDashboard, MessageSquare, Database, Settings, Github, Linkedin, Languages, Eye, Mic, FileSearch, Pin, PinOff } from 'lucide-react';
 import { DiagnosticsPanel } from './DiagnosticsPanel';
 import { useDiagnostics } from '../../hooks/useDiagnosticsHook';
 
+const SIDEBAR_PINNED_KEY = 'meridian-sidebar-pinned';
+
 const coreNavItems = [
   { to: '/', icon: LayoutDashboard, label: 'Dashboard' },
-  { to: '/query', icon: MessageSquare, label: 'Query' },
+  { to: '/query', icon: MessageSquare, label: 'Ask Meridian' },
   { to: '/ingest', icon: Database, label: 'Ingest' },
   { to: '/document', icon: FileSearch, label: 'Document Preview' },
   { to: '/settings', icon: Settings, label: 'Settings' },
@@ -18,25 +20,30 @@ const aiNavItems = [
   { to: '/speech', icon: Mic, label: 'Speech Services' },
 ];
 
-function NavItem({ to, icon: Icon, label }: { to: string; icon: React.ElementType; label: string }) {
+function NavItem({ to, icon: Icon, label, collapsed }: { to: string; icon: React.ElementType; label: string; collapsed: boolean }) {
   return (
     <NavLink
       to={to}
       end={to === '/'}
+      title={collapsed ? label : undefined}
       className={({ isActive }) =>
-        `flex items-center px-6 py-2.5 text-sm transition-colors ${
+        `flex items-center py-2.5 text-sm transition-colors ${
+          collapsed ? 'justify-center px-3' : 'px-6'
+        } ${
           isActive
-            ? 'bg-white/10 border-l-2 border-violet-400 pl-[22px]'
+            ? `bg-white/10 border-l-2 border-violet-400 ${collapsed ? 'pl-2.5' : 'pl-[22px]'}`
             : 'hover:bg-white/5'
         }`
       }
     >
       {({ isActive }) => (
         <>
-          <Icon className={`w-4 h-4 mr-3 transition-colors shrink-0 ${isActive ? 'text-white' : 'text-white/65'}`} />
-          <span className={`iridescent-on-hover truncate ${isActive ? 'text-white' : 'text-white/65'}`}>
-            {label}
-          </span>
+          <Icon className={`w-4 h-4 shrink-0 transition-colors ${collapsed ? '' : 'mr-3'} ${isActive ? 'text-white' : 'text-white/65'}`} />
+          {!collapsed && (
+            <span className={`iridescent-on-hover truncate ${isActive ? 'text-white' : 'text-white/65'}`}>
+              {label}
+            </span>
+          )}
         </>
       )}
     </NavLink>
@@ -50,6 +57,24 @@ export function Layout() {
   const showDiagnostics = AI_ROUTES.some((r) => pathname.startsWith(r));
   const { reset } = useDiagnostics();
 
+  // Sidebar pin state — persisted in localStorage
+  const [pinned, setPinned] = useState(() => {
+    const stored = localStorage.getItem(SIDEBAR_PINNED_KEY);
+    return stored === null ? true : stored === 'true';
+  });
+  const [hovered, setHovered] = useState(false);
+
+  const togglePin = useCallback(() => {
+    setPinned((prev) => {
+      const next = !prev;
+      localStorage.setItem(SIDEBAR_PINNED_KEY, String(next));
+      return next;
+    });
+  }, []);
+
+  // Sidebar is expanded when pinned OR hovered (while unpinned)
+  const expanded = pinned || hovered;
+
   // Reset diagnostics & governance when navigating between AI service pages
   useEffect(() => {
     if (showDiagnostics) reset();
@@ -58,98 +83,131 @@ export function Layout() {
   return (
     <div className="min-h-screen flex">
       {/* Sidebar */}
-      <aside className="w-64 bg-black text-white flex flex-col">
+      <aside
+        className={`bg-black text-white flex flex-col shrink-0 transition-all duration-200 ease-in-out ${expanded ? 'w-64' : 'w-14'}`}
+        onMouseEnter={() => { if (!pinned) setHovered(true); }}
+        onMouseLeave={() => { if (!pinned) setHovered(false); }}
+      >
         {/* Iridescent top accent strip — warm core to cool edge */}
         <div className="h-0.5 bg-gradient-to-r from-orange-400 via-violet-500 to-teal-400 shrink-0" />
-        <div className="p-6 border-b border-white/10">
-          <div className="flex items-center gap-3">
+        <div className={`border-b border-white/10 ${expanded ? 'p-6' : 'py-4 px-2'}`}>
+          <div className={`flex items-center ${expanded ? 'gap-3' : 'justify-center'}`}>
             <div className="w-8 h-8 rounded-lg overflow-hidden shrink-0 shadow-lg">
               <img src="/vpllogo.jfif" alt="VPL" className="w-full h-full object-contain" />
             </div>
-            <div className="iridescent-group">
-              <h1 className="text-base font-bold leading-tight iridescent-text">
-                Meridian Studio
-              </h1>
-              <p className="text-white/40 text-xs mt-0.5">Governed AI Platform</p>
-            </div>
+            {expanded && (
+              <div className="iridescent-group flex-1 min-w-0">
+                <h1 className="text-base font-bold leading-tight iridescent-text">
+                  Meridian Studio
+                </h1>
+                <p className="text-white/40 text-xs mt-0.5">Governed AI Platform</p>
+              </div>
+            )}
           </div>
         </div>
 
         <nav className="mt-2 flex-1 overflow-y-auto">
           {coreNavItems.map((item) => (
-            <NavItem key={item.to} {...item} />
+            <NavItem key={item.to} {...item} collapsed={!expanded} />
           ))}
 
-          <div className="px-6 pt-5 pb-1">
-            <p className="text-[10px] font-semibold uppercase tracking-widest text-white/25">Cognitive AI Services</p>
-          </div>
+          {expanded ? (
+            <div className="px-6 pt-5 pb-1">
+              <p className="text-[10px] font-semibold uppercase tracking-widest text-white/25">Cognitive AI Services</p>
+            </div>
+          ) : (
+            <div className="mx-2 my-3 border-t border-white/10" />
+          )}
 
           {aiNavItems.map((item) => (
-            <NavItem key={item.to} {...item} />
+            <NavItem key={item.to} {...item} collapsed={!expanded} />
           ))}
         </nav>
 
-        <div className="p-6 border-t border-white/10 space-y-2 shrink-0">
-          {/* Version → releases */}
-          <a
-            href="https://github.com/tvprasad/meridian/releases"
-            target="_blank"
-            rel="noreferrer"
-            className="block text-xs opacity-70 hover:opacity-100 transition-opacity iridescent-text"
+        {/* Pin/Unpin button */}
+        <div className={`border-t border-white/10 ${expanded ? 'px-6 py-3' : 'py-3 flex justify-center'}`}>
+          <button
+            onClick={togglePin}
+            title={pinned ? 'Unpin sidebar' : 'Pin sidebar'}
+            className="flex items-center gap-2 text-xs text-white/50 hover:text-white/90 transition-colors"
           >
-            v0.2.1
-          </a>
+            {pinned ? (
+              <>
+                <Pin className="w-3.5 h-3.5 shrink-0" />
+                {expanded && <span>Pinned</span>}
+              </>
+            ) : (
+              <>
+                <PinOff className="w-3.5 h-3.5 shrink-0" />
+                {expanded && <span>Unpinned</span>}
+              </>
+            )}
+          </button>
+        </div>
 
-          {/* Name + social icons */}
-          <div className="flex items-center justify-between">
-            <span className="text-xs opacity-70 iridescent-text">
-              Prasad Thiriveedi
-            </span>
-            <div className="flex items-center gap-2">
+        {expanded && (
+          <div className="px-6 pb-6 space-y-2 shrink-0">
+            {/* Version → releases */}
+            <a
+              href="https://github.com/tvprasad/meridian/releases"
+              target="_blank"
+              rel="noreferrer"
+              className="block text-xs opacity-70 hover:opacity-100 transition-opacity iridescent-text"
+            >
+              v0.2.1
+            </a>
+
+            {/* Name + social icons */}
+            <div className="flex items-center justify-between">
+              <span className="text-xs opacity-70 iridescent-text">
+                Prasad Thiriveedi
+              </span>
+              <div className="flex items-center gap-2">
+                <a
+                  href="https://github.com/tvprasad/"
+                  target="_blank"
+                  rel="noreferrer"
+                  className="opacity-60 hover:opacity-100 transition-opacity"
+                  style={{ color: '#a78bfa' }}
+                  title="GitHub"
+                >
+                  <Github className="w-3.5 h-3.5" />
+                </a>
+                <a
+                  href="https://www.linkedin.com/in/-prasad"
+                  target="_blank"
+                  rel="noreferrer"
+                  className="opacity-60 hover:opacity-100 transition-opacity"
+                  style={{ color: '#2dd4bf' }}
+                  title="LinkedIn"
+                >
+                  <Linkedin className="w-3.5 h-3.5" />
+                </a>
+              </div>
+            </div>
+
+            {/* Repo links */}
+            <div className="flex items-center gap-1.5 text-xs">
               <a
-                href="https://github.com/tvprasad/"
+                href="https://github.com/tvprasad/meridian"
                 target="_blank"
                 rel="noreferrer"
-                className="opacity-60 hover:opacity-100 transition-opacity"
-                style={{ color: '#a78bfa' }}
-                title="GitHub"
+                className="opacity-60 hover:opacity-100 transition-opacity iridescent-text"
               >
-                <Github className="w-3.5 h-3.5" />
+                meridian
               </a>
+              <span className="text-white/50">·</span>
               <a
-                href="https://www.linkedin.com/in/-prasad"
+                href="https://github.com/tvprasad/meridian-studio"
                 target="_blank"
                 rel="noreferrer"
-                className="opacity-60 hover:opacity-100 transition-opacity"
-                style={{ color: '#2dd4bf' }}
-                title="LinkedIn"
+                className="opacity-60 hover:opacity-100 transition-opacity iridescent-text"
               >
-                <Linkedin className="w-3.5 h-3.5" />
+                studio
               </a>
             </div>
           </div>
-
-          {/* Repo links */}
-          <div className="flex items-center gap-1.5 text-xs">
-            <a
-              href="https://github.com/tvprasad/meridian"
-              target="_blank"
-              rel="noreferrer"
-              className="opacity-60 hover:opacity-100 transition-opacity iridescent-text"
-            >
-              meridian
-            </a>
-            <span className="text-white/50">·</span>
-            <a
-              href="https://github.com/tvprasad/meridian-studio"
-              target="_blank"
-              rel="noreferrer"
-              className="opacity-60 hover:opacity-100 transition-opacity iridescent-text"
-            >
-              studio
-            </a>
-          </div>
-        </div>
+        )}
       </aside>
 
       {/* Main content */}
