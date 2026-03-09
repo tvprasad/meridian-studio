@@ -7,7 +7,7 @@ Versioning follows [Semantic Versioning](https://semver.org/).
 
 ---
 
-## [Unreleased]
+## [0.5.0] — 2026-03-09
 
 ### Added
 - **Retrieval Details panel** — collapsible panel under each response with per-chunk confidence trackbars, threshold markers, shield pass/fail icons, best/avg stats, and trace ID
