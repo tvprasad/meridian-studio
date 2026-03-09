@@ -4,9 +4,9 @@ import { Link } from 'react-router-dom';
 import { Card } from '../components/ui/Card';
 import { Button } from '../components/ui/Button';
 import { meridianApi } from '../api/meridian';
-import { FileText, FileCode, FileType2, Settings, Upload, CheckCircle2, Circle, Loader2, AlertCircle, Database, Scissors, Binary, Info, ChevronRight, ArrowRight } from 'lucide-react';
+import { FileText, FileCode, FileType2, FileSearch, Settings, Upload, CheckCircle2, Circle, Loader2, AlertCircle, Database, Scissors, Binary, Info, ChevronRight, ArrowRight } from 'lucide-react';
 
-type PipelineStage = 'idle' | 'uploading' | 'chunking' | 'embedding' | 'indexing' | 'done' | 'error';
+type PipelineStage = 'idle' | 'uploading' | 'extracting' | 'chunking' | 'embedding' | 'indexing' | 'done' | 'error';
 
 interface StageConfig {
   key: PipelineStage;
@@ -17,6 +17,7 @@ interface StageConfig {
 
 const STAGES: StageConfig[] = [
   { key: 'uploading', label: 'Upload', icon: Upload, description: 'Sending document to backend' },
+  { key: 'extracting', label: 'Extract', icon: FileSearch, description: 'Extracting text (OCR for scanned docs)' },
   { key: 'chunking', label: 'Chunk', icon: Scissors, description: 'Splitting into passages' },
   { key: 'embedding', label: 'Embed', icon: Binary, description: 'Generating vector embeddings' },
   { key: 'indexing', label: 'Index', icon: Database, description: 'Writing to vector store' },
@@ -125,21 +126,24 @@ export function Ingest() {
       // We simulate stage progression based on timing since the backend
       // does all stages in one call. When the backend exposes stage
       // callbacks or SSE, we can wire them up here.
-      const stageTimer = setTimeout(() => setCurrentStage('chunking'), 1500);
-      const stageTimer2 = setTimeout(() => setCurrentStage('embedding'), 3000);
-      const stageTimer3 = setTimeout(() => setCurrentStage('indexing'), 5000);
+      const stageTimer = setTimeout(() => setCurrentStage('extracting'), 1200);
+      const stageTimer2 = setTimeout(() => setCurrentStage('chunking'), 2800);
+      const stageTimer3 = setTimeout(() => setCurrentStage('embedding'), 4500);
+      const stageTimer4 = setTimeout(() => setCurrentStage('indexing'), 6500);
 
       try {
         const response = await meridianApi.ingest(formData);
         clearTimeout(stageTimer);
         clearTimeout(stageTimer2);
         clearTimeout(stageTimer3);
+        clearTimeout(stageTimer4);
         setCurrentStage('done');
         return response;
       } catch (err) {
         clearTimeout(stageTimer);
         clearTimeout(stageTimer2);
         clearTimeout(stageTimer3);
+        clearTimeout(stageTimer4);
         throw err;
       }
     },

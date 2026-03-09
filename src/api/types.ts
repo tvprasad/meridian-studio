@@ -28,6 +28,7 @@ export interface HealthResponse {
   llm_provider: string;
   retrieval_provider: string;
   retrieval_threshold: number;
+  suggested_questions?: string[];
 }
 
 export interface UpdateSettingsPayload {

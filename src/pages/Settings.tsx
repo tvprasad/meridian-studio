@@ -7,7 +7,7 @@ import { Card } from '../components/ui/Card';
 import { Button } from '../components/ui/Button';
 import { meridianApi } from '../api/meridian';
 import { type HealthResponse } from '../api/types';
-import { CheckCircle, AlertCircle, BrainCircuit, Database, SlidersHorizontal, Languages, Eye, AudioLines, FileSearch } from 'lucide-react';
+import { CheckCircle, AlertCircle, BrainCircuit, Database, SlidersHorizontal, Languages, Eye, AudioLines } from 'lucide-react';
 
 const settingsSchema = z.object({
   llm_provider: z.enum(['local', 'azure']),
@@ -193,11 +193,6 @@ export function Settings() {
             <span className="w-2 h-2 bg-green-500 rounded-full"></span>
             <AudioLines className="w-4 h-4 text-gray-400" />
             Speech Service
-          </li>
-          <li className="flex items-center gap-2">
-            <span className="w-2 h-2 bg-green-500 rounded-full"></span>
-            <FileSearch className="w-4 h-4 text-gray-400" />
-            Document Intelligence
           </li>
         </ul>
       </Card>

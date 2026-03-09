@@ -10,6 +10,8 @@ Versioning follows [Semantic Versioning](https://semver.org/).
 ## [Unreleased]
 
 ### Added
+- **Multi-turn chat** in Query Console — conversation history is sent with each query so follow-up questions ("What is so great about #1?") work naturally (ADR-0005)
+- **Dynamic example questions** — Query Console loads suggested questions from backend `/health` endpoint, falls back to `public/example-questions.json`, then hardcoded defaults
 - **Query Console** redesigned as a chat interface — persistent message history, user/assistant bubbles, typing indicator, example question chips, auto-scroll, Enter to send, confidence pill and trace ID shown inline per response
 - **Ingestion Pipeline** page replacing Document Upload — pipeline stage visualization (Upload → Chunk → Embed → Index), multi-file support, 120s timeout for large documents
 - Collapsible "What should I ingest?" guidance on Ingestion Pipeline page
@@ -28,9 +30,16 @@ Versioning follows [Semantic Versioning](https://semver.org/).
 - Settings: rename "Azure AI Services" to "Cognitive AI Services", mark all 4 services as active
 - Settings: updated page subtitle with descriptive text
 - Document Intelligence icon unified to `FileSearch` across sidebar nav and Settings page
+- Document Intelligence page repurposed as "Document Preview" — pipeline extraction debugging tool
+- Document Preview moved from Cognitive AI Services to core nav (next to Ingest)
+- Cognitive AI Services reduced to 3 services: Language, Vision, Speech
+- Settings: removed Document Intelligence from Cognitive AI Services list
+- Ingestion Pipeline: added Extract stage between Upload and Chunk
 
 ### Fixed
-- Query: increase MCP timeout from 30s to 90s to survive cold-start when meridian-mcp scales from zero replicas
+- Query: handle HTTP 422 (REFUSED) as valid QueryResponse instead of throwing — governance refusals now display correctly
+- Query: switch from MCP `/tools/call` to direct `/query` endpoint on Meridian API
+- Ingest: fix missing `FileSearch` import (pre-existing bug)
 - Sidebar: increase inactive nav link opacity (white/40 → white/65) for legibility on MacBook displays
 - Settings: Retrieval Threshold description moved below label row (was incorrectly inside flex justify-between)
 - Query page MCP integration: send correct `query_knowledge_base` tool call payload and map response fields (`confidence` -> `confidence_score`, `reason` -> `refusal_reason`)

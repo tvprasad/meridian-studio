@@ -3,7 +3,7 @@ import { Card } from '../components/ui/Card';
 import { Button } from '../components/ui/Button';
 import { azureAiApi } from '../api/azure-ai';
 import { useTrackedMutation } from '../hooks/useTrackedMutation';
-import { ScanSearch, Upload, FileText } from 'lucide-react';
+import { FileSearch, Upload, FileText } from 'lucide-react';
 import type { DocumentAnalysisResult } from '../api/types';
 
 const MODELS = [
@@ -173,11 +173,11 @@ export function DocumentIntelligence() {
     <div>
       <div className="flex items-center gap-3">
         <div className="p-2 rounded-lg bg-orange-50">
-          <ScanSearch className="w-5 h-5 text-orange-600" />
+          <FileSearch className="w-5 h-5 text-orange-600" />
         </div>
         <div>
-          <h1 className="text-2xl font-bold text-gray-900">Document Intelligence</h1>
-          <p className="text-gray-500 text-sm mt-0.5">Extract structured data from documents — invoices, receipts, IDs, and more.</p>
+          <h1 className="text-2xl font-bold text-gray-900">Document Preview</h1>
+          <p className="text-gray-500 text-sm mt-0.5">Preview what the ingestion pipeline will extract from a document. Useful for debugging extraction quality before ingesting.</p>
         </div>
       </div>
 

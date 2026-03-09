@@ -3,5 +3,9 @@
   "document_count": 42,
   "llm_provider": "azure",
   "retrieval_provider": "azure",
-  "retrieval_threshold": 0.6
+  "retrieval_threshold": 0.6,
+  "suggested_questions": [
+    "What topics are covered in the knowledge base?",
+    "How do I rollback a deployment?"
+  ]
 }

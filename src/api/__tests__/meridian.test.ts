@@ -15,8 +15,8 @@ let capturedBody: unknown = null;
 const server = setupServer(
   http.post('http://localhost:8000/query', async ({ request }) => {
     capturedBody = await request.json();
-    // Default to refused fixture; individual tests override via server.use()
-    return HttpResponse.json(queryRefused);
+    // Default to refused fixture (HTTP 422); individual tests override via server.use()
+    return HttpResponse.json(queryRefused, { status: 422 });
   }),
   http.get('http://localhost:8000/health', () => {
     return HttpResponse.json(healthFixture);
@@ -70,6 +70,28 @@ describe('meridianApi.query', () => {
       threshold: 0.6,
     }));
   });
+
+  it('sends conversation_history when provided', async () => {
+    const history = [
+      { role: 'user' as const, content: 'What topics are covered?' },
+      { role: 'assistant' as const, content: 'Deployments and rollbacks.' },
+    ];
+
+    await meridianApi.query('Tell me more about #1', history);
+
+    expect(capturedBody).toEqual({
+      question: 'Tell me more about #1',
+      conversation_history: history,
+    });
+  });
+
+  it('omits conversation_history when empty', async () => {
+    await meridianApi.query('What is Meridian?', []);
+
+    expect(capturedBody).toEqual({
+      question: 'What is Meridian?',
+    });
+  });
 });
 
 // ── Health API tests ────────────────────────────────────────────────────────
@@ -84,6 +106,10 @@ describe('meridianApi.health', () => {
       llm_provider: 'azure',
       retrieval_provider: 'azure',
       retrieval_threshold: 0.6,
+      suggested_questions: [
+        'What topics are covered in the knowledge base?',
+        'How do I rollback a deployment?',
+      ],
     });
   });
 });

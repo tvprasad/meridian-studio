@@ -1,7 +1,7 @@
 import { useState, useRef, useEffect } from 'react';
 import { useMutation, useQuery } from '@tanstack/react-query';
 import { Link } from 'react-router-dom';
-import { meridianApi } from '../api/meridian';
+import { meridianApi, type ChatMessage } from '../api/meridian';
 import type { QueryResponse } from '../api/types';
 import { Send, Settings, BrainCircuit, AlertTriangle } from 'lucide-react';
 
@@ -17,10 +17,11 @@ const PROVIDER_LABELS: Record<string, string> = {
   chroma: 'Local (Chroma)',
 };
 
-const EXAMPLE_QUESTIONS = [
+const FALLBACK_QUESTIONS = [
   'What topics are covered in the knowledge base?',
   'Summarize the key points from the ingested documents.',
   'What is the main purpose of this system?',
+  'How do I rollback a deployment?',
 ];
 
 function ConfidencePill({ score, threshold }: { score: number; threshold?: number }) {
@@ -103,8 +104,23 @@ export function Query() {
 
   const { data: health } = useQuery({ queryKey: ['health'], queryFn: meridianApi.health });
 
+  // Load static fallback questions from public/example-questions.json
+  const { data: staticQuestions } = useQuery({
+    queryKey: ['example-questions'],
+    queryFn: async () => {
+      const res = await fetch('/example-questions.json');
+      if (!res.ok) return null;
+      return res.json() as Promise<string[]>;
+    },
+    staleTime: Infinity,
+  });
+
+  // Prefer backend suggestions, fall back to static JSON, then hardcoded
+  const exampleQuestions = health?.suggested_questions ?? staticQuestions ?? FALLBACK_QUESTIONS;
+
   const mutation = useMutation({
-    mutationFn: meridianApi.query,
+    mutationFn: ({ question, history }: { question: string; history?: ChatMessage[] }) =>
+      meridianApi.query(question, history),
     onSuccess: (data) => {
       setMessages((prev) => [
         ...prev,
@@ -130,9 +146,15 @@ export function Query() {
   const handleSubmit = () => {
     const q = input.trim();
     if (!q || mutation.isPending) return;
+
+    // Build conversation history from existing messages (before adding the new one)
+    const history: ChatMessage[] = messages
+      .filter((m) => m.content)
+      .map((m) => ({ role: m.role, content: m.content }));
+
     setMessages((prev) => [...prev, { role: 'user', content: q }]);
     setInput('');
-    mutation.mutate(q);
+    mutation.mutate({ question: q, history: history.length ? history : undefined });
     // Reset textarea height
     if (textareaRef.current) textareaRef.current.style.height = 'auto';
   };
@@ -184,7 +206,7 @@ export function Query() {
             <h3 className="text-gray-700 font-medium">Ask anything about your documents</h3>
             <p className="text-sm text-gray-400 mt-1 mb-6">Meridian will search the knowledge base and ground its answer in your content.</p>
             <div className="flex flex-wrap gap-2 justify-center max-w-lg">
-              {EXAMPLE_QUESTIONS.map((q) => (
+              {exampleQuestions.map((q) => (
                 <button
                   key={q}
                   onClick={() => { setInput(q); textareaRef.current?.focus(); }}
