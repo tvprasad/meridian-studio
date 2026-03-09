@@ -10,6 +10,7 @@ import { VisionIntelligence } from './pages/VisionIntelligence';
 import { SpeechServices } from './pages/SpeechServices';
 import { DocumentIntelligence } from './pages/DocumentIntelligence';
 import { DiagnosticsProvider } from './hooks/useDiagnostics';
+import { Landing } from './pages/Landing';
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -26,6 +27,7 @@ function App() {
       <DiagnosticsProvider>
       <BrowserRouter>
         <Routes>
+          <Route path="/welcome" element={<Landing />} />
           <Route path="/" element={<Layout />}>
             <Route index element={<Dashboard />} />
             <Route path="query" element={<Query />} />

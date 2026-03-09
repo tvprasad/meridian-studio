@@ -13,6 +13,15 @@ Versioning follows [Semantic Versioning](https://semver.org/).
 - **Pin/Unpin sidebar** — collapsible sidebar with icon-only mode; expands on hover when unpinned; state persisted in localStorage
 - **REFUSED response UX** — confidence explanation ("Confidence was X% — minimum threshold is Y%"), suggestion chips ("Try one of these instead") on refused queries
 - **Follow-up prompts** — "Keep the conversation going" chips (Tell me more, Give an example, Key takeaways, Compare to alternatives) after successful OK responses
+- **Landing page** at `/welcome` — dark hero section with iridescent gradient, 7 capability cards, "Get Started" and "View Source" CTAs
+- **Markdown rendering** in assistant responses via `react-markdown`
+- **Copy answer button** on each assistant response (clipboard API)
+- **Offline/disconnect banner** when API health check fails
+- **Chat history persistence** — messages survive page refresh via localStorage
+- **New Chat button** to clear conversation and localStorage
+- **Keyboard shortcuts** — Ctrl+K focuses chat input, Escape clears input
+- **Auto-resize chat area** — textarea grows with input, chat area uses full viewport height
+- **AI disclaimer** — footer note under chat input: "it turns out the human, not the AI, made a mistake"
 - **Query page component tests** — 7 tests covering empty state, OK response follow-ups, REFUSED suggestion chips, and chip interactions
 
 ### Changed
