@@ -50,6 +50,21 @@ export interface IngestResponse {
   message?: string;
 }
 
+export interface ServiceNowIngestRequest {
+  instance_url: string;
+  username: string;
+  password: string;
+  kb_name?: string;
+  category?: string;
+  limit?: number;
+}
+
+export interface ServiceNowIngestResponse {
+  ingested: number;
+  chunks: number;
+  message?: string;
+}
+
 // ===========================================
 // Azure AI Types
 // ===========================================

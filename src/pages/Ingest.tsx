@@ -4,7 +4,11 @@ import { Link } from 'react-router-dom';
 import { Card } from '../components/ui/Card';
 import { Button } from '../components/ui/Button';
 import { meridianApi } from '../api/meridian';
-import { FileText, FileCode, FileType2, FileSearch, Settings, Upload, CheckCircle2, Circle, Loader2, AlertCircle, Database, Scissors, Binary, Info, ChevronRight, ArrowRight } from 'lucide-react';
+import { ApiError } from '../api/client';
+import type { ServiceNowIngestResponse } from '../api/types';
+import { FileText, FileCode, FileType2, FileSearch, Settings, Upload, CheckCircle2, Circle, Loader2, AlertCircle, Database, Scissors, Binary, Info, ChevronRight, ArrowRight, Globe, CheckCircle, XCircle } from 'lucide-react';
+
+type IngestSource = 'file' | 'servicenow';
 
 type PipelineStage = 'idle' | 'uploading' | 'extracting' | 'chunking' | 'embedding' | 'indexing' | 'done' | 'error';
 
@@ -103,7 +107,230 @@ function StageIndicator({ stage, currentStage, errorStage }: {
   );
 }
 
+function friendlyError(err: unknown): string {
+  if (err instanceof ApiError) {
+    if (err.status === 400) return 'Missing or invalid credentials. Please check your Instance URL, username, and password.';
+    if (err.status === 502) return 'Could not reach the ServiceNow instance. Verify the URL is correct and the instance is accessible.';
+    return err.message;
+  }
+  if (err instanceof Error) return err.message;
+  return 'An unexpected error occurred.';
+}
+
+function ServiceNowTab({ onSyncSuccess }: { onSyncSuccess: () => void }) {
+  const [instanceUrl, setInstanceUrl] = useState('');
+  const [username, setUsername] = useState('');
+  const [password, setPassword] = useState('');
+  const [kbName, setKbName] = useState('');
+  const [category, setCategory] = useState('');
+  const [limit, setLimit] = useState('');
+  const [connectionStatus, setConnectionStatus] = useState<'idle' | 'success' | 'error'>('idle');
+  const [connectionMsg, setConnectionMsg] = useState('');
+  const [result, setResult] = useState<ServiceNowIngestResponse | null>(null);
+
+  const hasCredentials = instanceUrl.trim() && username.trim() && password.trim();
+
+  const testConnection = useMutation({
+    mutationFn: () => meridianApi.testServiceNowConnection({
+      instance_url: instanceUrl.trim(),
+      username: username.trim(),
+      password: password.trim(),
+    }),
+    onSuccess: () => {
+      setConnectionStatus('success');
+      setConnectionMsg('Connection successful.');
+    },
+    onError: (err) => {
+      setConnectionStatus('error');
+      setConnectionMsg(friendlyError(err));
+    },
+  });
+
+  const sync = useMutation({
+    mutationFn: () =>
+      meridianApi.ingestServiceNow({
+        instance_url: instanceUrl.trim(),
+        username: username.trim(),
+        password: password.trim(),
+        ...(kbName.trim() && { kb_name: kbName.trim() }),
+        ...(category.trim() && { category: category.trim() }),
+        ...(limit && Number(limit) > 0 && { limit: Number(limit) }),
+      }),
+    onSuccess: (data) => {
+      setResult(data);
+      onSyncSuccess();
+    },
+  });
+
+  const resetForm = () => {
+    setResult(null);
+    sync.reset();
+    setConnectionStatus('idle');
+    setConnectionMsg('');
+  };
+
+  return (
+    <div className="mt-8">
+      <Card>
+        {/* Connection */}
+        <div>
+          <h3 className="text-sm font-semibold text-gray-700 dark:text-gray-200 mb-4 flex items-center gap-2">
+            <Globe className="w-4 h-4" />
+            Connection
+          </h3>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <div>
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-1">Instance URL</label>
+              <input
+                type="url"
+                placeholder="https://yourinstance.service-now.com"
+                value={instanceUrl}
+                onChange={(e) => { setInstanceUrl(e.target.value); setConnectionStatus('idle'); }}
+                className="block w-full rounded-lg border border-gray-300 dark:border-white/15 p-2.5 text-sm dark:bg-gray-900 dark:text-gray-200 focus:border-primary-500 focus:outline-none"
+              />
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-1">Username</label>
+              <input
+                type="text"
+                placeholder="admin"
+                value={username}
+                onChange={(e) => { setUsername(e.target.value); setConnectionStatus('idle'); }}
+                className="block w-full rounded-lg border border-gray-300 dark:border-white/15 p-2.5 text-sm dark:bg-gray-900 dark:text-gray-200 focus:border-primary-500 focus:outline-none"
+              />
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-1">Password</label>
+              <input
+                type="password"
+                value={password}
+                onChange={(e) => { setPassword(e.target.value); setConnectionStatus('idle'); }}
+                className="block w-full rounded-lg border border-gray-300 dark:border-white/15 p-2.5 text-sm dark:bg-gray-900 dark:text-gray-200 focus:border-primary-500 focus:outline-none"
+              />
+            </div>
+          </div>
+          <div className="mt-3 flex items-center gap-3">
+            <Button
+              variant="secondary"
+              size="sm"
+              onClick={() => testConnection.mutate()}
+              loading={testConnection.isPending}
+              disabled={!hasCredentials}
+            >
+              Test Connection
+            </Button>
+            {connectionStatus === 'success' && (
+              <span className="inline-flex items-center gap-1.5 text-sm text-emerald-600 dark:text-emerald-400">
+                <CheckCircle className="w-4 h-4" />
+                {connectionMsg}
+              </span>
+            )}
+            {connectionStatus === 'error' && (
+              <span className="inline-flex items-center gap-1.5 text-sm text-red-600 dark:text-red-400">
+                <XCircle className="w-4 h-4" />
+                {connectionMsg}
+              </span>
+            )}
+          </div>
+        </div>
+
+        {/* Filters */}
+        <div className="mt-6 pt-6 border-t border-gray-100 dark:border-white/10">
+          <h3 className="text-sm font-semibold text-gray-700 dark:text-gray-200 mb-4">Filters (optional)</h3>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <div>
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-1">Knowledge Base</label>
+              <input
+                type="text"
+                placeholder="e.g. IT Knowledge Base"
+                value={kbName}
+                onChange={(e) => setKbName(e.target.value)}
+                className="block w-full rounded-lg border border-gray-300 dark:border-white/15 p-2.5 text-sm dark:bg-gray-900 dark:text-gray-200 focus:border-primary-500 focus:outline-none"
+              />
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-1">Category</label>
+              <input
+                type="text"
+                placeholder="e.g. Networking"
+                value={category}
+                onChange={(e) => setCategory(e.target.value)}
+                className="block w-full rounded-lg border border-gray-300 dark:border-white/15 p-2.5 text-sm dark:bg-gray-900 dark:text-gray-200 focus:border-primary-500 focus:outline-none"
+              />
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-1">Article Limit</label>
+              <input
+                type="number"
+                min="1"
+                placeholder="All articles"
+                value={limit}
+                onChange={(e) => setLimit(e.target.value)}
+                className="block w-full rounded-lg border border-gray-300 dark:border-white/15 p-2.5 text-sm dark:bg-gray-900 dark:text-gray-200 focus:border-primary-500 focus:outline-none"
+              />
+            </div>
+          </div>
+        </div>
+
+        {/* Sync button */}
+        <div className="mt-6 pt-6 border-t border-gray-100 dark:border-white/10 flex gap-3">
+          <Button
+            onClick={() => sync.mutate()}
+            loading={sync.isPending}
+            disabled={!hasCredentials || !!result}
+          >
+            <Database className="w-4 h-4 mr-2" />
+            Sync Articles
+          </Button>
+          {(result || sync.isError) && (
+            <Button onClick={resetForm} variant="secondary">
+              Reset
+            </Button>
+          )}
+        </div>
+      </Card>
+
+      {/* Error */}
+      {sync.isError && (
+        <Card className="mt-4 border-red-200 dark:border-red-800 bg-red-50 dark:bg-red-900/20">
+          <p className="text-red-800 dark:text-red-300 text-sm">{friendlyError(sync.error)}</p>
+        </Card>
+      )}
+
+      {/* Success */}
+      {result && (
+        <Card className="mt-4 border-emerald-200 dark:border-emerald-800 bg-emerald-50 dark:bg-emerald-900/20">
+          <h3 className="font-semibold text-emerald-800 dark:text-emerald-300">Sync Complete</h3>
+          <div className="mt-3 grid grid-cols-2 gap-3">
+            <div className="bg-white dark:bg-white/5 rounded-lg px-4 py-3 border border-emerald-100 dark:border-emerald-800">
+              <p className="text-2xl font-bold text-emerald-700 dark:text-emerald-400">{result.ingested}</p>
+              <p className="text-xs text-emerald-600 dark:text-emerald-400 mt-0.5">{result.ingested === 1 ? 'article' : 'articles'} ingested</p>
+            </div>
+            <div className="bg-white dark:bg-white/5 rounded-lg px-4 py-3 border border-emerald-100 dark:border-emerald-800">
+              <p className="text-2xl font-bold text-emerald-700 dark:text-emerald-400">{result.chunks}</p>
+              <p className="text-xs text-emerald-600 dark:text-emerald-400 mt-0.5">{result.chunks === 1 ? 'chunk' : 'chunks'} indexed</p>
+            </div>
+          </div>
+          {result.message && (
+            <p className="text-xs text-emerald-600 dark:text-emerald-400 mt-3">{result.message}</p>
+          )}
+          <div className="mt-3 flex justify-end">
+            <Link
+              to="/query"
+              className="inline-flex items-center gap-1.5 text-sm font-medium text-emerald-700 dark:text-emerald-400 hover:text-emerald-900 dark:hover:text-emerald-300 transition-colors"
+            >
+              Query the knowledge base
+              <ArrowRight className="w-4 h-4" />
+            </Link>
+          </div>
+        </Card>
+      )}
+    </div>
+  );
+}
+
 export function Ingest() {
+  const [source, setSource] = useState<IngestSource>('file');
   const [files, setFiles] = useState<File[]>([]);
   const [currentStage, setCurrentStage] = useState<PipelineStage>('idle');
   const [errorStage, setErrorStage] = useState<PipelineStage | null>(null);
@@ -196,135 +423,169 @@ export function Ingest() {
         </p>
       )}
 
-      <details className="mt-6 group bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg text-sm text-blue-800 dark:text-blue-300">
-        <summary className="flex items-center gap-3 p-4 cursor-pointer select-none list-none [&::-webkit-details-marker]:hidden">
-          <Info className="w-5 h-5 text-blue-500 shrink-0" />
-          <span className="font-medium flex-1">What should I ingest?</span>
-          <ChevronRight className="w-4 h-4 text-blue-400 transition-transform group-open:rotate-90" />
-        </summary>
-        <div className="px-4 pb-4 pl-12">
-          <p className="text-blue-700 dark:text-blue-400">
-            Upload documents that contain knowledge you want Meridian to reference when answering questions.
-            Good examples: product manuals, policy documents, FAQs, technical specs, research papers, or meeting notes.
-            Each file is split into passages, converted to vector embeddings, and stored in your configured index
-            so the RAG engine can retrieve relevant context at query time.
-          </p>
-          <p className="mt-2 text-blue-600 dark:text-blue-400">
-            Supported formats: <span className="font-medium">PDF, TXT, Markdown, DOCX</span>.
-            For best results, use text-rich documents — scanned images without OCR text will produce poor results.
-          </p>
-        </div>
-      </details>
-
-      <div className="mt-8 grid grid-cols-1 lg:grid-cols-3 gap-6">
-        {/* Left: File selection + action */}
-        <div className="lg:col-span-2">
-          <Card>
-            <div className="border-2 border-dashed border-gray-300 dark:border-white/15 rounded-lg p-8 text-center hover:border-primary-300 dark:hover:border-primary-700 transition-colors">
-              <input
-                type="file"
-                id="file-ingest"
-                className="hidden"
-                accept={ACCEPTED_TYPES}
-                multiple
-                onChange={handleFileChange}
-              />
-              <label htmlFor="file-ingest" className="cursor-pointer">
-                <Upload className="w-12 h-12 text-gray-400 dark:text-gray-500 mx-auto" />
-                <p className="mt-4 text-gray-600 dark:text-gray-300">
-                  <span className="text-primary-600 dark:text-primary-400 font-medium">Select documents</span> to ingest
-                </p>
-                <p className="text-sm text-gray-400 dark:text-gray-500 mt-1">PDF, TXT, Markdown, DOCX — multiple files supported</p>
-              </label>
-            </div>
-
-            {files.length > 0 && (
-              <div className="mt-6 space-y-2">
-                <p className="text-sm font-medium text-gray-700 dark:text-gray-200">{plural(files.length, 'file')} selected</p>
-                {files.map((f) => {
-                  const { Icon, color } = getFileIcon(f.name);
-                  return (
-                    <div key={f.name} className="flex items-center gap-3 p-3 bg-gray-50 dark:bg-white/5 rounded-lg">
-                      <Icon className={`w-5 h-5 shrink-0 ${color}`} />
-                      <div className="flex-1 min-w-0">
-                        <p className="text-sm font-medium truncate">{f.name}</p>
-                        <p className="text-xs text-gray-400 dark:text-gray-500">{(f.size / 1024).toFixed(1)} KB</p>
-                      </div>
-                    </div>
-                  );
-                })}
-
-                <div className="flex gap-3 pt-4">
-                  <Button
-                    onClick={handleIngest}
-                    loading={ingest.isPending}
-                    disabled={currentStage === 'done'}
-                  >
-                    <Database className="w-4 h-4 mr-2" />
-                    Ingest Documents
-                  </Button>
-                  {(currentStage === 'done' || errorStage) && (
-                    <Button onClick={handleReset} variant="secondary">
-                      Reset
-                    </Button>
-                  )}
-                </div>
-              </div>
-            )}
-          </Card>
-
-          {/* Error display */}
-          {ingest.isError && (
-            <Card className="mt-4 border-red-200 dark:border-red-800 bg-red-50 dark:bg-red-900/20">
-              <p className="text-red-800 dark:text-red-300 text-sm">{(ingest.error as Error).message}</p>
-            </Card>
-          )}
-
-          {/* Success result */}
-          {result && (
-            <Card className="mt-4 border-emerald-200 dark:border-emerald-800 bg-emerald-50 dark:bg-emerald-900/20">
-              <h3 className="font-semibold text-emerald-800 dark:text-emerald-300">Ingestion Complete</h3>
-              <div className="mt-3 grid grid-cols-2 gap-3">
-                <div className="bg-white dark:bg-white/5 rounded-lg px-4 py-3 border border-emerald-100 dark:border-emerald-800">
-                  <p className="text-2xl font-bold text-emerald-700 dark:text-emerald-400">{result.ingested}</p>
-                  <p className="text-xs text-emerald-600 dark:text-emerald-400 mt-0.5">{result.ingested === 1 ? 'document' : 'documents'} ingested</p>
-                </div>
-                <div className="bg-white dark:bg-white/5 rounded-lg px-4 py-3 border border-emerald-100 dark:border-emerald-800">
-                  <p className="text-2xl font-bold text-emerald-700 dark:text-emerald-400">{result.chunks}</p>
-                  <p className="text-xs text-emerald-600 dark:text-emerald-400 mt-0.5">{result.chunks === 1 ? 'chunk' : 'chunks'} indexed — each chunk is a retrievable passage</p>
-                </div>
-              </div>
-              <div className="mt-3 flex items-center justify-between">
-                {result.message && <p className="text-xs text-emerald-600 dark:text-emerald-400">{result.message}</p>}
-                <Link
-                  to="/query"
-                  className="inline-flex items-center gap-1.5 text-sm font-medium text-emerald-700 dark:text-emerald-400 hover:text-emerald-900 dark:hover:text-emerald-300 transition-colors ml-auto"
-                >
-                  Query the knowledge base
-                  <ArrowRight className="w-4 h-4" />
-                </Link>
-              </div>
-            </Card>
-          )}
-        </div>
-
-        {/* Right: Pipeline stages */}
-        <div>
-          <Card>
-            <h3 className="text-sm font-semibold text-gray-700 dark:text-gray-200 mb-4">Pipeline Stages</h3>
-            <div className="space-y-2">
-              {STAGES.map((stage) => (
-                <StageIndicator
-                  key={stage.key}
-                  stage={stage}
-                  currentStage={currentStage}
-                  errorStage={errorStage}
-                />
-              ))}
-            </div>
-          </Card>
-        </div>
+      {/* Source tabs */}
+      <div className="flex gap-1 mt-6 border-b border-gray-200 dark:border-white/10">
+        <button
+          onClick={() => setSource('file')}
+          className={`px-4 py-2 text-sm font-medium rounded-t-lg transition-colors -mb-px flex items-center gap-2 ${
+            source === 'file'
+              ? 'bg-white dark:bg-white/[0.05] border border-gray-200 dark:border-white/10 border-b-white dark:border-b-transparent text-primary-700 dark:text-primary-400'
+              : 'text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200'
+          }`}
+        >
+          <Upload className="w-4 h-4" />
+          File Upload
+        </button>
+        <button
+          onClick={() => setSource('servicenow')}
+          className={`px-4 py-2 text-sm font-medium rounded-t-lg transition-colors -mb-px flex items-center gap-2 ${
+            source === 'servicenow'
+              ? 'bg-white dark:bg-white/[0.05] border border-gray-200 dark:border-white/10 border-b-white dark:border-b-transparent text-primary-700 dark:text-primary-400'
+              : 'text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200'
+          }`}
+        >
+          <Globe className="w-4 h-4" />
+          ServiceNow
+        </button>
       </div>
+
+      {source === 'file' && (
+        <>
+          <details className="mt-6 group bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg text-sm text-blue-800 dark:text-blue-300">
+            <summary className="flex items-center gap-3 p-4 cursor-pointer select-none list-none [&::-webkit-details-marker]:hidden">
+              <Info className="w-5 h-5 text-blue-500 shrink-0" />
+              <span className="font-medium flex-1">What should I ingest?</span>
+              <ChevronRight className="w-4 h-4 text-blue-400 transition-transform group-open:rotate-90" />
+            </summary>
+            <div className="px-4 pb-4 pl-12">
+              <p className="text-blue-700 dark:text-blue-400">
+                Upload documents that contain knowledge you want Meridian to reference when answering questions.
+                Good examples: product manuals, policy documents, FAQs, technical specs, research papers, or meeting notes.
+                Each file is split into passages, converted to vector embeddings, and stored in your configured index
+                so the RAG engine can retrieve relevant context at query time.
+              </p>
+              <p className="mt-2 text-blue-600 dark:text-blue-400">
+                Supported formats: <span className="font-medium">PDF, TXT, Markdown, DOCX</span>.
+                For best results, use text-rich documents — scanned images without OCR text will produce poor results.
+              </p>
+            </div>
+          </details>
+
+          <div className="mt-8 grid grid-cols-1 lg:grid-cols-3 gap-6">
+            {/* Left: File selection + action */}
+            <div className="lg:col-span-2">
+              <Card>
+                <div className="border-2 border-dashed border-gray-300 dark:border-white/15 rounded-lg p-8 text-center hover:border-primary-300 dark:hover:border-primary-700 transition-colors">
+                  <input
+                    type="file"
+                    id="file-ingest"
+                    className="hidden"
+                    accept={ACCEPTED_TYPES}
+                    multiple
+                    onChange={handleFileChange}
+                  />
+                  <label htmlFor="file-ingest" className="cursor-pointer">
+                    <Upload className="w-12 h-12 text-gray-400 dark:text-gray-500 mx-auto" />
+                    <p className="mt-4 text-gray-600 dark:text-gray-300">
+                      <span className="text-primary-600 dark:text-primary-400 font-medium">Select documents</span> to ingest
+                    </p>
+                    <p className="text-sm text-gray-400 dark:text-gray-500 mt-1">PDF, TXT, Markdown, DOCX — multiple files supported</p>
+                  </label>
+                </div>
+
+                {files.length > 0 && (
+                  <div className="mt-6 space-y-2">
+                    <p className="text-sm font-medium text-gray-700 dark:text-gray-200">{plural(files.length, 'file')} selected</p>
+                    {files.map((f) => {
+                      const { Icon, color } = getFileIcon(f.name);
+                      return (
+                        <div key={f.name} className="flex items-center gap-3 p-3 bg-gray-50 dark:bg-white/5 rounded-lg">
+                          <Icon className={`w-5 h-5 shrink-0 ${color}`} />
+                          <div className="flex-1 min-w-0">
+                            <p className="text-sm font-medium truncate">{f.name}</p>
+                            <p className="text-xs text-gray-400 dark:text-gray-500">{(f.size / 1024).toFixed(1)} KB</p>
+                          </div>
+                        </div>
+                      );
+                    })}
+
+                    <div className="flex gap-3 pt-4">
+                      <Button
+                        onClick={handleIngest}
+                        loading={ingest.isPending}
+                        disabled={currentStage === 'done'}
+                      >
+                        <Database className="w-4 h-4 mr-2" />
+                        Ingest Documents
+                      </Button>
+                      {(currentStage === 'done' || errorStage) && (
+                        <Button onClick={handleReset} variant="secondary">
+                          Reset
+                        </Button>
+                      )}
+                    </div>
+                  </div>
+                )}
+              </Card>
+
+              {/* Error display */}
+              {ingest.isError && (
+                <Card className="mt-4 border-red-200 dark:border-red-800 bg-red-50 dark:bg-red-900/20">
+                  <p className="text-red-800 dark:text-red-300 text-sm">{(ingest.error as Error).message}</p>
+                </Card>
+              )}
+
+              {/* Success result */}
+              {result && (
+                <Card className="mt-4 border-emerald-200 dark:border-emerald-800 bg-emerald-50 dark:bg-emerald-900/20">
+                  <h3 className="font-semibold text-emerald-800 dark:text-emerald-300">Ingestion Complete</h3>
+                  <div className="mt-3 grid grid-cols-2 gap-3">
+                    <div className="bg-white dark:bg-white/5 rounded-lg px-4 py-3 border border-emerald-100 dark:border-emerald-800">
+                      <p className="text-2xl font-bold text-emerald-700 dark:text-emerald-400">{result.ingested}</p>
+                      <p className="text-xs text-emerald-600 dark:text-emerald-400 mt-0.5">{result.ingested === 1 ? 'document' : 'documents'} ingested</p>
+                    </div>
+                    <div className="bg-white dark:bg-white/5 rounded-lg px-4 py-3 border border-emerald-100 dark:border-emerald-800">
+                      <p className="text-2xl font-bold text-emerald-700 dark:text-emerald-400">{result.chunks}</p>
+                      <p className="text-xs text-emerald-600 dark:text-emerald-400 mt-0.5">{result.chunks === 1 ? 'chunk' : 'chunks'} indexed — each chunk is a retrievable passage</p>
+                    </div>
+                  </div>
+                  <div className="mt-3 flex items-center justify-between">
+                    {result.message && <p className="text-xs text-emerald-600 dark:text-emerald-400">{result.message}</p>}
+                    <Link
+                      to="/query"
+                      className="inline-flex items-center gap-1.5 text-sm font-medium text-emerald-700 dark:text-emerald-400 hover:text-emerald-900 dark:hover:text-emerald-300 transition-colors ml-auto"
+                    >
+                      Query the knowledge base
+                      <ArrowRight className="w-4 h-4" />
+                    </Link>
+                  </div>
+                </Card>
+              )}
+            </div>
+
+            {/* Right: Pipeline stages */}
+            <div>
+              <Card>
+                <h3 className="text-sm font-semibold text-gray-700 dark:text-gray-200 mb-4">Pipeline Stages</h3>
+                <div className="space-y-2">
+                  {STAGES.map((stage) => (
+                    <StageIndicator
+                      key={stage.key}
+                      stage={stage}
+                      currentStage={currentStage}
+                      errorStage={errorStage}
+                    />
+                  ))}
+                </div>
+              </Card>
+            </div>
+          </div>
+        </>
+      )}
+
+      {source === 'servicenow' && (
+        <ServiceNowTab onSyncSuccess={() => queryClient.invalidateQueries({ queryKey: ['health'] })} />
+      )}
     </div>
   );
 }

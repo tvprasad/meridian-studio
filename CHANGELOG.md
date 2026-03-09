@@ -11,6 +11,7 @@ Versioning follows [Semantic Versioning](https://semver.org/).
 
 ### Added
 - **Dark mode toggle** — sun/moon button in sidebar, persisted in localStorage; dark: variants applied across every page and shared component
+- **ServiceNow connector** — new "ServiceNow" tab on the Ingestion Pipeline page with connection form (instance URL, username, password), optional filters (KB name, category, article limit), Test Connection button, Sync Articles action, and result/error display with friendly messages for 400/502 errors
 
 ### Changed
 - Rename "Retrieval Details" to **Citations** in collapsible panel header
