@@ -438,13 +438,13 @@ export function Query() {
       {/* Messages area */}
       <div className="flex-1 mt-6 overflow-y-auto min-h-0">
         {isEmpty ? (
-          <div className="flex flex-col items-center justify-center h-full py-16 text-center">
+          <div className="flex flex-col items-center justify-center h-full text-center">
             <div className="w-14 h-14 rounded-full bg-primary-50 dark:bg-primary-900/30 flex items-center justify-center mb-4">
               <BrainCircuit className="w-7 h-7 text-primary-500 dark:text-primary-400" />
             </div>
             <h3 className="text-gray-700 dark:text-gray-200 font-medium">Ask anything about your documents</h3>
             <p className="text-sm text-gray-400 dark:text-gray-500 mt-1 mb-6">Meridian will search the knowledge base and ground its answer in your content.</p>
-            <div className="flex flex-wrap gap-2 justify-center max-w-lg">
+            <div className="flex flex-wrap gap-2 justify-center max-w-lg mb-8">
               {exampleQuestions.map((q) => (
                 <button
                   key={q}
@@ -455,9 +455,38 @@ export function Query() {
                 </button>
               ))}
             </div>
-            <p className="text-xs text-gray-300 mt-8">
-              <kbd className="px-1.5 py-0.5 rounded border border-gray-200 dark:border-white/15 bg-gray-50 dark:bg-white/5 text-gray-400 font-mono text-[10px]">Ctrl+K</kbd>
-              {' '}to focus input
+
+            {/* Input bar — centered in empty state */}
+            <div className="w-full max-w-2xl bg-white dark:bg-white/[0.03] border border-gray-200 dark:border-white/15 rounded-2xl shadow-md focus-within:border-primary-400 focus-within:ring-2 focus-within:ring-primary-100 dark:focus-within:ring-primary-900/30 focus-within:shadow-lg transition-all">
+              <textarea
+                ref={textareaRef}
+                rows={1}
+                className="block w-full resize-none px-4 pt-3.5 pb-2 text-sm text-gray-800 dark:text-gray-200 placeholder-gray-400 dark:placeholder-gray-500 focus:outline-none bg-transparent"
+                placeholder="Ask a question..."
+                value={input}
+                onChange={handleInput}
+                onKeyDown={handleKeyDown}
+                disabled={mutation.isPending}
+              />
+              <div className="flex items-center justify-between px-3 pb-3">
+                <div className="flex items-center gap-2">
+                  <kbd className="hidden sm:inline-flex items-center gap-0.5 px-1.5 py-0.5 rounded border border-gray-200 dark:border-white/10 bg-gray-50 dark:bg-white/5 text-[10px] font-mono text-gray-400">
+                    Enter
+                  </kbd>
+                  <span className="hidden sm:inline text-[10px] text-gray-400 dark:text-gray-500">to send</span>
+                </div>
+                <button
+                  onClick={handleSubmit}
+                  disabled={!input.trim() || mutation.isPending}
+                  className="inline-flex items-center justify-center w-8 h-8 rounded-xl bg-primary-600 text-white hover:bg-primary-700 disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
+                  title="Send (Enter)"
+                >
+                  <Send className="w-4 h-4" />
+                </button>
+              </div>
+            </div>
+            <p className="text-[10px] text-gray-400 dark:text-gray-600 mt-3">
+              AI-generated, document-grounded answers. Useful as a co-pilot, not a replacement for your judgment.
             </p>
           </div>
         ) : (
@@ -498,34 +527,42 @@ export function Query() {
         )}
       </div>
 
-      {/* Input bar */}
-      <div className="shrink-0 mt-4 bg-white dark:bg-white/[0.05] border border-gray-200 dark:border-white/15 rounded-2xl shadow-sm focus-within:border-primary-400 focus-within:ring-2 focus-within:ring-primary-100 dark:focus-within:ring-primary-900/30 transition-all">
-        <textarea
-          ref={textareaRef}
-          rows={1}
-          className="block w-full resize-none rounded-2xl px-4 pt-3 pb-2 text-sm text-gray-800 dark:text-gray-200 placeholder-gray-400 dark:placeholder-gray-600 focus:outline-none bg-transparent"
-          placeholder="Ask a question… (Enter to send, Shift+Enter for new line, Esc to clear)"
-          value={input}
-          onChange={handleInput}
-          onKeyDown={handleKeyDown}
-          disabled={mutation.isPending}
-        />
-        <div className="flex items-center justify-end px-3 pb-2.5">
-          <button
-            onClick={handleSubmit}
-            disabled={!input.trim() || mutation.isPending}
-            className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-primary-600 text-white text-xs font-medium hover:bg-primary-700 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
-          >
-            <Send className="w-3.5 h-3.5" />
-            Send
-          </button>
-        </div>
-      </div>
-
-      {/* Disclaimer */}
-      <p className="shrink-0 text-center text-[10px] text-gray-400 dark:text-gray-600 mt-2 leading-relaxed">
-        AI-generated, document-grounded answers. Useful as a co-pilot, not a replacement for your judgment.
-      </p>
+      {/* Input bar — bottom-pinned during conversation */}
+      {!isEmpty && (
+        <>
+          <div className="shrink-0 mt-4 bg-white dark:bg-white/[0.03] border border-gray-200 dark:border-white/15 rounded-2xl shadow-md focus-within:border-primary-400 focus-within:ring-2 focus-within:ring-primary-100 dark:focus-within:ring-primary-900/30 focus-within:shadow-lg transition-all">
+            <textarea
+              ref={textareaRef}
+              rows={1}
+              className="block w-full resize-none px-4 pt-3.5 pb-2 text-sm text-gray-800 dark:text-gray-200 placeholder-gray-400 dark:placeholder-gray-500 focus:outline-none bg-transparent"
+              placeholder="Ask a follow-up..."
+              value={input}
+              onChange={handleInput}
+              onKeyDown={handleKeyDown}
+              disabled={mutation.isPending}
+            />
+            <div className="flex items-center justify-between px-3 pb-3">
+              <div className="flex items-center gap-2">
+                <kbd className="hidden sm:inline-flex items-center gap-0.5 px-1.5 py-0.5 rounded border border-gray-200 dark:border-white/10 bg-gray-50 dark:bg-white/5 text-[10px] font-mono text-gray-400">
+                  Enter
+                </kbd>
+                <span className="hidden sm:inline text-[10px] text-gray-400 dark:text-gray-500">to send</span>
+              </div>
+              <button
+                onClick={handleSubmit}
+                disabled={!input.trim() || mutation.isPending}
+                className="inline-flex items-center justify-center w-8 h-8 rounded-xl bg-primary-600 text-white hover:bg-primary-700 disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
+                title="Send (Enter)"
+              >
+                <Send className="w-4 h-4" />
+              </button>
+            </div>
+          </div>
+          <p className="shrink-0 text-center text-[10px] text-gray-400 dark:text-gray-600 mt-2 leading-relaxed">
+            AI-generated, document-grounded answers. Useful as a co-pilot, not a replacement for your judgment.
+          </p>
+        </>
+      )}
     </div>
   );
 }

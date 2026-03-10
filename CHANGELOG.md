@@ -18,6 +18,9 @@ Versioning follows [Semantic Versioning](https://semver.org/).
 - **ServiceNow API contract tests** — 6 tests covering status (configured/unconfigured), ingest (filters, empty payload), and error cases (502 unreachable, 400 missing credentials)
 
 ### Changed
+- **Ops Agent UX improvements** — answer rendered above reasoning timeline (faster time-to-value), timeline collapsed by default, follow-up prompt chips ("Keep investigating"), New Query button with Ctrl+K shortcut
+- **Centered input bar** on empty state for both Ask Meridian and Ops Agent — input moves to bottom-pinned position once conversation starts
+- **Polished input bar** on both chat pages — elevated card with shadow, keyboard hint badge, circular send icon button, contextual placeholder ("Ask a follow-up..." during conversation)
 - Rename "Retrieval Details" to **Citations** in collapsible panel header
 - Move "Keep the conversation going" follow-up prompts below confidence pill and Citations panel
 - Widen Citations panel and follow-up prompts to span full chat width (no longer constrained by message bubble width)
