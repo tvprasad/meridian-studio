@@ -109,7 +109,7 @@ function StageIndicator({ stage, currentStage, errorStage }: {
 
 function friendlySnowError(err: unknown): string {
   if (err instanceof ApiError) {
-    if (err.status === 502) return 'Could not reach the ServiceNow instance. Check the backend configuration.';
+    if (err.status === 502) return `Could not reach the ServiceNow instance: ${err.message}`;
     return err.message;
   }
   if (err instanceof Error) return err.message;
