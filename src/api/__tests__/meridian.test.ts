@@ -10,6 +10,7 @@ import ingestFixture from '../../__fixtures__/ingest-success.json';
 import snowStatusConfigured from '../../__fixtures__/servicenow-status-configured.json';
 import snowStatusUnconfigured from '../../__fixtures__/servicenow-status-unconfigured.json';
 import snowIngestFixture from '../../__fixtures__/servicenow-ingest-success.json';
+import agentQueryOk from '../../__fixtures__/agent-query-ok.json';
 
 // ── MSW server ──────────────────────────────────────────────────────────────
 
@@ -30,6 +31,10 @@ const server = setupServer(
   http.post('http://localhost:8000/ingest/servicenow', async ({ request }) => {
     capturedBody = await request.json();
     return HttpResponse.json(snowIngestFixture);
+  }),
+  http.post('http://localhost:8000/agent/query', async ({ request }) => {
+    capturedBody = await request.json();
+    return HttpResponse.json(agentQueryOk);
   }),
 );
 
@@ -232,5 +237,48 @@ describe('meridianApi.ingestServiceNow', () => {
     await expect(
       meridianApi.ingestServiceNow({}),
     ).rejects.toThrow('ServiceNow credentials required.');
+  });
+});
+
+// ── Agent Query API tests ──────────────────────────────────────────────────
+
+describe('meridianApi.agentQuery', () => {
+  it('sends the question to /agent/query and returns the response', async () => {
+    const result = await meridianApi.agentQuery('Why are login requests failing for region us-east?');
+
+    expect(capturedBody).toEqual({
+      question: 'Why are login requests failing for region us-east?',
+    });
+    expect(result).toEqual(agentQueryOk);
+  });
+
+  it('maps response fields correctly', async () => {
+    const result = await meridianApi.agentQuery('test');
+
+    expect(result.status).toBe('OK');
+    expect(result.trace_id).toBe('agt-7f3a2e01-b9c4-4d8f-a1e2-c3d4e5f6a7b8');
+    expect(result.steps_taken).toBe(3);
+    expect(result.elapsed_ms).toBe(27000);
+    expect(result.steps).toHaveLength(3);
+    expect(result.steps[0]).toEqual(expect.objectContaining({
+      step: 1,
+      tool: 'search_incidents',
+      elapsed_ms: 460,
+    }));
+  });
+
+  it('throws ApiError on 500 server error', async () => {
+    server.use(
+      http.post('http://localhost:8000/agent/query', () => {
+        return HttpResponse.json(
+          { detail: 'Agent execution failed: tool timeout' },
+          { status: 500 },
+        );
+      }),
+    );
+
+    await expect(
+      meridianApi.agentQuery('test'),
+    ).rejects.toThrow('Agent execution failed: tool timeout');
   });
 });

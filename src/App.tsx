@@ -9,6 +9,7 @@ import { LanguageIntelligence } from './pages/LanguageIntelligence';
 import { VisionIntelligence } from './pages/VisionIntelligence';
 import { SpeechServices } from './pages/SpeechServices';
 import { DocumentIntelligence } from './pages/DocumentIntelligence';
+import { AgentQuery } from './pages/AgentQuery';
 import { DiagnosticsProvider } from './hooks/useDiagnostics';
 import { Landing } from './pages/Landing';
 
@@ -37,6 +38,7 @@ function App() {
             <Route path="vision" element={<VisionIntelligence />} />
             <Route path="speech" element={<SpeechServices />} />
             <Route path="document" element={<DocumentIntelligence />} />
+            <Route path="agent" element={<AgentQuery />} />
           </Route>
         </Routes>
       </BrowserRouter>

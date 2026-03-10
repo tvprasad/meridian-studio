@@ -1,6 +1,6 @@
 import { useEffect, useState, useCallback } from 'react';
 import { Outlet, NavLink, useLocation } from 'react-router-dom';
-import { LayoutDashboard, MessageSquare, Database, Settings, Github, Linkedin, Languages, Eye, Mic, FileSearch, Pin, PinOff, Sun, Moon } from 'lucide-react';
+import { LayoutDashboard, MessageSquare, Database, Settings, Github, Linkedin, Languages, Eye, Mic, FileSearch, Pin, PinOff, Sun, Moon, Bot } from 'lucide-react';
 import { DiagnosticsPanel } from './DiagnosticsPanel';
 import { useDiagnostics } from '../../hooks/useDiagnosticsHook';
 
@@ -10,6 +10,7 @@ const THEME_KEY = 'meridian-theme';
 const coreNavItems = [
   { to: '/', icon: LayoutDashboard, label: 'Dashboard' },
   { to: '/query', icon: MessageSquare, label: 'Ask Meridian' },
+  { to: '/agent', icon: Bot, label: 'Ops Agent' },
   { to: '/ingest', icon: Database, label: 'Ingest' },
   { to: '/settings', icon: Settings, label: 'Settings' },
 ];

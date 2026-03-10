@@ -10,6 +10,8 @@ Versioning follows [Semantic Versioning](https://semver.org/).
 ## [Unreleased]
 
 ### Added
+- **AI Operations Agent** page (`/agent`) — ReAct reasoning UI that calls `POST /agent/query`, displays step-by-step tool execution timeline (tool name, input, output preview, elapsed time), and renders the final answer with markdown
+- **Agent API contract tests** — 3 tests covering successful query with step mapping, response field validation, and 500 error handling
 - **Dark mode toggle** — sun/moon button in sidebar, persisted in localStorage; dark: variants applied across every page and shared component
 - **ServiceNow connector** (ADR-0006) — new "ServiceNow" source tab on the Ingestion Pipeline page with server-side credentials, Check Status button, optional filters (KB name, category, article limit), Sync Articles action, and result/error display
 - **AI/GenAI suggested questions** — updated example questions to include generative AI policy, Azure OpenAI access, approved AI tools, and data classification topics

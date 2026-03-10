@@ -77,6 +77,27 @@ export interface ServiceNowStatusResponse {
 }
 
 // ===========================================
+// Agent Types
+// ===========================================
+
+export interface AgentStep {
+  step: number;
+  tool: string;
+  input: Record<string, unknown>;
+  output_preview: string;
+  elapsed_ms: number;
+}
+
+export interface AgentQueryResponse {
+  trace_id: string;
+  status: string;
+  answer: string;
+  steps: AgentStep[];
+  steps_taken: number;
+  elapsed_ms: number;
+}
+
+// ===========================================
 // Azure AI Types
 // ===========================================
 

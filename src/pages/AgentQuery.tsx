@@ -1,0 +1,369 @@
+import { useState, useRef, useEffect, useCallback } from 'react';
+import { useMutation } from '@tanstack/react-query';
+import ReactMarkdown from 'react-markdown';
+import { meridianApi } from '../api/meridian';
+import type { AgentQueryResponse, AgentStep } from '../api/types';
+import {
+  Send, Bot, Wrench, Clock, ChevronDown, ChevronRight,
+  Copy, Check, AlertCircle, Loader2, Fingerprint,
+} from 'lucide-react';
+
+// ── Constants ────────────────────────────────────────────────────────────────
+
+const DEMO_QUESTION = 'Why are login requests failing for region us-east?';
+
+const EXAMPLE_QUESTIONS = [
+  DEMO_QUESTION,
+  'What caused the spike in 5xx errors yesterday?',
+  'Are there any open P1 incidents affecting payments?',
+  'Summarize recent deployment failures in production',
+];
+
+// ── Step Components ──────────────────────────────────────────────────────────
+
+function StepCard({ step, isLast }: { step: AgentStep; isLast: boolean }) {
+  const [expanded, setExpanded] = useState(false);
+
+  return (
+    <div className="relative flex gap-3">
+      {/* Timeline connector */}
+      <div className="flex flex-col items-center">
+        <div className="w-7 h-7 rounded-full bg-violet-100 dark:bg-violet-900/30 flex items-center justify-center shrink-0 z-10">
+          <Wrench className="w-3.5 h-3.5 text-violet-600 dark:text-violet-400" />
+        </div>
+        {!isLast && <div className="w-px flex-1 bg-violet-200 dark:bg-violet-800/50 mt-1" />}
+      </div>
+
+      {/* Step content */}
+      <div className="flex-1 pb-4 min-w-0">
+        <div className="flex items-center gap-2 flex-wrap">
+          <span className="text-xs font-semibold text-violet-700 dark:text-violet-300">
+            Step {step.step}
+          </span>
+          <code className="text-xs px-1.5 py-0.5 rounded bg-gray-100 dark:bg-white/10 text-gray-700 dark:text-gray-300 font-mono">
+            {step.tool}
+          </code>
+          <span className="text-[11px] text-gray-400 dark:text-gray-500 flex items-center gap-1">
+            <Clock className="w-3 h-3" />
+            {step.elapsed_ms.toLocaleString()}ms
+          </span>
+        </div>
+
+        <button
+          onClick={() => setExpanded(!expanded)}
+          className="mt-1 flex items-center gap-1 text-xs text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 transition-colors"
+        >
+          {expanded ? <ChevronDown className="w-3 h-3" /> : <ChevronRight className="w-3 h-3" />}
+          {expanded ? 'Hide details' : 'Show details'}
+        </button>
+
+        {expanded && (
+          <div className="mt-2 space-y-2">
+            {step.input && Object.keys(step.input).length > 0 && (
+              <div>
+                <p className="text-[10px] uppercase tracking-wider text-gray-400 dark:text-gray-500 font-semibold mb-1">Input</p>
+                <pre className="text-xs bg-gray-50 dark:bg-white/5 border border-gray-200 dark:border-white/10 rounded-lg p-2 overflow-x-auto text-gray-600 dark:text-gray-400">
+                  {JSON.stringify(step.input, null, 2)}
+                </pre>
+              </div>
+            )}
+            {step.output_preview && (
+              <div>
+                <p className="text-[10px] uppercase tracking-wider text-gray-400 dark:text-gray-500 font-semibold mb-1">Output preview</p>
+                <p className="text-xs text-gray-600 dark:text-gray-400 bg-gray-50 dark:bg-white/5 border border-gray-200 dark:border-white/10 rounded-lg p-2">
+                  {step.output_preview}
+                </p>
+              </div>
+            )}
+          </div>
+        )}
+      </div>
+    </div>
+  );
+}
+
+function ReasoningTimeline({ steps }: { steps: AgentStep[] }) {
+  const [open, setOpen] = useState(true);
+
+  return (
+    <div className="border border-violet-200 dark:border-violet-800/50 rounded-xl overflow-hidden bg-violet-50/50 dark:bg-violet-900/10">
+      <button
+        onClick={() => setOpen(!open)}
+        className="w-full flex items-center gap-2 px-3 py-2 text-xs text-violet-600 dark:text-violet-400 hover:bg-violet-100 dark:hover:bg-violet-900/20 transition-colors"
+      >
+        {open ? <ChevronDown className="w-3.5 h-3.5" /> : <ChevronRight className="w-3.5 h-3.5" />}
+        <span className="font-medium">Reasoning steps</span>
+        <span className="text-violet-400 dark:text-violet-500">
+          {steps.length} tool{steps.length !== 1 ? 's' : ''} called
+        </span>
+      </button>
+      {open && (
+        <div className="px-3 pb-2 border-t border-violet-200 dark:border-violet-800/50 pt-3">
+          {steps.map((step, i) => (
+            <StepCard key={step.step} step={step} isLast={i === steps.length - 1} />
+          ))}
+        </div>
+      )}
+    </div>
+  );
+}
+
+// ── Answer Display ───────────────────────────────────────────────────────────
+
+function CopyButton({ text }: { text: string }) {
+  const [copied, setCopied] = useState(false);
+
+  const handleCopy = async () => {
+    await navigator.clipboard.writeText(text);
+    setCopied(true);
+    setTimeout(() => setCopied(false), 2000);
+  };
+
+  return (
+    <button
+      onClick={handleCopy}
+      title="Copy answer"
+      className="inline-flex items-center gap-1 text-xs text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 transition-colors"
+    >
+      {copied ? <Check className="w-3.5 h-3.5 text-emerald-500" /> : <Copy className="w-3.5 h-3.5" />}
+      {copied ? 'Copied' : 'Copy'}
+    </button>
+  );
+}
+
+function AgentAnswer({ result }: { result: AgentQueryResponse }) {
+  const isOk = result.status === 'OK';
+
+  return (
+    <div className="space-y-4">
+      {/* Reasoning timeline */}
+      {result.steps.length > 0 && <ReasoningTimeline steps={result.steps} />}
+
+      {/* Final answer */}
+      <div className="flex items-start gap-3">
+        <div className="shrink-0 w-8 h-8 rounded-full bg-violet-100 dark:bg-violet-900/30 flex items-center justify-center mt-0.5">
+          <Bot className="w-4 h-4 text-violet-600 dark:text-violet-400" />
+        </div>
+        <div className="flex-1 min-w-0">
+          {isOk ? (
+            <div className="bg-white dark:bg-white/10 border border-gray-200 dark:border-white/10 rounded-2xl rounded-tl-sm px-4 py-3 shadow-sm">
+              <div className="text-sm text-gray-800 dark:text-gray-200 leading-relaxed prose prose-sm prose-gray dark:prose-invert max-w-none">
+                <ReactMarkdown>{result.answer}</ReactMarkdown>
+              </div>
+            </div>
+          ) : (
+            <div className="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-2xl rounded-tl-sm px-4 py-3">
+              <div className="flex items-center gap-2 mb-1">
+                <AlertCircle className="w-4 h-4 text-red-500 shrink-0" />
+                <span className="text-xs font-medium text-red-700 dark:text-red-400">Agent failed</span>
+              </div>
+              <p className="text-sm text-red-800 dark:text-red-300">{result.answer}</p>
+            </div>
+          )}
+          <div className="flex items-center gap-4 mt-1.5 px-1">
+            {result.answer && <CopyButton text={result.answer} />}
+            <span className="text-[11px] text-gray-400 flex items-center gap-1">
+              <Clock className="w-3 h-3" />
+              {(result.elapsed_ms / 1000).toFixed(1)}s total
+            </span>
+            <span className="text-[11px] text-gray-400">
+              {result.steps_taken} step{result.steps_taken !== 1 ? 's' : ''}
+            </span>
+            <span className="text-[11px] text-gray-400 flex items-center gap-1">
+              <Fingerprint className="w-3 h-3" />
+              {result.trace_id}
+            </span>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// ── Thinking Indicator ───────────────────────────────────────────────────────
+
+function ThinkingIndicator() {
+  return (
+    <div className="flex items-start gap-3">
+      <div className="shrink-0 w-8 h-8 rounded-full bg-violet-100 dark:bg-violet-900/30 flex items-center justify-center mt-0.5">
+        <Bot className="w-4 h-4 text-violet-600 dark:text-violet-400" />
+      </div>
+      <div className="bg-white dark:bg-white/10 border border-gray-200 dark:border-white/10 rounded-2xl rounded-tl-sm px-4 py-3 shadow-sm">
+        <div className="flex items-center gap-2">
+          <Loader2 className="w-4 h-4 text-violet-500 animate-spin" />
+          <span className="text-sm text-gray-500 dark:text-gray-400">Agent is reasoning...</span>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// ── Main Component ───────────────────────────────────────────────────────────
+
+interface ConversationEntry {
+  question: string;
+  result?: AgentQueryResponse;
+  error?: string;
+}
+
+export function AgentQuery() {
+  const [entries, setEntries] = useState<ConversationEntry[]>([]);
+  const [input, setInput] = useState('');
+  const bottomRef = useRef<HTMLDivElement>(null);
+  const textareaRef = useRef<HTMLTextAreaElement>(null);
+
+  const mutation = useMutation({
+    mutationFn: (question: string) => meridianApi.agentQuery(question),
+    onSuccess: (data) => {
+      setEntries((prev) => {
+        const updated = [...prev];
+        updated[updated.length - 1] = { ...updated[updated.length - 1], result: data };
+        return updated;
+      });
+    },
+    onError: (err) => {
+      setEntries((prev) => {
+        const updated = [...prev];
+        updated[updated.length - 1] = {
+          ...updated[updated.length - 1],
+          error: (err as Error).message,
+        };
+        return updated;
+      });
+    },
+  });
+
+  useEffect(() => {
+    bottomRef.current?.scrollIntoView({ behavior: 'smooth' });
+  }, [entries, mutation.isPending]);
+
+  const handleSubmit = useCallback(() => {
+    const q = input.trim();
+    if (!q || mutation.isPending) return;
+
+    setEntries((prev) => [...prev, { question: q }]);
+    setInput('');
+    mutation.mutate(q);
+    if (textareaRef.current) textareaRef.current.style.height = 'auto';
+  }, [input, mutation]);
+
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
+    if (e.key === 'Enter' && !e.shiftKey) {
+      e.preventDefault();
+      handleSubmit();
+    }
+    if (e.key === 'Escape') {
+      setInput('');
+      if (textareaRef.current) textareaRef.current.style.height = 'auto';
+    }
+  };
+
+  const handleInput = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
+    setInput(e.target.value);
+    e.target.style.height = 'auto';
+    e.target.style.height = `${Math.min(e.target.scrollHeight, 160)}px`;
+  };
+
+  const isEmpty = entries.length === 0;
+
+  return (
+    <div className="flex flex-col h-[calc(100vh-7rem)]">
+      {/* Header */}
+      <div className="shrink-0">
+        <h1 className="text-2xl font-bold text-gray-900 dark:text-white">AI Operations Agent</h1>
+        <p className="text-gray-500 dark:text-gray-400 mt-1">
+          Ask operational questions — the agent uses ReAct reasoning to search incidents, logs, and metrics, then synthesizes an answer.
+        </p>
+      </div>
+
+      {/* Messages area */}
+      <div className="flex-1 mt-6 overflow-y-auto min-h-0">
+        {isEmpty ? (
+          <div className="flex flex-col items-center justify-center h-full py-16 text-center">
+            <div className="w-14 h-14 rounded-full bg-violet-50 dark:bg-violet-900/30 flex items-center justify-center mb-4">
+              <Bot className="w-7 h-7 text-violet-500 dark:text-violet-400" />
+            </div>
+            <h3 className="text-gray-700 dark:text-gray-200 font-medium">Ask about incidents, alerts, and operations</h3>
+            <p className="text-sm text-gray-400 dark:text-gray-500 mt-1 mb-6">
+              The agent reasons step-by-step, calling tools to investigate before answering.
+            </p>
+            <div className="flex flex-wrap gap-2 justify-center max-w-lg">
+              {EXAMPLE_QUESTIONS.map((q) => (
+                <button
+                  key={q}
+                  onClick={() => { setInput(q); textareaRef.current?.focus(); }}
+                  className="text-xs px-3 py-1.5 rounded-full border border-gray-200 dark:border-white/15 text-gray-600 dark:text-gray-300 hover:border-violet-300 hover:text-violet-600 dark:hover:text-violet-400 transition-colors bg-white dark:bg-white/5"
+                >
+                  {q}
+                </button>
+              ))}
+            </div>
+          </div>
+        ) : (
+          <div className="space-y-6 pb-4">
+            {entries.map((entry, i) => (
+              <div key={i} className="space-y-4">
+                {/* User question */}
+                <div className="flex justify-end">
+                  <div className="max-w-2xl bg-violet-600 text-white rounded-2xl rounded-tr-sm px-4 py-3 shadow-sm">
+                    <p className="text-sm whitespace-pre-wrap leading-relaxed">{entry.question}</p>
+                  </div>
+                </div>
+
+                {/* Agent response */}
+                {entry.result && <AgentAnswer result={entry.result} />}
+
+                {/* Error */}
+                {entry.error && (
+                  <div className="flex items-start gap-3">
+                    <div className="shrink-0 w-8 h-8 rounded-full bg-red-100 dark:bg-red-900/30 flex items-center justify-center mt-0.5">
+                      <AlertCircle className="w-4 h-4 text-red-600 dark:text-red-400" />
+                    </div>
+                    <div className="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-2xl rounded-tl-sm px-4 py-3">
+                      <p className="text-sm text-red-800 dark:text-red-300">{entry.error}</p>
+                    </div>
+                  </div>
+                )}
+
+                {/* Thinking (only on last entry if still pending) */}
+                {i === entries.length - 1 && mutation.isPending && !entry.result && !entry.error && (
+                  <ThinkingIndicator />
+                )}
+              </div>
+            ))}
+            <div ref={bottomRef} />
+          </div>
+        )}
+      </div>
+
+      {/* Input bar */}
+      <div className="shrink-0 mt-4 bg-white dark:bg-white/[0.05] border border-gray-200 dark:border-white/15 rounded-2xl shadow-sm focus-within:border-violet-400 focus-within:ring-2 focus-within:ring-violet-100 dark:focus-within:ring-violet-900/30 transition-all">
+        <textarea
+          ref={textareaRef}
+          rows={1}
+          className="block w-full resize-none rounded-2xl px-4 pt-3 pb-2 text-sm text-gray-800 dark:text-gray-200 placeholder-gray-400 dark:placeholder-gray-600 focus:outline-none bg-transparent"
+          placeholder="Ask an operations question... (Enter to send)"
+          value={input}
+          onChange={handleInput}
+          onKeyDown={handleKeyDown}
+          disabled={mutation.isPending}
+        />
+        <div className="flex items-center justify-end px-3 pb-2.5">
+          <button
+            onClick={handleSubmit}
+            disabled={!input.trim() || mutation.isPending}
+            className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-violet-600 text-white text-xs font-medium hover:bg-violet-700 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
+          >
+            <Send className="w-3.5 h-3.5" />
+            Send
+          </button>
+        </div>
+      </div>
+
+      {/* Disclaimer */}
+      <p className="shrink-0 text-center text-[10px] text-gray-400 dark:text-gray-600 mt-2 leading-relaxed">
+        AI-generated answers based on tool-assisted reasoning. Verify critical operational decisions independently.
+      </p>
+    </div>
+  );
+}

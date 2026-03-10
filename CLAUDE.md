@@ -1,7 +1,7 @@
 # Meridian Studio — Project Context
 
 ## What is this?
-React frontend for the Meridian RAG knowledge engine. Provides a Query console, Ingestion Pipeline (document chunking, embedding, indexing), Cognitive AI Services (Language, Vision, Speech, Document Intelligence), and a Settings page.
+React frontend for the Meridian RAG knowledge engine. Provides a Query console, AI Operations Agent (ReAct reasoning), Ingestion Pipeline (document chunking, embedding, indexing), Cognitive AI Services (Language, Vision, Speech, Document Intelligence), and a Settings page.
 
 ## Tech Stack
 - **Framework**: React 19 + TypeScript + Vite 7
@@ -18,12 +18,12 @@ React frontend for the Meridian RAG knowledge engine. Provides a Query console, 
 - `src/hooks/` — DiagnosticsContext, DiagnosticsProvider, useDiagnostics, useTrackedMutation
 - `src/pages/` — one component per route
 - `src/__fixtures__/` — real backend response fixtures for contract tests
-- `adr/` — architecture decision records (0001–0003)
+- `adr/` — architecture decision records (0001–0007)
 
 ## Backends
 | Service | Default URL | Purpose |
 |---------|-------------|---------|
-| Meridian API | `http://localhost:8000` | RAG engine (health, settings, upload) |
+| Meridian API | `http://localhost:8000` | RAG engine (health, settings, upload, agent) |
 | MCP Server | `http://localhost:8001` | Tool calls (query_knowledge_base) |
 
 The MCP `tools/call` endpoint expects: `{ name: "query_knowledge_base", arguments: { question } }`
@@ -61,6 +61,7 @@ The MCP `tools/call` endpoint expects: `{ name: "query_knowledge_base", argument
 
 ## Azure Resources (meridian-rg)
 - ACR: `meridian.azurecr.io`
-- Static Web App: `meridian-studio`
-- Container Apps: `meridian-api`, `meridian-mcp`
-- Individual Cognitive Services: meridian-language, meridian-speech, meridian-vision-app, meridian-docintel-formrecognizer, meridian-openai
+- Container Apps: `meridian-studio`, `meridian-api`, `meridian-mcp`
+- Cognitive Services: meridian-language, meridian-speech, meridian-vision-app, meridian-docintel-formrecognizer, meridian-openai, meridian-llm
+- Azure AI Search: `meridian-search-tvp`
+- Azure SQL: `meridian-db` (serverless GP_S_Gen5, westus2)
