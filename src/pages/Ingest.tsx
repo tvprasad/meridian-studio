@@ -247,6 +247,19 @@ function ServiceNowTab({ onSyncSuccess }: { onSyncSuccess: () => void }) {
         </div>
       </Card>
 
+      {/* Syncing progress */}
+      {sync.isPending && (
+        <Card className="mt-4 border-primary-200 dark:border-primary-800 bg-primary-50 dark:bg-primary-900/20">
+          <div className="flex items-center gap-3">
+            <Loader2 className="w-5 h-5 text-primary-600 dark:text-primary-400 animate-spin" />
+            <div>
+              <p className="text-sm font-medium text-primary-800 dark:text-primary-300">Syncing articles from ServiceNow...</p>
+              <p className="text-xs text-primary-600 dark:text-primary-400 mt-0.5">Fetching, chunking, and indexing articles. This may take a minute for large knowledge bases.</p>
+            </div>
+          </div>
+        </Card>
+      )}
+
       {/* Error */}
       {sync.isError && (
         <Card className="mt-4 border-red-200 dark:border-red-800 bg-red-50 dark:bg-red-900/20">
@@ -274,9 +287,10 @@ function ServiceNowTab({ onSyncSuccess }: { onSyncSuccess: () => void }) {
           <div className="mt-3 flex justify-end">
             <Link
               to="/query"
+              onClick={() => localStorage.removeItem('meridian-chat-history')}
               className="inline-flex items-center gap-1.5 text-sm font-medium text-emerald-700 dark:text-emerald-400 hover:text-emerald-900 dark:hover:text-emerald-300 transition-colors"
             >
-              Query the knowledge base
+              Ask Meridian
               <ArrowRight className="w-4 h-4" />
             </Link>
           </div>
@@ -510,9 +524,10 @@ export function Ingest() {
                     {result.message && <p className="text-xs text-emerald-600 dark:text-emerald-400">{result.message}</p>}
                     <Link
                       to="/query"
+                      onClick={() => localStorage.removeItem('meridian-chat-history')}
                       className="inline-flex items-center gap-1.5 text-sm font-medium text-emerald-700 dark:text-emerald-400 hover:text-emerald-900 dark:hover:text-emerald-300 transition-colors ml-auto"
                     >
-                      Query the knowledge base
+                      Ask Meridian
                       <ArrowRight className="w-4 h-4" />
                     </Link>
                   </div>
