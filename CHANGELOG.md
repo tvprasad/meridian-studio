@@ -9,6 +9,10 @@ Versioning follows [Semantic Versioning](https://semver.org/).
 
 ## [Unreleased]
 
+---
+
+## [0.6.0] — 2026-03-10
+
 ### Added
 - **AI Operations Agent** page (`/agent`) — ReAct reasoning UI that calls `POST /agent/query`, displays step-by-step tool execution timeline (tool name, input, output preview, elapsed time), and renders the final answer with markdown
 - **Agent API contract tests** — 3 tests covering successful query with step mapping, response field validation, and 500 error handling
@@ -178,7 +182,10 @@ Versioning follows [Semantic Versioning](https://semver.org/).
 - VPL logo in sidebar header
 - GitHub and LinkedIn social links in sidebar footer
 
-[Unreleased]: https://github.com/tvprasad/meridian-studio/compare/v0.3.0...HEAD
+[Unreleased]: https://github.com/tvprasad/meridian-studio/compare/v0.6.0...HEAD
+[0.6.0]: https://github.com/tvprasad/meridian-studio/compare/v0.5.0...v0.6.0
+[0.5.0]: https://github.com/tvprasad/meridian-studio/compare/v0.4.0...v0.5.0
+[0.4.0]: https://github.com/tvprasad/meridian-studio/compare/v0.3.0...v0.4.0
 [0.3.0]: https://github.com/tvprasad/meridian-studio/compare/v0.2.1...v0.3.0
 [0.2.1]: https://github.com/tvprasad/meridian-studio/compare/v0.2.0...v0.2.1
 [0.2.0]: https://github.com/tvprasad/meridian-studio/compare/v0.1.0...v0.2.0
