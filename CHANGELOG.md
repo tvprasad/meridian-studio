@@ -9,6 +9,10 @@ Versioning follows [Semantic Versioning](https://semver.org/).
 
 ## [Unreleased]
 
+### Fixed
+- **Dark mode select dropdowns** — Evaluation page filter and page size dropdowns now use `dark:bg-gray-800` instead of near-transparent `dark:bg-white/5`, fixing invisible option text on dark backgrounds
+- **Feedback button visibility** — thumbs up/down icons now use `text-gray-400` / `dark:text-gray-500` (was `text-gray-300` / `dark:text-gray-600`), making them visible on both light and dark backgrounds
+
 ---
 
 ## [0.9.0] — 2026-03-11

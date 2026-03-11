@@ -351,7 +351,7 @@ export function EvaluationQueries() {
               <select
                 value={statusFilter}
                 onChange={(e) => setStatusFilter(e.target.value as StatusFilter)}
-                className="text-xs border border-gray-200 dark:border-white/15 rounded-lg px-2 py-1.5 bg-white dark:bg-white/5 text-gray-600 dark:text-gray-300 focus:outline-none focus:ring-1 focus:ring-primary-400"
+                className="text-xs border border-gray-200 dark:border-white/15 rounded-lg px-2 py-1.5 bg-white dark:bg-gray-800 text-gray-600 dark:text-gray-300 focus:outline-none focus:ring-1 focus:ring-primary-400"
               >
                 <option value="ALL">All statuses</option>
                 <option value="OK">OK</option>
@@ -360,7 +360,7 @@ export function EvaluationQueries() {
               <select
                 value={sourceFilter}
                 onChange={(e) => setSourceFilter(e.target.value as SourceFilter)}
-                className="text-xs border border-gray-200 dark:border-white/15 rounded-lg px-2 py-1.5 bg-white dark:bg-white/5 text-gray-600 dark:text-gray-300 focus:outline-none focus:ring-1 focus:ring-primary-400"
+                className="text-xs border border-gray-200 dark:border-white/15 rounded-lg px-2 py-1.5 bg-white dark:bg-gray-800 text-gray-600 dark:text-gray-300 focus:outline-none focus:ring-1 focus:ring-primary-400"
               >
                 <option value="ALL">All sources</option>
                 <option value="query">query</option>
@@ -381,7 +381,7 @@ export function EvaluationQueries() {
               <select
                 value={pageSize}
                 onChange={(e) => { setPageSize(Number(e.target.value)); setOffset(0); }}
-                className="text-xs border border-gray-200 dark:border-white/15 rounded-lg px-2 py-1.5 bg-white dark:bg-white/5 text-gray-600 dark:text-gray-300 focus:outline-none focus:ring-1 focus:ring-primary-400"
+                className="text-xs border border-gray-200 dark:border-white/15 rounded-lg px-2 py-1.5 bg-white dark:bg-gray-800 text-gray-600 dark:text-gray-300 focus:outline-none focus:ring-1 focus:ring-primary-400"
               >
                 {PAGE_SIZE_OPTIONS.map((size) => (
                   <option key={size} value={size}>{size} / page</option>
