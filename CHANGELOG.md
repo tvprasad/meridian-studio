@@ -9,6 +9,17 @@ Versioning follows [Semantic Versioning](https://semver.org/).
 
 ## [Unreleased]
 
+### Changed
+- **Settings page reads from `GET /settings`** — form now loads current runtime configuration from the dedicated settings endpoint instead of deriving values from `/health`; works correctly even when health is degraded
+- **Settings save invalidates both `settings` and `health` query caches** — ensures Dashboard and Settings stay in sync after runtime config changes
+- **Settings page loading state** — spinner shown while fetching current config from backend
+- **Settings page persistence note** — inline description explaining that changes are in-memory and reset on server restart
+
+### Added
+- `getSettings()` API method (`GET /settings`) with `SettingsResponse` type
+- `updateSettings()` now returns `SettingsResponse` (was `void`)
+- 3 contract tests for Settings API (GET returns config, field mapping, POST sends payload and returns updated config)
+
 ---
 
 ## [0.7.0] — 2026-03-11

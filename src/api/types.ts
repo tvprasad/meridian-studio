@@ -33,6 +33,12 @@ export interface HealthResponse {
   suggested_questions?: string[];
 }
 
+export interface SettingsResponse {
+  llm_provider: string;
+  retrieval_provider: string;
+  retrieval_threshold: number;
+}
+
 export interface UpdateSettingsPayload {
   llm_provider: 'local' | 'azure';
   retrieval_provider: 'chroma' | 'azure';

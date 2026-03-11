@@ -1,0 +1,5 @@
+{
+  "llm_provider": "local",
+  "retrieval_provider": "chroma",
+  "retrieval_threshold": 0.75
+}

@@ -1,6 +1,6 @@
 import { api, ApiError } from './client';
 import { config } from '../config';
-import type { QueryResponse, HealthResponse, McpTool, UpdateSettingsPayload, IngestResponse, ServiceNowIngestRequest, ServiceNowIngestResponse, ServiceNowStatusResponse, AgentQueryResponse, EvaluationQueriesResponse, EvaluationMetricsResponse } from './types';
+import type { QueryResponse, HealthResponse, SettingsResponse, McpTool, UpdateSettingsPayload, IngestResponse, ServiceNowIngestRequest, ServiceNowIngestResponse, ServiceNowStatusResponse, AgentQueryResponse, EvaluationQueriesResponse, EvaluationMetricsResponse } from './types';
 
 export interface ChatMessage {
   role: 'user' | 'assistant';
@@ -49,9 +49,13 @@ export const meridianApi = {
   ingest: (formData: FormData) =>
     api.postForm<IngestResponse>('/ingest', formData, { timeoutMs: 120_000 }),
 
-  // POST /settings — backend must expose this to accept runtime config changes
+  // GET /settings — read current runtime configuration
+  getSettings: () =>
+    api.get<SettingsResponse>('/settings'),
+
+  // POST /settings — update runtime configuration (in-memory, reset on restart)
   updateSettings: (payload: UpdateSettingsPayload) =>
-    api.post<void>('/settings', payload),
+    api.post<SettingsResponse>('/settings', payload),
 
   // POST /ingest/servicenow — sync articles from a ServiceNow knowledge base
   ingestServiceNow: (payload: ServiceNowIngestRequest) =>

@@ -6,8 +6,8 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { Card } from '../components/ui/Card';
 import { Button } from '../components/ui/Button';
 import { meridianApi } from '../api/meridian';
-import { type HealthResponse } from '../api/types';
-import { CheckCircle, AlertCircle, BrainCircuit, Database, SlidersHorizontal, Languages, Eye, AudioLines } from 'lucide-react';
+import { type SettingsResponse } from '../api/types';
+import { CheckCircle, AlertCircle, BrainCircuit, Database, SlidersHorizontal, Languages, Eye, AudioLines, Loader2 } from 'lucide-react';
 
 const settingsSchema = z.object({
   llm_provider: z.enum(['local', 'azure']),
@@ -17,41 +17,41 @@ const settingsSchema = z.object({
 
 type SettingsForm = z.infer<typeof settingsSchema>;
 
-function toFormValues(h: HealthResponse | undefined): SettingsForm {
+function toFormValues(s: SettingsResponse | undefined): SettingsForm {
   return {
-    llm_provider: (h?.llm_provider as SettingsForm['llm_provider']) ?? 'local',
-    retrieval_provider: (h?.retrieval_provider as SettingsForm['retrieval_provider']) ?? 'chroma',
-    retrieval_threshold: h?.retrieval_threshold ?? 0.6,
+    llm_provider: (s?.llm_provider as SettingsForm['llm_provider']) ?? 'local',
+    retrieval_provider: (s?.retrieval_provider as SettingsForm['retrieval_provider']) ?? 'chroma',
+    retrieval_threshold: s?.retrieval_threshold ?? 0.6,
   };
 }
 
 export function Settings() {
   const queryClient = useQueryClient();
 
-  const { data: health } = useQuery({
-    queryKey: ['health'],
-    queryFn: meridianApi.health,
+  const { data: settings, isLoading } = useQuery({
+    queryKey: ['settings'],
+    queryFn: meridianApi.getSettings,
   });
 
-  // Seed defaultValues from cache so form shows correct values immediately on remount,
-  // without waiting for the useEffect to fire after the first render.
-  const cachedHealth = queryClient.getQueryData<HealthResponse>(['health']);
+  // Seed defaultValues from cache so form shows correct values immediately on remount
+  const cachedSettings = queryClient.getQueryData<SettingsResponse>(['settings']);
 
   const form = useForm<SettingsForm>({
     resolver: zodResolver(settingsSchema),
-    defaultValues: toFormValues(cachedHealth),
+    defaultValues: toFormValues(cachedSettings),
   });
 
   // Keep in sync when a background refetch brings in fresh data.
   useEffect(() => {
-    if (health) {
-      form.reset(toFormValues(health));
+    if (settings) {
+      form.reset(toFormValues(settings));
     }
-  }, [health, form]);
+  }, [settings, form]);
 
   const mutation = useMutation({
     mutationFn: meridianApi.updateSettings,
     onSuccess: () => {
+      void queryClient.invalidateQueries({ queryKey: ['settings'] });
       void queryClient.invalidateQueries({ queryKey: ['health'] });
     },
   });
@@ -77,7 +77,16 @@ export function Settings() {
 
       <form onSubmit={onSubmit}>
         <Card className="mt-8">
-          <h2 className="text-lg font-semibold dark:text-white mb-4">Provider Configuration</h2>
+          <div className="flex items-center justify-between mb-4">
+            <h2 className="text-lg font-semibold dark:text-white">Provider Configuration</h2>
+            {isLoading && (
+              <span className="flex items-center gap-1.5 text-xs text-gray-400 dark:text-gray-500">
+                <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                Loading...
+              </span>
+            )}
+          </div>
+          <p className="text-xs text-gray-400 dark:text-gray-500 -mt-2 mb-5">Changes apply immediately but are reset on server restart. Set environment variables for persistent configuration.</p>
 
           <div className="space-y-6">
             <div>

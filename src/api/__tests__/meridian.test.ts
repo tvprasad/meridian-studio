@@ -15,6 +15,8 @@ import agentQueryOk from '../../__fixtures__/agent-query-ok.json';
 import evalQueriesFixture from '../../__fixtures__/evaluation-queries.json';
 import evalMetricsFixture from '../../__fixtures__/evaluation-metrics.json';
 import evalUnconfigured from '../../__fixtures__/evaluation-unconfigured.json';
+import settingsGetFixture from '../../__fixtures__/settings-get.json';
+import settingsPostFixture from '../../__fixtures__/settings-post.json';
 
 // ── MSW server ──────────────────────────────────────────────────────────────
 
@@ -45,6 +47,13 @@ const server = setupServer(
   }),
   http.get('http://localhost:8000/evaluation/metrics', () => {
     return HttpResponse.json(evalMetricsFixture);
+  }),
+  http.get('http://localhost:8000/settings', () => {
+    return HttpResponse.json(settingsGetFixture);
+  }),
+  http.post('http://localhost:8000/settings', async ({ request }) => {
+    capturedBody = await request.json();
+    return HttpResponse.json(settingsPostFixture);
   }),
 );
 
@@ -392,5 +401,47 @@ describe('meridianApi.evaluationMetrics', () => {
     const result = await meridianApi.evaluationMetrics();
 
     expect(result.configured).toBe(false);
+  });
+});
+
+// ── Settings API tests ────────────────────────────────────────────────────
+
+describe('meridianApi.getSettings', () => {
+  it('returns current runtime configuration', async () => {
+    const result = await meridianApi.getSettings();
+
+    expect(result).toEqual({
+      llm_provider: 'azure',
+      retrieval_provider: 'azure',
+      retrieval_threshold: 0.6,
+    });
+  });
+
+  it('maps all three settings fields', async () => {
+    const result = await meridianApi.getSettings();
+
+    expect(result).toHaveProperty('llm_provider');
+    expect(result).toHaveProperty('retrieval_provider');
+    expect(result).toHaveProperty('retrieval_threshold');
+    expect(typeof result.retrieval_threshold).toBe('number');
+  });
+});
+
+describe('meridianApi.updateSettings', () => {
+  it('sends the payload to POST /settings and returns updated config', async () => {
+    const payload = {
+      llm_provider: 'local' as const,
+      retrieval_provider: 'chroma' as const,
+      retrieval_threshold: 0.75,
+    };
+
+    const result = await meridianApi.updateSettings(payload);
+
+    expect(capturedBody).toEqual(payload);
+    expect(result).toEqual({
+      llm_provider: 'local',
+      retrieval_provider: 'chroma',
+      retrieval_threshold: 0.75,
+    });
   });
 });

@@ -1,0 +1,5 @@
+{
+  "llm_provider": "azure",
+  "retrieval_provider": "azure",
+  "retrieval_threshold": 0.6
+}
