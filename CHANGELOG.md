@@ -9,6 +9,10 @@ Versioning follows [Semantic Versioning](https://semver.org/).
 
 ## [Unreleased]
 
+---
+
+## [0.8.0] — 2026-03-11
+
 ### Changed
 - **Settings page reads from `GET /settings`** — form now loads current runtime configuration from the dedicated settings endpoint instead of deriving values from `/health`; works correctly even when health is degraded
 - **Settings save invalidates both `settings` and `health` query caches** — ensures Dashboard and Settings stay in sync after runtime config changes
@@ -215,7 +219,8 @@ Versioning follows [Semantic Versioning](https://semver.org/).
 - VPL logo in sidebar header
 - GitHub and LinkedIn social links in sidebar footer
 
-[Unreleased]: https://github.com/tvprasad/meridian-studio/compare/v0.7.0...HEAD
+[Unreleased]: https://github.com/tvprasad/meridian-studio/compare/v0.8.0...HEAD
+[0.8.0]: https://github.com/tvprasad/meridian-studio/compare/v0.7.0...v0.8.0
 [0.7.0]: https://github.com/tvprasad/meridian-studio/compare/v0.6.1...v0.7.0
 [0.6.1]: https://github.com/tvprasad/meridian-studio/compare/v0.6.0...v0.6.1
 [0.6.0]: https://github.com/tvprasad/meridian-studio/compare/v0.5.0...v0.6.0
