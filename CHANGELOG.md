@@ -9,6 +9,10 @@ Versioning follows [Semantic Versioning](https://semver.org/).
 
 ## [Unreleased]
 
+---
+
+## [0.9.0] — 2026-03-11
+
 ### Added
 - **Feedback buttons** — thumbs up/down on Ask Meridian and AI Operations Agent responses, persisted in localStorage per trace ID
 - **Page size selector** on Evaluation query log — choose 25, 50, or 100 rows per page (replaces fixed 20-row pages)
@@ -226,7 +230,8 @@ Versioning follows [Semantic Versioning](https://semver.org/).
 - VPL logo in sidebar header
 - GitHub and LinkedIn social links in sidebar footer
 
-[Unreleased]: https://github.com/tvprasad/meridian-studio/compare/v0.8.0...HEAD
+[Unreleased]: https://github.com/tvprasad/meridian-studio/compare/v0.9.0...HEAD
+[0.9.0]: https://github.com/tvprasad/meridian-studio/compare/v0.8.0...v0.9.0
 [0.8.0]: https://github.com/tvprasad/meridian-studio/compare/v0.7.0...v0.8.0
 [0.7.0]: https://github.com/tvprasad/meridian-studio/compare/v0.6.1...v0.7.0
 [0.6.1]: https://github.com/tvprasad/meridian-studio/compare/v0.6.0...v0.6.1
