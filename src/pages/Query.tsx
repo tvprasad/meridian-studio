@@ -371,12 +371,12 @@ export function Query() {
     if (textareaRef.current) textareaRef.current.style.height = 'auto';
   }, [input, messages, mutation]);
 
-  const handleNewChat = () => {
+  const handleNewChat = useCallback(() => {
     setMessages([]);
     setInput('');
     localStorage.removeItem(STORAGE_KEY);
     textareaRef.current?.focus();
-  };
+  }, []);
 
   const handleKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
     if (e.key === 'Enter' && !e.shiftKey) {
@@ -395,49 +395,54 @@ export function Query() {
     e.target.style.height = `${Math.min(e.target.scrollHeight, 160)}px`;
   };
 
-  // Global keyboard shortcut: Ctrl+K to focus chat input
+  // Global keyboard shortcut: Ctrl+K — new chat (resets conversation) or focuses input
   useEffect(() => {
     const onGlobalKey = (e: KeyboardEvent) => {
       if ((e.ctrlKey || e.metaKey) && e.key === 'k') {
         e.preventDefault();
-        textareaRef.current?.focus();
+        if (messages.length > 0) {
+          handleNewChat();
+        } else {
+          textareaRef.current?.focus();
+        }
       }
     };
     window.addEventListener('keydown', onGlobalKey);
     return () => window.removeEventListener('keydown', onGlobalKey);
-  }, []);
+  }, [messages.length, handleNewChat]);
 
   const isEmpty = messages.length === 0;
 
   return (
     <div className="flex flex-col h-[calc(100vh-7rem)]">
       {/* Header */}
-      <div className="shrink-0">
-        <div className="flex items-center justify-between">
+      <div className="shrink-0 flex items-start justify-between gap-4">
+        <div>
           <h1 className="text-2xl font-bold text-gray-900 dark:text-white">Ask Meridian</h1>
-          {!isEmpty && (
-            <button
-              onClick={handleNewChat}
-              className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-white hover:bg-gray-100 dark:hover:bg-white/10 transition-colors"
-            >
-              <RotateCcw className="w-3.5 h-3.5" />
-              New chat
-            </button>
+          <p className="text-gray-500 dark:text-gray-400 mt-1">Ask questions in plain language — Meridian searches your documents and returns a grounded answer.</p>
+          {health && (
+            <p className="mt-2 text-xs text-gray-400 flex items-center gap-1.5">
+              Using
+              <span className="font-medium text-gray-600 dark:text-gray-300">{PROVIDER_LABELS[health.llm_provider] ?? health.llm_provider}</span>
+              and
+              <span className="font-medium text-gray-600 dark:text-gray-300">{PROVIDER_LABELS[health.retrieval_provider] ?? health.retrieval_provider}</span>
+              —
+              <Link to="/settings" className="inline-flex items-center gap-0.5 text-primary-600 hover:text-primary-700 transition-colors">
+                <Settings className="w-3 h-3" />
+                change in Settings
+              </Link>
+            </p>
           )}
         </div>
-        <p className="text-gray-500 dark:text-gray-400 mt-1">Ask questions in plain language — Meridian searches your documents and returns a grounded answer.</p>
-        {health && (
-          <p className="mt-2 text-xs text-gray-400 flex items-center gap-1.5">
-            Using
-            <span className="font-medium text-gray-600 dark:text-gray-300">{PROVIDER_LABELS[health.llm_provider] ?? health.llm_provider}</span>
-            and
-            <span className="font-medium text-gray-600 dark:text-gray-300">{PROVIDER_LABELS[health.retrieval_provider] ?? health.retrieval_provider}</span>
-            —
-            <Link to="/settings" className="inline-flex items-center gap-0.5 text-primary-600 hover:text-primary-700 transition-colors">
-              <Settings className="w-3 h-3" />
-              change in Settings
-            </Link>
-          </p>
+        {!isEmpty && (
+          <button
+            onClick={handleNewChat}
+            title="New chat (Ctrl+K)"
+            className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-gray-200 dark:border-white/15 text-xs font-medium text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-white/5 transition-colors shrink-0 mt-1"
+          >
+            <RotateCcw className="w-3.5 h-3.5" />
+            New chat
+          </button>
         )}
       </div>
 

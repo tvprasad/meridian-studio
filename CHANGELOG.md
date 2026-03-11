@@ -23,6 +23,8 @@ Versioning follows [Semantic Versioning](https://semver.org/).
 - 8 contract tests for evaluation endpoints (queries pagination, field mapping, raw_confidence, metrics aggregates, latency percentiles, status/source breakdowns, unconfigured state)
 
 ### Changed
+- **Evaluation page enhancements** — sortable columns (Time, Status, Confidence, Latency, Source), filter dropdowns (status, source) with clear button, metric card descriptions, column header tooltips, collapsible "Understanding these metrics" guide explaining all 4 metrics and 7 query log columns
+- **Ask Meridian input bar consistency** — header layout, New Chat button style, and Ctrl+K behavior aligned with Ops Agent page
 - **Ops Agent UX improvements** — answer rendered above reasoning timeline (faster time-to-value), timeline collapsed by default, follow-up prompt chips ("Keep investigating"), New Query button with Ctrl+K shortcut
 - **Centered input bar** on empty state for both Ask Meridian and Ops Agent — input moves to bottom-pinned position once conversation starts
 - **Polished input bar** on both chat pages — elevated card with shadow, keyboard hint badge, circular send icon button, contextual placeholder ("Ask a follow-up..." during conversation)
