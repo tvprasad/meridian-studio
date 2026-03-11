@@ -44,14 +44,22 @@ const FOLLOW_UP_PROMPTS = [
 
 // ── Small Components ─────────────────────────────────────────────────────────
 
-function ConfidencePill({ score, threshold }: { score: number; threshold?: number }) {
+function ConfidencePill({ score, rawScore, threshold }: { score: number; rawScore?: number | null; threshold?: number }) {
   const pct = (score * 100).toFixed(1);
   const passes = threshold == null || score >= threshold;
+  const isCalibrated = rawScore != null && Math.abs(rawScore - score) > 0.001;
+
   return (
     <span className={`inline-flex items-center gap-1 text-xs font-medium px-2 py-0.5 rounded-full ${
       passes ? 'bg-emerald-50 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-400' : 'bg-red-50 text-red-600 dark:bg-red-900/30 dark:text-red-400'
     }`}>
-      {pct}% confidence
+      {isCalibrated ? (
+        <span title={`Raw: ${(rawScore * 100).toFixed(1)}% — Calibrated: ${pct}%`}>
+          {(rawScore * 100).toFixed(1)}% → {pct}%
+        </span>
+      ) : (
+        <>{pct}% confidence</>
+      )}
     </span>
   );
 }
@@ -197,6 +205,8 @@ function AssistantMessage({ msg, isLatest, onSuggestionClick }: {
   const showFollowUps = isLatest && !isRefused;
   const threshold = msg.metadata?.threshold;
   const score = msg.metadata?.confidence_score;
+  const rawScore = msg.metadata?.raw_confidence;
+  const isCalibrated = rawScore != null && score != null && Math.abs(rawScore - score) > 0.001;
 
   return (
     <div>
@@ -214,8 +224,11 @@ function AssistantMessage({ msg, isLatest, onSuggestionClick }: {
               <p className="text-sm text-amber-800 dark:text-amber-300">{msg.metadata?.refusal_reason ?? 'Retrieval confidence below threshold.'}</p>
               {score != null && threshold != null && (
                 <p className="text-xs text-amber-600 dark:text-amber-400/80 mt-2">
-                  Confidence was {(score * 100).toFixed(1)}% — the minimum threshold is {(threshold * 100).toFixed(0)}%.
-                  Try rephrasing with more specific terms or ask about a different topic.
+                  {isCalibrated
+                    ? `Raw confidence was ${(rawScore * 100).toFixed(1)}%, calibrated to ${(score * 100).toFixed(1)}%`
+                    : `Confidence was ${(score * 100).toFixed(1)}%`}
+                  {` — the minimum threshold is ${(threshold * 100).toFixed(0)}%.`}
+                  {' '}Try rephrasing with more specific terms or ask about a different topic.
                 </p>
               )}
             </div>
@@ -228,7 +241,7 @@ function AssistantMessage({ msg, isLatest, onSuggestionClick }: {
           )}
           {msg.metadata && (
             <div className="flex items-center gap-3 mt-1.5 px-1">
-              <ConfidencePill score={msg.metadata.confidence_score} threshold={msg.metadata.threshold} />
+              <ConfidencePill score={msg.metadata.confidence_score} rawScore={msg.metadata.raw_confidence} threshold={msg.metadata.threshold} />
               {msg.content && <CopyButton text={msg.content} />}
             </div>
           )}

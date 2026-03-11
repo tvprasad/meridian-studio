@@ -16,6 +16,8 @@ Versioning follows [Semantic Versioning](https://semver.org/).
 - **ServiceNow connector** (ADR-0006) — new "ServiceNow" source tab on the Ingestion Pipeline page with server-side credentials, Check Status button, optional filters (KB name, category, article limit), Sync Articles action, and result/error display
 - **AI/GenAI suggested questions** — updated example questions to include generative AI policy, Azure OpenAI access, approved AI tools, and data classification topics
 - **ServiceNow API contract tests** — 6 tests covering status (configured/unconfigured), ingest (filters, empty payload), and error cases (502 unreachable, 400 missing credentials)
+- **Calibrated confidence support** — `raw_confidence` field from ADR-0016; ConfidencePill shows "Raw → Calibrated" when scores differ, REFUSED explanation includes both values
+- Contract test for calibrated scoring (`query-ok-calibrated.json` fixture)
 
 ### Changed
 - **Ops Agent UX improvements** — answer rendered above reasoning timeline (faster time-to-value), timeline collapsed by default, follow-up prompt chips ("Keep investigating"), New Query button with Ctrl+K shortcut

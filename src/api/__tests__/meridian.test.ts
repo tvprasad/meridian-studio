@@ -5,6 +5,7 @@ import { meridianApi } from '../meridian';
 
 import queryRefused from '../../__fixtures__/query-refused.json';
 import queryOk from '../../__fixtures__/query-ok.json';
+import queryOkCalibrated from '../../__fixtures__/query-ok-calibrated.json';
 import healthFixture from '../../__fixtures__/health.json';
 import ingestFixture from '../../__fixtures__/ingest-success.json';
 import snowStatusConfigured from '../../__fixtures__/servicenow-status-configured.json';
@@ -81,9 +82,24 @@ describe('meridianApi.query', () => {
       status: 'OK',
       trace_id: 'a1b2c3d4-e5f6-7890-abcd-ef1234567890',
       confidence_score: 0.87,
+      raw_confidence: null,
       answer: 'Meridian is a RAG-powered knowledge engine.',
       threshold: 0.6,
     }));
+  });
+
+  it('maps raw_confidence when calibration is enabled', async () => {
+    server.use(
+      http.post('http://localhost:8000/query', async () => {
+        return HttpResponse.json(queryOkCalibrated);
+      }),
+    );
+
+    const result = await meridianApi.query('What is calibrated scoring?');
+
+    expect(result.confidence_score).toBe(0.85);
+    expect(result.raw_confidence).toBe(0.70);
+    expect(result.raw_confidence).not.toBe(result.confidence_score);
   });
 
   it('sends conversation_history when provided', async () => {

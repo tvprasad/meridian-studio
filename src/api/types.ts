@@ -8,6 +8,7 @@ export interface QueryResponse {
   status: QueryStatus;
   trace_id: string;
   confidence_score: number;
+  raw_confidence?: number | null;
   answer?: string;
   refusal_reason?: string;
   threshold?: number;
