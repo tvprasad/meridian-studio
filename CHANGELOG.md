@@ -18,6 +18,9 @@ Versioning follows [Semantic Versioning](https://semver.org/).
 - **ServiceNow API contract tests** — 6 tests covering status (configured/unconfigured), ingest (filters, empty payload), and error cases (502 unreachable, 400 missing credentials)
 - **Calibrated confidence support** — `raw_confidence` field from ADR-0016; ConfidencePill shows "Raw → Calibrated" when scores differ, REFUSED explanation includes both values
 - Contract test for calibrated scoring (`query-ok-calibrated.json` fixture)
+- **Evaluation Queries** page (`/evaluation`) — aggregate metrics dashboard (total queries, avg confidence, refusal rate, latency P50/P95) and paginated query log table with raw/calibrated confidence, chunks, latency, and source columns
+- Evaluation API methods (`evaluationQueries`, `evaluationMetrics`) with TypeScript types
+- 8 contract tests for evaluation endpoints (queries pagination, field mapping, raw_confidence, metrics aggregates, latency percentiles, status/source breakdowns, unconfigured state)
 
 ### Changed
 - **Ops Agent UX improvements** — answer rendered above reasoning timeline (faster time-to-value), timeline collapsed by default, follow-up prompt chips ("Keep investigating"), New Query button with Ctrl+K shortcut

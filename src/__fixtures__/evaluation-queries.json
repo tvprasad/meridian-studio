@@ -1,0 +1,53 @@
+{
+  "configured": true,
+  "total": 3,
+  "limit": 50,
+  "offset": 0,
+  "queries": [
+    {
+      "id": "q-001",
+      "trace_id": "eval-aaa-1111",
+      "timestamp": "2026-03-10T14:32:00+00:00",
+      "question": "How do I reset my password?",
+      "status": "OK",
+      "confidence": 0.82,
+      "raw_confidence": 0.71,
+      "chunks_retrieved": 5,
+      "chunks_above": 4,
+      "t_retrieve_ms": 120,
+      "t_generate_ms": 850,
+      "t_total_ms": 970,
+      "source": "query"
+    },
+    {
+      "id": "q-002",
+      "trace_id": "eval-bbb-2222",
+      "timestamp": "2026-03-10T14:28:15+00:00",
+      "question": "What is the vacation policy for contractors?",
+      "status": "REFUSED",
+      "confidence": 0.38,
+      "raw_confidence": 0.35,
+      "chunks_retrieved": 5,
+      "chunks_above": 1,
+      "t_retrieve_ms": 95,
+      "t_generate_ms": null,
+      "t_total_ms": 95,
+      "source": "query"
+    },
+    {
+      "id": "q-003",
+      "trace_id": "eval-ccc-3333",
+      "timestamp": "2026-03-10T14:20:45+00:00",
+      "question": "Why are login requests failing for region us-east?",
+      "status": "OK",
+      "confidence": 0.91,
+      "raw_confidence": 0.88,
+      "chunks_retrieved": 5,
+      "chunks_above": 5,
+      "t_retrieve_ms": 140,
+      "t_generate_ms": 1200,
+      "t_total_ms": 1340,
+      "source": "agent"
+    }
+  ]
+}

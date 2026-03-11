@@ -12,6 +12,9 @@ import snowStatusConfigured from '../../__fixtures__/servicenow-status-configure
 import snowStatusUnconfigured from '../../__fixtures__/servicenow-status-unconfigured.json';
 import snowIngestFixture from '../../__fixtures__/servicenow-ingest-success.json';
 import agentQueryOk from '../../__fixtures__/agent-query-ok.json';
+import evalQueriesFixture from '../../__fixtures__/evaluation-queries.json';
+import evalMetricsFixture from '../../__fixtures__/evaluation-metrics.json';
+import evalUnconfigured from '../../__fixtures__/evaluation-unconfigured.json';
 
 // ── MSW server ──────────────────────────────────────────────────────────────
 
@@ -36,6 +39,12 @@ const server = setupServer(
   http.post('http://localhost:8000/agent/query', async ({ request }) => {
     capturedBody = await request.json();
     return HttpResponse.json(agentQueryOk);
+  }),
+  http.get('http://localhost:8000/evaluation/queries', () => {
+    return HttpResponse.json(evalQueriesFixture);
+  }),
+  http.get('http://localhost:8000/evaluation/metrics', () => {
+    return HttpResponse.json(evalMetricsFixture);
   }),
 );
 
@@ -296,5 +305,92 @@ describe('meridianApi.agentQuery', () => {
     await expect(
       meridianApi.agentQuery('test'),
     ).rejects.toThrow('Agent execution failed: tool timeout');
+  });
+});
+
+// ── Evaluation Queries API tests ────────────────────────────────────────────
+
+describe('meridianApi.evaluationQueries', () => {
+  it('returns paginated query log entries', async () => {
+    const result = await meridianApi.evaluationQueries();
+
+    expect(result.configured).toBe(true);
+    expect(result.total).toBe(3);
+    expect(result.queries).toHaveLength(3);
+  });
+
+  it('maps query entry fields correctly', async () => {
+    const result = await meridianApi.evaluationQueries();
+    const first = result.queries![0];
+
+    expect(first).toEqual(expect.objectContaining({
+      id: 'q-001',
+      trace_id: 'eval-aaa-1111',
+      status: 'OK',
+      confidence: 0.82,
+      raw_confidence: 0.71,
+      source: 'query',
+    }));
+  });
+
+  it('includes raw_confidence for calibrated entries', async () => {
+    const result = await meridianApi.evaluationQueries();
+    const calibrated = result.queries!.find((q) => q.id === 'q-001')!;
+
+    expect(calibrated.raw_confidence).toBe(0.71);
+    expect(calibrated.confidence).toBe(0.82);
+    expect(calibrated.raw_confidence).not.toBe(calibrated.confidence);
+  });
+
+  it('returns unconfigured when database is not set up', async () => {
+    server.use(
+      http.get('http://localhost:8000/evaluation/queries', () => {
+        return HttpResponse.json(evalUnconfigured);
+      }),
+    );
+
+    const result = await meridianApi.evaluationQueries();
+
+    expect(result.configured).toBe(false);
+    expect(result.error).toBe('Database not configured');
+  });
+});
+
+// ── Evaluation Metrics API tests ────────────────────────────────────────────
+
+describe('meridianApi.evaluationMetrics', () => {
+  it('returns aggregate metrics', async () => {
+    const result = await meridianApi.evaluationMetrics();
+
+    expect(result.configured).toBe(true);
+    expect(result.total_queries).toBe(127);
+    expect(result.avg_confidence).toBe(0.7234);
+    expect(result.refusal_rate).toBe(0.1575);
+  });
+
+  it('includes latency percentiles', async () => {
+    const result = await meridianApi.evaluationMetrics();
+
+    expect(result.latency_p50_ms).toBe(980);
+    expect(result.latency_p95_ms).toBe(2450);
+  });
+
+  it('includes status and source breakdowns', async () => {
+    const result = await meridianApi.evaluationMetrics();
+
+    expect(result.queries_by_status).toEqual({ OK: 107, REFUSED: 20 });
+    expect(result.queries_by_source).toEqual({ query: 98, agent: 29 });
+  });
+
+  it('returns unconfigured when database is not set up', async () => {
+    server.use(
+      http.get('http://localhost:8000/evaluation/metrics', () => {
+        return HttpResponse.json(evalUnconfigured);
+      }),
+    );
+
+    const result = await meridianApi.evaluationMetrics();
+
+    expect(result.configured).toBe(false);
   });
 });

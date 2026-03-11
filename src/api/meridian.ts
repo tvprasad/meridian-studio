@@ -1,6 +1,6 @@
 import { api, ApiError } from './client';
 import { config } from '../config';
-import type { QueryResponse, HealthResponse, McpTool, UpdateSettingsPayload, IngestResponse, ServiceNowIngestRequest, ServiceNowIngestResponse, ServiceNowStatusResponse, AgentQueryResponse } from './types';
+import type { QueryResponse, HealthResponse, McpTool, UpdateSettingsPayload, IngestResponse, ServiceNowIngestRequest, ServiceNowIngestResponse, ServiceNowStatusResponse, AgentQueryResponse, EvaluationQueriesResponse, EvaluationMetricsResponse } from './types';
 
 export interface ChatMessage {
   role: 'user' | 'assistant';
@@ -64,4 +64,16 @@ export const meridianApi = {
   // POST /agent/query — AI Operations Agent with ReAct reasoning
   agentQuery: (question: string) =>
     api.post<AgentQueryResponse>('/agent/query', { question }, { timeoutMs: 120_000 }),
+
+  // GET /evaluation/queries — paginated query log entries
+  evaluationQueries: (limit = 50, offset = 0) =>
+    api.get<EvaluationQueriesResponse>('/evaluation/queries', {
+      params: { limit: String(limit), offset: String(offset) },
+    }),
+
+  // GET /evaluation/metrics — aggregate telemetry metrics
+  evaluationMetrics: (since?: string) =>
+    api.get<EvaluationMetricsResponse>('/evaluation/metrics', {
+      ...(since && { params: { since } }),
+    }),
 };

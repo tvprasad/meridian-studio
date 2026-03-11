@@ -78,6 +78,51 @@ export interface ServiceNowStatusResponse {
 }
 
 // ===========================================
+// Evaluation Types
+// ===========================================
+
+export interface EvaluationQueryEntry {
+  id: string;
+  trace_id: string;
+  timestamp: string;
+  question: string | null;
+  status: string;
+  confidence: number | null;
+  raw_confidence: number | null;
+  chunks_retrieved: number | null;
+  chunks_above: number | null;
+  t_retrieve_ms: number | null;
+  t_generate_ms: number | null;
+  t_total_ms: number | null;
+  source: string;
+}
+
+export interface EvaluationQueriesResponse {
+  configured: boolean;
+  total?: number;
+  limit?: number;
+  offset?: number;
+  queries?: EvaluationQueryEntry[];
+  error?: string;
+}
+
+export interface EvaluationMetricsResponse {
+  configured: boolean;
+  total_queries?: number;
+  avg_confidence?: number | null;
+  retrieval_precision?: number | null;
+  refusal_rate?: number;
+  latency_p50_ms?: number | null;
+  latency_p95_ms?: number | null;
+  queries_by_status?: Record<string, number>;
+  queries_by_source?: Record<string, number>;
+  period_start?: string;
+  period_end?: string;
+  message?: string;
+  error?: string;
+}
+
+// ===========================================
 // Agent Types
 // ===========================================
 
