@@ -9,6 +9,10 @@ Versioning follows [Semantic Versioning](https://semver.org/).
 
 ## [Unreleased]
 
+---
+
+## [0.7.0] — 2026-03-11
+
 ### Added
 - **PRODUCT_BRIEF.md** — investor/sales-facing product document covering executive summary, capabilities, competitive comparison, deployment options, security, target personas, and roadmap
 - **Landing page: AI Operations Agent card** — ReAct reasoning agent capability card added to Core Capabilities section
@@ -200,7 +204,8 @@ Versioning follows [Semantic Versioning](https://semver.org/).
 - VPL logo in sidebar header
 - GitHub and LinkedIn social links in sidebar footer
 
-[Unreleased]: https://github.com/tvprasad/meridian-studio/compare/v0.6.1...HEAD
+[Unreleased]: https://github.com/tvprasad/meridian-studio/compare/v0.7.0...HEAD
+[0.7.0]: https://github.com/tvprasad/meridian-studio/compare/v0.6.1...v0.7.0
 [0.6.1]: https://github.com/tvprasad/meridian-studio/compare/v0.6.0...v0.6.1
 [0.6.0]: https://github.com/tvprasad/meridian-studio/compare/v0.5.0...v0.6.0
 [0.5.0]: https://github.com/tvprasad/meridian-studio/compare/v0.4.0...v0.5.0
