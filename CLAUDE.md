@@ -42,6 +42,17 @@ The MCP `tools/call` endpoint expects: `{ name: "query_knowledge_base", argument
 4. CHANGELOG.md updated
 5. ADR written for architectural decisions
 
+### After every commit (mandatory)
+1. Determine version bump from commit prefix: `fix:` = patch, `feat:` = minor, breaking change = major
+2. Move `[Unreleased]` entries in CHANGELOG.md to new `[x.y.z] — YYYY-MM-DD` section
+3. Add fresh empty `[Unreleased]` section above
+4. Update CHANGELOG comparison links at bottom of file
+5. Commit: `chore: release vX.Y.Z`
+6. Tag: `git tag vX.Y.Z`
+7. Push: `git push && git push origin vX.Y.Z`
+
+This is enforced by a `postToolUse` hook on `git commit`. Never skip tagging.
+
 ### Code style
 - Prefer "Cognitive AI Services" (not "Azure AI Services")
 - No emojis in code or docs unless explicitly asked
