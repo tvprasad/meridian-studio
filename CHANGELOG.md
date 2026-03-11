@@ -11,6 +11,13 @@ Versioning follows [Semantic Versioning](https://semver.org/).
 
 ---
 
+## [0.6.1] — 2026-03-10
+
+### Changed
+- **Mandatory post-commit tagging** — added convention to CLAUDE.md requiring a semantic version tag after every commit, enforced by `postToolUse` hook
+
+---
+
 ## [0.6.0] — 2026-03-10
 
 ### Added
@@ -182,7 +189,8 @@ Versioning follows [Semantic Versioning](https://semver.org/).
 - VPL logo in sidebar header
 - GitHub and LinkedIn social links in sidebar footer
 
-[Unreleased]: https://github.com/tvprasad/meridian-studio/compare/v0.6.0...HEAD
+[Unreleased]: https://github.com/tvprasad/meridian-studio/compare/v0.6.1...HEAD
+[0.6.1]: https://github.com/tvprasad/meridian-studio/compare/v0.6.0...v0.6.1
 [0.6.0]: https://github.com/tvprasad/meridian-studio/compare/v0.5.0...v0.6.0
 [0.5.0]: https://github.com/tvprasad/meridian-studio/compare/v0.4.0...v0.5.0
 [0.4.0]: https://github.com/tvprasad/meridian-studio/compare/v0.3.0...v0.4.0
