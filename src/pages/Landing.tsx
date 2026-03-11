@@ -6,10 +6,11 @@ import {
   Languages,
   Eye,
   Mic,
-  FileSearch,
   ArrowRight,
   Github,
   Linkedin,
+  Bot,
+  BarChart3,
 } from 'lucide-react';
 
 const CORE_CAPABILITIES = [
@@ -24,14 +25,19 @@ const CORE_CAPABILITIES = [
     desc: 'Upload, extract, chunk, embed, and index documents into a searchable knowledge base.',
   },
   {
+    icon: Bot,
+    title: 'AI Operations Agent',
+    desc: 'ReAct reasoning agent that searches ServiceNow incidents, changes, and your knowledge base with full step-by-step transparency.',
+  },
+  {
+    icon: BarChart3,
+    title: 'Evaluation Dashboard',
+    desc: 'Aggregate metrics, sortable query logs, and confidence analytics to monitor and tune system performance.',
+  },
+  {
     icon: Shield,
     title: 'Governance & Diagnostics',
     desc: 'Every query is traced, scored, and auditable. Refusals are transparent with confidence thresholds.',
-  },
-  {
-    icon: FileSearch,
-    title: 'Document Intelligence',
-    desc: 'Structured extraction from invoices, receipts, IDs, and layouts.',
   },
 ];
 
@@ -129,7 +135,7 @@ export function Landing() {
         <h2 className="text-center text-2xl font-bold text-white/90 mb-12">
           Everything you need for enterprise AI
         </h2>
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
           {CORE_CAPABILITIES.map(({ icon: Icon, title, desc }) => (
             <div
               key={title}

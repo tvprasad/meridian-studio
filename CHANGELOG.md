@@ -9,6 +9,17 @@ Versioning follows [Semantic Versioning](https://semver.org/).
 
 ## [Unreleased]
 
+### Added
+- **PRODUCT_BRIEF.md** — investor/sales-facing product document covering executive summary, capabilities, competitive comparison, deployment options, security, target personas, and roadmap
+- **Landing page: AI Operations Agent card** — ReAct reasoning agent capability card added to Core Capabilities section
+- **Landing page: Evaluation Dashboard card** — metrics and analytics capability card added to Core Capabilities section
+
+### Changed
+- Landing page Core Capabilities grid updated from 4 columns to 3 (2 rows of 3 for 6 capabilities)
+
+### Fixed
+- `package.json` version synced to `0.6.1` (was `0.5.0`)
+
 ---
 
 ## [0.6.1] — 2026-03-10
