@@ -9,6 +9,13 @@ Versioning follows [Semantic Versioning](https://semver.org/).
 
 ## [Unreleased]
 
+### Added
+- **Feedback buttons** — thumbs up/down on Ask Meridian and AI Operations Agent responses, persisted in localStorage per trace ID
+- **Page size selector** on Evaluation query log — choose 25, 50, or 100 rows per page (replaces fixed 20-row pages)
+
+### Changed
+- **REFUSED auto-expand** — Citations panel automatically opens when a query is refused, so users immediately see per-chunk retrieval scores and why confidence fell below threshold
+
 ---
 
 ## [0.8.0] — 2026-03-11

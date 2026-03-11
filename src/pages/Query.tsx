@@ -8,6 +8,7 @@ import {
   Send, Settings, BrainCircuit, AlertTriangle, MessageCircle,
   RotateCcw, Copy, Check, WifiOff, ChevronDown, ChevronRight,
   FileText, ShieldCheck, ShieldAlert, Fingerprint,
+  ThumbsUp, ThumbsDown,
 } from 'lucide-react';
 
 // ── Types & Constants ────────────────────────────────────────────────────────
@@ -19,6 +20,7 @@ interface Message {
 }
 
 const STORAGE_KEY = 'meridian-chat-history';
+const FEEDBACK_KEY = 'meridian-feedback';
 
 const PROVIDER_LABELS: Record<string, string> = {
   local: 'Local (Ollama)',
@@ -85,6 +87,62 @@ function CopyButton({ text }: { text: string }) {
   );
 }
 
+type Feedback = 'up' | 'down' | null;
+
+function loadFeedback(): Record<string, Feedback> {
+  try {
+    const stored = localStorage.getItem(FEEDBACK_KEY);
+    return stored ? JSON.parse(stored) : {};
+  } catch { return {}; }
+}
+
+function saveFeedback(traceId: string, value: Feedback) {
+  const all = loadFeedback();
+  if (value) {
+    all[traceId] = value;
+  } else {
+    delete all[traceId];
+  }
+  localStorage.setItem(FEEDBACK_KEY, JSON.stringify(all));
+}
+
+function FeedbackButtons({ traceId }: { traceId: string }) {
+  const [feedback, setFeedback] = useState<Feedback>(() => loadFeedback()[traceId] ?? null);
+
+  const toggle = (value: 'up' | 'down') => {
+    const next = feedback === value ? null : value;
+    setFeedback(next);
+    saveFeedback(traceId, next);
+  };
+
+  return (
+    <span className="inline-flex items-center gap-1">
+      <button
+        onClick={() => toggle('up')}
+        title="Helpful"
+        className={`p-0.5 rounded transition-colors ${
+          feedback === 'up'
+            ? 'text-emerald-500'
+            : 'text-gray-300 hover:text-gray-500 dark:text-gray-600 dark:hover:text-gray-400'
+        }`}
+      >
+        <ThumbsUp className="w-3.5 h-3.5" />
+      </button>
+      <button
+        onClick={() => toggle('down')}
+        title="Not helpful"
+        className={`p-0.5 rounded transition-colors ${
+          feedback === 'down'
+            ? 'text-red-500'
+            : 'text-gray-300 hover:text-gray-500 dark:text-gray-600 dark:hover:text-gray-400'
+        }`}
+      >
+        <ThumbsDown className="w-3.5 h-3.5" />
+      </button>
+    </span>
+  );
+}
+
 function RetrievalScoreBar({ score, threshold, index }: { score: number; threshold: number; index: number }) {
   const pct = score * 100;
   const threshPct = threshold * 100;
@@ -127,8 +185,8 @@ function RetrievalScoreBar({ score, threshold, index }: { score: number; thresho
   );
 }
 
-function RetrievalPanel({ metadata }: { metadata: QueryResponse }) {
-  const [open, setOpen] = useState(false);
+function RetrievalPanel({ metadata, defaultOpen }: { metadata: QueryResponse; defaultOpen?: boolean }) {
+  const [open, setOpen] = useState(defaultOpen ?? false);
   const scores = metadata.retrieval_scores ?? [];
   const threshold = metadata.threshold ?? 0.6;
   const passing = scores.filter((s) => s >= threshold).length;
@@ -243,11 +301,12 @@ function AssistantMessage({ msg, isLatest, onSuggestionClick }: {
             <div className="flex items-center gap-3 mt-1.5 px-1">
               <ConfidencePill score={msg.metadata.confidence_score} rawScore={msg.metadata.raw_confidence} threshold={msg.metadata.threshold} />
               {msg.content && <CopyButton text={msg.content} />}
+              <FeedbackButtons traceId={msg.metadata.trace_id} />
             </div>
           )}
         </div>
       </div>
-      {msg.metadata && <RetrievalPanel metadata={msg.metadata} />}
+      {msg.metadata && <RetrievalPanel metadata={msg.metadata} defaultOpen={msg.metadata.status === 'REFUSED'} />}
       {showFollowUps && (
         <div className="flex flex-wrap gap-2 mt-4 justify-center">
           <div className="w-full flex items-center justify-center gap-1.5 mb-1">

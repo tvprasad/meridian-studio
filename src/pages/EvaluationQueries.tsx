@@ -20,7 +20,8 @@ import {
 } from 'lucide-react';
 import type { EvaluationQueryEntry } from '../api/types';
 
-const PAGE_SIZE = 20;
+const PAGE_SIZE_OPTIONS = [25, 50, 100] as const;
+const DEFAULT_PAGE_SIZE = 25;
 
 type SortField = 'timestamp' | 'status' | 'confidence' | 't_total_ms' | 'source';
 type SortDir = 'asc' | 'desc';
@@ -204,6 +205,7 @@ function EvaluationGuide() {
 }
 
 export function EvaluationQueries() {
+  const [pageSize, setPageSize] = useState(DEFAULT_PAGE_SIZE);
   const [offset, setOffset] = useState(0);
   const [sortField, setSortField] = useState<SortField | null>(null);
   const [sortDir, setSortDir] = useState<SortDir>('desc');
@@ -217,8 +219,8 @@ export function EvaluationQueries() {
   });
 
   const { data: queries, isLoading: queriesLoading } = useQuery({
-    queryKey: ['evaluation-queries', offset],
-    queryFn: () => meridianApi.evaluationQueries(PAGE_SIZE, offset),
+    queryKey: ['evaluation-queries', pageSize, offset],
+    queryFn: () => meridianApi.evaluationQueries(pageSize, offset),
     refetchInterval: 30_000,
   });
 
@@ -265,8 +267,8 @@ export function EvaluationQueries() {
   }
 
   const total = queries?.total ?? 0;
-  const currentPage = Math.floor(offset / PAGE_SIZE) + 1;
-  const totalPages = Math.ceil(total / PAGE_SIZE);
+  const currentPage = Math.floor(offset / pageSize) + 1;
+  const totalPages = Math.ceil(total / pageSize);
 
   const thClass = 'px-4 py-3 cursor-pointer select-none hover:bg-gray-50 dark:hover:bg-white/5 transition-colors';
 
@@ -374,28 +376,39 @@ export function EvaluationQueries() {
                 </button>
               )}
             </div>
-            {/* Pagination */}
-            {totalPages > 1 && (
-              <div className="flex items-center gap-2 text-sm border-l border-gray-200 dark:border-white/10 pl-3">
-                <button
-                  onClick={() => setOffset(Math.max(0, offset - PAGE_SIZE))}
-                  disabled={offset === 0}
-                  className="p-1 rounded hover:bg-gray-100 dark:hover:bg-white/10 disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
-                >
-                  <ChevronLeft className="w-4 h-4 text-gray-600 dark:text-gray-300" />
-                </button>
-                <span className="text-gray-500 dark:text-gray-400 tabular-nums text-xs">
-                  {currentPage} / {totalPages}
-                </span>
-                <button
-                  onClick={() => setOffset(offset + PAGE_SIZE)}
-                  disabled={offset + PAGE_SIZE >= total}
-                  className="p-1 rounded hover:bg-gray-100 dark:hover:bg-white/10 disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
-                >
-                  <ChevronRight className="w-4 h-4 text-gray-600 dark:text-gray-300" />
-                </button>
-              </div>
-            )}
+            {/* Page size + Pagination */}
+            <div className="flex items-center gap-2 text-sm border-l border-gray-200 dark:border-white/10 pl-3">
+              <select
+                value={pageSize}
+                onChange={(e) => { setPageSize(Number(e.target.value)); setOffset(0); }}
+                className="text-xs border border-gray-200 dark:border-white/15 rounded-lg px-2 py-1.5 bg-white dark:bg-white/5 text-gray-600 dark:text-gray-300 focus:outline-none focus:ring-1 focus:ring-primary-400"
+              >
+                {PAGE_SIZE_OPTIONS.map((size) => (
+                  <option key={size} value={size}>{size} / page</option>
+                ))}
+              </select>
+              {totalPages > 1 && (
+                <>
+                  <button
+                    onClick={() => setOffset(Math.max(0, offset - pageSize))}
+                    disabled={offset === 0}
+                    className="p-1 rounded hover:bg-gray-100 dark:hover:bg-white/10 disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
+                  >
+                    <ChevronLeft className="w-4 h-4 text-gray-600 dark:text-gray-300" />
+                  </button>
+                  <span className="text-gray-500 dark:text-gray-400 tabular-nums text-xs">
+                    {currentPage} / {totalPages}
+                  </span>
+                  <button
+                    onClick={() => setOffset(offset + pageSize)}
+                    disabled={offset + pageSize >= total}
+                    className="p-1 rounded hover:bg-gray-100 dark:hover:bg-white/10 disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
+                  >
+                    <ChevronRight className="w-4 h-4 text-gray-600 dark:text-gray-300" />
+                  </button>
+                </>
+              )}
+            </div>
           </div>
         </div>
 

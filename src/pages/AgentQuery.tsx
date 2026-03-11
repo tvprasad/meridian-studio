@@ -6,10 +6,68 @@ import type { AgentQueryResponse, AgentStep } from '../api/types';
 import {
   Send, Bot, Wrench, Clock, ChevronDown, ChevronRight,
   Copy, Check, AlertCircle, Loader2, Fingerprint, RotateCcw,
-  MessageCircle,
+  MessageCircle, ThumbsUp, ThumbsDown,
 } from 'lucide-react';
 
 // ── Constants ────────────────────────────────────────────────────────────────
+
+const AGENT_FEEDBACK_KEY = 'meridian-agent-feedback';
+
+type Feedback = 'up' | 'down' | null;
+
+function loadFeedback(): Record<string, Feedback> {
+  try {
+    const stored = localStorage.getItem(AGENT_FEEDBACK_KEY);
+    return stored ? JSON.parse(stored) : {};
+  } catch { return {}; }
+}
+
+function saveFeedback(traceId: string, value: Feedback) {
+  const all = loadFeedback();
+  if (value) {
+    all[traceId] = value;
+  } else {
+    delete all[traceId];
+  }
+  localStorage.setItem(AGENT_FEEDBACK_KEY, JSON.stringify(all));
+}
+
+function FeedbackButtons({ traceId }: { traceId: string }) {
+  const [feedback, setFeedback] = useState<Feedback>(() => loadFeedback()[traceId] ?? null);
+
+  const toggle = (value: 'up' | 'down') => {
+    const next = feedback === value ? null : value;
+    setFeedback(next);
+    saveFeedback(traceId, next);
+  };
+
+  return (
+    <span className="inline-flex items-center gap-1">
+      <button
+        onClick={() => toggle('up')}
+        title="Helpful"
+        className={`p-0.5 rounded transition-colors ${
+          feedback === 'up'
+            ? 'text-emerald-500'
+            : 'text-gray-300 hover:text-gray-500 dark:text-gray-600 dark:hover:text-gray-400'
+        }`}
+      >
+        <ThumbsUp className="w-3.5 h-3.5" />
+      </button>
+      <button
+        onClick={() => toggle('down')}
+        title="Not helpful"
+        className={`p-0.5 rounded transition-colors ${
+          feedback === 'down'
+            ? 'text-red-500'
+            : 'text-gray-300 hover:text-gray-500 dark:text-gray-600 dark:hover:text-gray-400'
+        }`}
+      >
+        <ThumbsDown className="w-3.5 h-3.5" />
+      </button>
+    </span>
+  );
+}
 
 const DEMO_QUESTION = 'Why are login requests failing for region us-east?';
 
@@ -172,6 +230,7 @@ function AgentAnswer({ result, isLatest, onFollowUpClick }: {
           )}
           <div className="flex items-center gap-4 mt-1.5 px-1">
             {result.answer && <CopyButton text={result.answer} />}
+            <FeedbackButtons traceId={result.trace_id} />
             <span className="text-[11px] text-gray-400 flex items-center gap-1">
               <Clock className="w-3 h-3" />
               {(result.elapsed_ms / 1000).toFixed(1)}s total
