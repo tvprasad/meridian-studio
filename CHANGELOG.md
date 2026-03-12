@@ -9,6 +9,10 @@ Versioning follows [Semantic Versioning](https://semver.org/).
 
 ## [Unreleased]
 
+---
+
+## [0.10.0] — 2026-03-11
+
 ### Added
 - **Evaluation human-in-the-loop feedback** — Rating column (thumbs up/down) on every query log row; analysts rate answer correctness or refusal appropriateness; persisted to `query_log.feedback` via `POST /evaluation/queries/{trace_id}/feedback`; localStorage used as optimistic cache
 - **"Helpful?" label** on Ask Meridian feedback buttons — concise inline label sets user expectation before thumbs up/down icons
@@ -247,6 +251,9 @@ Versioning follows [Semantic Versioning](https://semver.org/).
 - GitHub and LinkedIn social links in sidebar footer
 
 [Unreleased]: https://github.com/tvprasad/meridian-studio/compare/v0.9.1...HEAD
+[0.9.1]: https://github.com/tvprasad/meridian-studio/compare/v0.9.0...v0.9.1
+[0.9.0]: https://github.com/tvprasad/meridian-studio/compare/v0.8.0...v0.9.0
+[0.10.0]: https://github.com/tvprasad/meridian-studio/compare/v0.9.1...v0.10.0
 [0.9.1]: https://github.com/tvprasad/meridian-studio/compare/v0.9.0...v0.9.1
 [0.9.0]: https://github.com/tvprasad/meridian-studio/compare/v0.8.0...v0.9.0
 [0.8.0]: https://github.com/tvprasad/meridian-studio/compare/v0.7.0...v0.8.0
