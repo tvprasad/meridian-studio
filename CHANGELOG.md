@@ -9,6 +9,14 @@ Versioning follows [Semantic Versioning](https://semver.org/).
 
 ## [Unreleased]
 
+### Added
+- **Evaluation human-in-the-loop feedback** — Rating column (thumbs up/down) on every query log row; analysts rate answer correctness or refusal appropriateness; persisted to `query_log.feedback` via `POST /evaluation/queries/{trace_id}/feedback`; localStorage used as optimistic cache
+- **"Helpful?" label** on Ask Meridian feedback buttons — concise inline label sets user expectation before thumbs up/down icons
+
+### Fixed
+- **Citations panel width** — panel now constrained to `max-w-3xl pl-11`, matching the message bubble width; bars no longer stretch full viewport width
+- **Confidential documents** — `WHITEPAPER.md` and `PRODUCT_BRIEF.md` added to `.gitignore`; never enter git history
+
 ---
 
 ## [0.9.1] — 2026-03-11

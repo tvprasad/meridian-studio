@@ -101,6 +101,7 @@ export interface EvaluationQueryEntry {
   t_generate_ms: number | null;
   t_total_ms: number | null;
   source: string;
+  feedback?: 'up' | 'down' | null;
 }
 
 export interface EvaluationQueriesResponse {

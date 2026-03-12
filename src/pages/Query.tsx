@@ -116,7 +116,8 @@ function FeedbackButtons({ traceId }: { traceId: string }) {
   };
 
   return (
-    <span className="inline-flex items-center gap-1">
+    <span className="inline-flex items-center gap-1.5">
+      <span className="text-[11px] text-gray-400 dark:text-gray-500">Helpful?</span>
       <button
         onClick={() => toggle('up')}
         title="Helpful"
@@ -306,7 +307,11 @@ function AssistantMessage({ msg, isLatest, onSuggestionClick }: {
           )}
         </div>
       </div>
-      {msg.metadata && <RetrievalPanel metadata={msg.metadata} defaultOpen={msg.metadata.status === 'REFUSED'} />}
+      {msg.metadata && (
+        <div className="max-w-3xl pl-11">
+          <RetrievalPanel metadata={msg.metadata} defaultOpen={msg.metadata.status === 'REFUSED'} />
+        </div>
+      )}
       {showFollowUps && (
         <div className="flex flex-wrap gap-2 mt-4 justify-center">
           <div className="w-full flex items-center justify-center gap-1.5 mb-1">

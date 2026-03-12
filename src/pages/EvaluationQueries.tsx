@@ -17,8 +17,66 @@ import {
   X,
   ChevronDown,
   HelpCircle,
+  ThumbsUp,
+  ThumbsDown,
 } from 'lucide-react';
 import type { EvaluationQueryEntry } from '../api/types';
+
+const EVAL_FEEDBACK_KEY = 'meridian-eval-feedback';
+
+function loadEvalFeedback(): Record<string, 'up' | 'down'> {
+  try {
+    const stored = localStorage.getItem(EVAL_FEEDBACK_KEY);
+    return stored ? JSON.parse(stored) : {};
+  } catch { return {}; }
+}
+
+function FeedbackCell({ entry }: { entry: EvaluationQueryEntry }) {
+  const [rating, setRating] = useState<'up' | 'down' | null>(
+    () => loadEvalFeedback()[entry.trace_id] ?? entry.feedback ?? null
+  );
+
+  const toggle = (value: 'up' | 'down') => {
+    const next = rating === value ? null : value;
+    setRating(next);
+    const all = loadEvalFeedback();
+    if (next) all[entry.trace_id] = next;
+    else delete all[entry.trace_id];
+    localStorage.setItem(EVAL_FEEDBACK_KEY, JSON.stringify(all));
+    meridianApi.submitFeedback(entry.trace_id, next).catch(() => {});
+  };
+
+  const tooltip = entry.status === 'REFUSED'
+    ? 'Was this refusal appropriate?'
+    : 'Was this answer correct?';
+
+  return (
+    <td className="px-4 py-3">
+      <span className="inline-flex items-center gap-1" title={tooltip}>
+        <button
+          onClick={() => toggle('up')}
+          className={`p-0.5 rounded transition-colors ${
+            rating === 'up'
+              ? 'text-emerald-500'
+              : 'text-gray-300 hover:text-gray-500 dark:text-gray-600 dark:hover:text-gray-400'
+          }`}
+        >
+          <ThumbsUp className="w-3.5 h-3.5" />
+        </button>
+        <button
+          onClick={() => toggle('down')}
+          className={`p-0.5 rounded transition-colors ${
+            rating === 'down'
+              ? 'text-red-500'
+              : 'text-gray-300 hover:text-gray-500 dark:text-gray-600 dark:hover:text-gray-400'
+          }`}
+        >
+          <ThumbsDown className="w-3.5 h-3.5" />
+        </button>
+      </span>
+    </td>
+  );
+}
 
 const PAGE_SIZE_OPTIONS = [25, 50, 100] as const;
 const DEFAULT_PAGE_SIZE = 25;
@@ -456,6 +514,7 @@ export function EvaluationQueries() {
                   <th className={thClass} onClick={() => handleSort('source')} title="Query origin: direct query or AI Operations Agent">
                     <span className="inline-flex items-center gap-1">Source <SortIcon field="source" sortField={sortField} sortDir={sortDir} /></span>
                   </th>
+                  <th className="px-4 py-3" title="Human rating: was this answer correct or refusal appropriate?">Rating</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-gray-50 dark:divide-white/5">
@@ -490,6 +549,7 @@ export function EvaluationQueries() {
                         {entry.source}
                       </span>
                     </td>
+                    <FeedbackCell entry={entry} />
                   </tr>
                 ))}
               </tbody>

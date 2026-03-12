@@ -80,4 +80,8 @@ export const meridianApi = {
     api.get<EvaluationMetricsResponse>('/evaluation/metrics', {
       ...(since && { params: { since } }),
     }),
+
+  // PATCH /evaluation/queries/{trace_id}/feedback — submit human rating
+  submitFeedback: (traceId: string, rating: 'up' | 'down' | null) =>
+    api.post<void>(`/evaluation/queries/${traceId}/feedback`, { rating }),
 };

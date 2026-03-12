@@ -28,3 +28,7 @@ dist-ssr
 *.sln
 *.sw?
 .claude/
+
+# Confidential documents
+WHITEPAPER.md
+PRODUCT_BRIEF.md
