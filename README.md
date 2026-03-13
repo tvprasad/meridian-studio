@@ -31,6 +31,7 @@ The operator interface for [Meridian](https://github.com/tvprasad/meridian) — 
 
 ### Cross-cutting Features
 
+- **Authentication** — Azure AD/Entra ID via MSAL.js, gated by `VITE_AUTH_ENABLED` feature flag (off by default)
 - **Dark mode** — toggle via sun/moon button in sidebar, persisted in localStorage
 - **Collapsible sidebar** — pin/unpin with icon-only rail, expands on hover when unpinned
 - **Landing page** — dark hero section with capability cards at `/welcome`
@@ -79,6 +80,66 @@ The app will be available at `http://localhost:5173`.
 |---|---|---|
 | `VITE_API_BASE_URL` | `http://localhost:8000` | Meridian REST API base URL |
 | `VITE_MCP_BASE_URL` | `http://localhost:8001` | Meridian MCP server base URL |
+| `VITE_AUTH_ENABLED` | `false` | Enable Azure AD authentication |
+| `VITE_AZURE_CLIENT_ID` | — | Azure AD app registration client ID |
+| `VITE_AZURE_TENANT_ID` | — | Azure AD tenant ID |
+| `VITE_AZURE_REDIRECT_URI` | `window.location.origin` | Post-login redirect URI |
+| `VITE_AZURE_API_SCOPE` | — | API scope (e.g., `api://meridian-api/.default`) |
+
+---
+
+## Authentication Setup
+
+Authentication is **off by default**. When `VITE_AUTH_ENABLED=true`, Studio uses MSAL.js to authenticate users via Azure AD/Entra ID. The backend must also have `AUTH_ENABLED=true` (available since Meridian API v0.13.0).
+
+### 1. Register an Azure AD Application
+
+1. Go to **Azure Portal** > **Microsoft Entra ID** > **App registrations** > **New registration**
+2. **Name**: `meridian`
+3. **Supported account types**: choose based on your needs:
+   - *Single tenant* — only users in your org directory (most secure for production)
+   - *Any Entra ID tenant + Personal Microsoft accounts* — allows personal accounts like `@gmail.com` (useful for dev)
+4. **Redirect URI**: select **Single-page application (SPA)** and enter `http://localhost:5173`
+5. Click **Register**
+
+### 2. Configure the Manifest (required for multi-tenant + personal accounts)
+
+If you chose multi-tenant or personal accounts:
+
+1. Go to **Manifest** in the left sidebar
+2. Find `"accessTokenAcceptedVersion"` and change it from `null` to `2`
+3. Click **Save**
+4. Then set the supported account type under **Authentication** > **Supported accounts**
+
+### 3. Note Your IDs
+
+From the app registration **Overview** page, copy:
+
+- **Application (client) ID** — this is `VITE_AZURE_CLIENT_ID`
+- **Directory (tenant) ID** — this is `VITE_AZURE_TENANT_ID`
+
+### 4. Add Production Redirect URI
+
+Under **Authentication** > **Redirect URI configuration**, add your production domain:
+
+- `https://studio.vplsolutions.com` (type: SPA)
+
+### 5. Update Environment Variables
+
+```env
+VITE_AUTH_ENABLED=true
+VITE_AZURE_CLIENT_ID=<your-client-id>
+VITE_AZURE_TENANT_ID=<your-tenant-id>
+VITE_AZURE_REDIRECT_URI=http://localhost:5173
+# VITE_AZURE_API_SCOPE=api://meridian-api/.default
+```
+
+### How It Works
+
+- **Flag off (default)**: No MSAL code initializes. No login required. App behaves identically to pre-auth versions.
+- **Flag on**: MSAL acquires tokens silently (from cache/refresh), falling back to Azure AD redirect login. All API calls include `Authorization: Bearer <token>`. Sidebar shows user profile with logout button. Protected routes redirect unauthenticated users to login. `/welcome` remains public.
+
+See [ADR-0008](adr/0008-msal-authentication.md) for the full architectural decision.
 
 ---
 
@@ -103,6 +164,7 @@ The app will be available at `http://localhost:5173`.
 - **React Router v7** — client-side routing
 - **TanStack Query v5** — server state and caching
 - **React Hook Form v7** + **Zod v4** — form validation
+- **MSAL.js** (`@azure/msal-browser` + `@azure/msal-react`) — Azure AD authentication
 - **Vitest** + **MSW** + **Testing Library** — contract and component tests
 - **Lucide React** — icons
 
@@ -114,12 +176,14 @@ The app will be available at `http://localhost:5173`.
 src/
 ├── api/              # API client, Meridian + Azure AI type definitions
 │   └── __tests__/    # API contract tests (Vitest + MSW)
+├── auth/             # MSAL.js authentication (provider, guard, token utility)
+│   └── __tests__/    # Auth unit and integration tests
 ├── __fixtures__/     # Real backend response fixtures for tests
 ├── components/
 │   └── ui/           # Shared UI components (Layout, DiagnosticsPanel, …)
 ├── hooks/            # Custom hooks (useDiagnostics, useTrackedMutation)
 └── pages/            # Route-level page components
-adr/                  # Architecture decision records (ADR-0001 through ADR-0007)
+adr/                  # Architecture decision records (ADR-0001 through ADR-0008)
 ```
 
 ---
