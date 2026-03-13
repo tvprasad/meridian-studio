@@ -9,6 +9,9 @@ Versioning follows [Semantic Versioning](https://semver.org/).
 
 ## [Unreleased]
 
+### Added
+- **ADR-0009: Release Lineage & Security Gates** — four-artifact release record (code, dependencies, auth config, bundle), security controls per pipeline stage (npm audit, secret scanning, container image scan, bundle size guard), phased rollout plan, aligned with backend ADR-0017
+
 ---
 
 ## [0.13.0] — 2026-03-12
