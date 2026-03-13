@@ -9,6 +9,10 @@ Versioning follows [Semantic Versioning](https://semver.org/).
 
 ## [Unreleased]
 
+---
+
+## [0.13.0] — 2026-03-12
+
 ### Changed
 - **Logo links to vplsolutions.com** — clicking logo on sign-in screen, sidebar, or landing page opens vplsolutions.com in a new tab; Layout and Landing now use logo.png (was vpllogo.jfif)
 
@@ -272,7 +276,8 @@ Versioning follows [Semantic Versioning](https://semver.org/).
 - VPL logo in sidebar header
 - GitHub and LinkedIn social links in sidebar footer
 
-[Unreleased]: https://github.com/tvprasad/meridian-studio/compare/v0.12.0...HEAD
+[Unreleased]: https://github.com/tvprasad/meridian-studio/compare/v0.13.0...HEAD
+[0.13.0]: https://github.com/tvprasad/meridian-studio/compare/v0.12.0...v0.13.0
 [0.12.0]: https://github.com/tvprasad/meridian-studio/compare/v0.11.0...v0.12.0
 [0.11.0]: https://github.com/tvprasad/meridian-studio/compare/v0.10.0...v0.11.0
 [0.10.0]: https://github.com/tvprasad/meridian-studio/compare/v0.9.1...v0.10.0
