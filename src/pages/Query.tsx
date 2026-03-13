@@ -1,5 +1,5 @@
 import { useState, useRef, useEffect, useCallback } from 'react';
-import { useMutation, useQuery } from '@tanstack/react-query';
+import { useQuery } from '@tanstack/react-query';
 import { Link } from 'react-router-dom';
 import ReactMarkdown from 'react-markdown';
 import { meridianApi, type ChatMessage } from '../api/meridian';
@@ -255,13 +255,14 @@ function OfflineBanner() {
 
 // ── Message Components ───────────────────────────────────────────────────────
 
-function AssistantMessage({ msg, isLatest, onSuggestionClick }: {
+function AssistantMessage({ msg, isLatest, isStreamingMsg, onSuggestionClick }: {
   msg: Message;
   isLatest: boolean;
+  isStreamingMsg?: boolean;
   onSuggestionClick: (q: string) => void;
 }) {
   const isRefused = msg.metadata?.status === 'REFUSED';
-  const showFollowUps = isLatest && !isRefused;
+  const showFollowUps = isLatest && !isRefused && !isStreamingMsg;
   const threshold = msg.metadata?.threshold;
   const score = msg.metadata?.confidence_score;
   const rawScore = msg.metadata?.raw_confidence;
@@ -295,14 +296,15 @@ function AssistantMessage({ msg, isLatest, onSuggestionClick }: {
             <div className="bg-white dark:bg-white/10 border border-gray-200 dark:border-white/10 rounded-2xl rounded-tl-sm px-4 py-3 shadow-sm">
               <div className="text-sm text-gray-800 dark:text-gray-200 leading-relaxed prose prose-sm prose-gray dark:prose-invert max-w-none">
                 <ReactMarkdown>{msg.content}</ReactMarkdown>
+                {isStreamingMsg && <span className="inline-block w-2 h-4 bg-primary-500 animate-pulse ml-0.5 align-text-bottom rounded-sm" />}
               </div>
             </div>
           )}
           {msg.metadata && (
             <div className="flex items-center gap-3 mt-1.5 px-1">
               <ConfidencePill score={msg.metadata.confidence_score} rawScore={msg.metadata.raw_confidence} threshold={msg.metadata.threshold} />
-              {msg.content && <CopyButton text={msg.content} />}
-              <FeedbackButtons traceId={msg.metadata.trace_id} />
+              {msg.content && !isStreamingMsg && <CopyButton text={msg.content} />}
+              {!isStreamingMsg && <FeedbackButtons traceId={msg.metadata.trace_id} />}
             </div>
           )}
         </div>
@@ -396,34 +398,118 @@ export function Query() {
 
   const exampleQuestions = health?.suggested_questions ?? staticQuestions ?? FALLBACK_QUESTIONS;
 
-  const mutation = useMutation({
-    mutationFn: ({ question, history }: { question: string; history?: ChatMessage[] }) =>
-      meridianApi.query(question, history),
-    onSuccess: (data) => {
-      setMessages((prev) => [
-        ...prev,
-        {
-          role: 'assistant',
-          content: data.status === 'OK' ? (data.answer ?? '') : '',
-          metadata: data,
-        },
-      ]);
-    },
-    onError: (err) => {
-      setMessages((prev) => [
-        ...prev,
-        { role: 'assistant', content: `Error: ${(err as Error).message}` },
-      ]);
-    },
-  });
+  const [isStreaming, setIsStreaming] = useState(false);
+
+  const streamQuery = useCallback(async (question: string, history?: ChatMessage[]) => {
+    setIsStreaming(true);
+    try {
+      // Add a placeholder assistant message that we'll update incrementally
+      const placeholderIndex = messages.length + 1; // +1 for the user message added before calling this
+      let accumulatedText = '';
+      let metadata: QueryResponse | undefined;
+
+      for await (const event of meridianApi.queryStream(question, history)) {
+        switch (event.type) {
+          case 'metadata':
+            metadata = {
+              status: event.data.status,
+              trace_id: event.data.trace_id,
+              confidence_score: event.data.confidence_score,
+              raw_confidence: event.data.raw_confidence,
+              threshold: event.data.threshold,
+              retrieval_scores: event.data.retrieval_scores,
+            };
+            // Add the assistant message with metadata but empty content (tokens incoming)
+            setMessages((prev) => {
+              const updated = [...prev];
+              // Only add if we haven't added the assistant message yet
+              if (updated.length === placeholderIndex) {
+                updated.push({ role: 'assistant', content: '', metadata });
+              }
+              return updated;
+            });
+            break;
+
+          case 'token':
+            accumulatedText += event.data.text;
+            setMessages((prev) => {
+              const updated = [...prev];
+              const lastIdx = updated.length - 1;
+              if (lastIdx >= 0 && updated[lastIdx].role === 'assistant') {
+                updated[lastIdx] = { ...updated[lastIdx], content: accumulatedText };
+              }
+              return updated;
+            });
+            break;
+
+          case 'done':
+            // Final update — ensure metadata has answer
+            setMessages((prev) => {
+              const updated = [...prev];
+              const lastIdx = updated.length - 1;
+              if (lastIdx >= 0 && updated[lastIdx].role === 'assistant' && updated[lastIdx].metadata) {
+                updated[lastIdx] = {
+                  ...updated[lastIdx],
+                  metadata: { ...updated[lastIdx].metadata!, answer: accumulatedText },
+                };
+              }
+              return updated;
+            });
+            break;
+
+          case 'error':
+            // REFUSED or UNINITIALIZED — render as a single message
+            setMessages((prev) => {
+              const updated = [...prev];
+              const errorResponse: QueryResponse = {
+                status: event.data.status,
+                trace_id: event.data.trace_id,
+                confidence_score: event.data.confidence_score ?? 0,
+                raw_confidence: event.data.raw_confidence,
+                threshold: event.data.threshold,
+                refusal_reason: event.data.refusal_reason,
+              };
+              // If we already have a placeholder, update it; otherwise add
+              if (updated.length > placeholderIndex - 1 && updated[updated.length - 1].role === 'assistant') {
+                updated[updated.length - 1] = { role: 'assistant', content: '', metadata: errorResponse };
+              } else {
+                updated.push({ role: 'assistant', content: '', metadata: errorResponse });
+              }
+              return updated;
+            });
+            break;
+        }
+      }
+    } catch {
+      // Streaming failed — fall back to non-streaming
+      try {
+        const data = await meridianApi.query(question, history);
+        setMessages((prev) => [
+          ...prev,
+          {
+            role: 'assistant',
+            content: data.status === 'OK' ? (data.answer ?? '') : '',
+            metadata: data,
+          },
+        ]);
+      } catch (fallbackErr) {
+        setMessages((prev) => [
+          ...prev,
+          { role: 'assistant', content: `Error: ${(fallbackErr as Error).message}` },
+        ]);
+      }
+    } finally {
+      setIsStreaming(false);
+    }
+  }, [messages.length]);
 
   useEffect(() => {
     bottomRef.current?.scrollIntoView({ behavior: 'smooth' });
-  }, [messages, mutation.isPending]);
+  }, [messages, isStreaming]);
 
   const handleSubmit = useCallback(() => {
     const q = input.trim();
-    if (!q || mutation.isPending) return;
+    if (!q || isStreaming) return;
 
     const history: ChatMessage[] = messages
       .filter((m) => m.content)
@@ -431,9 +517,9 @@ export function Query() {
 
     setMessages((prev) => [...prev, { role: 'user', content: q }]);
     setInput('');
-    mutation.mutate({ question: q, history: history.length ? history : undefined });
+    streamQuery(q, history.length ? history : undefined);
     if (textareaRef.current) textareaRef.current.style.height = 'auto';
-  }, [input, messages, mutation]);
+  }, [input, messages, isStreaming, streamQuery]);
 
   const handleNewChat = useCallback(() => {
     setMessages([]);
@@ -548,7 +634,7 @@ export function Query() {
                 value={input}
                 onChange={handleInput}
                 onKeyDown={handleKeyDown}
-                disabled={mutation.isPending}
+                disabled={isStreaming}
               />
               <div className="flex items-center justify-between px-3 pb-3">
                 <div className="flex items-center gap-2">
@@ -559,7 +645,7 @@ export function Query() {
                 </div>
                 <button
                   onClick={handleSubmit}
-                  disabled={!input.trim() || mutation.isPending}
+                  disabled={!input.trim() || isStreaming}
                   className="inline-flex items-center justify-center w-8 h-8 rounded-xl bg-primary-600 text-white hover:bg-primary-700 disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
                   title="Send (Enter)"
                 >
@@ -584,6 +670,7 @@ export function Query() {
                   <AssistantMessage
                     msg={msg}
                     isLatest={isLatest}
+                    isStreamingMsg={isLatest && isStreaming}
                     onSuggestionClick={handleChipClick}
                   />
                   {isLatest && msg.metadata?.status === 'REFUSED' && exampleQuestions.length > 0 && (
@@ -603,7 +690,7 @@ export function Query() {
                 </div>
               );
             })}
-            {mutation.isPending && <ThinkingIndicator />}
+            {isStreaming && (messages.length === 0 || messages[messages.length - 1].role === 'user') && <ThinkingIndicator />}
             <div ref={bottomRef} />
           </div>
         )}
@@ -621,7 +708,7 @@ export function Query() {
               value={input}
               onChange={handleInput}
               onKeyDown={handleKeyDown}
-              disabled={mutation.isPending}
+              disabled={isStreaming}
             />
             <div className="flex items-center justify-between px-3 pb-3">
               <div className="flex items-center gap-2">
@@ -632,7 +719,7 @@ export function Query() {
               </div>
               <button
                 onClick={handleSubmit}
-                disabled={!input.trim() || mutation.isPending}
+                disabled={!input.trim() || isStreaming}
                 className="inline-flex items-center justify-center w-8 h-8 rounded-xl bg-primary-600 text-white hover:bg-primary-700 disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
                 title="Send (Enter)"
               >

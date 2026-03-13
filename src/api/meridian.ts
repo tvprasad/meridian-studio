@@ -1,11 +1,60 @@
 import { api, ApiError } from './client';
 import { config } from '../config';
 import { getAuthHeaders } from '../auth/getAuthHeaders';
-import type { QueryResponse, HealthResponse, SettingsResponse, McpTool, UpdateSettingsPayload, IngestResponse, ServiceNowIngestRequest, ServiceNowIngestResponse, ServiceNowStatusResponse, AgentQueryResponse, EvaluationQueriesResponse, EvaluationMetricsResponse } from './types';
+import type { QueryResponse, HealthResponse, SettingsResponse, McpTool, UpdateSettingsPayload, IngestResponse, ServiceNowIngestRequest, ServiceNowIngestResponse, ServiceNowStatusResponse, AgentQueryResponse, EvaluationQueriesResponse, EvaluationMetricsResponse, StreamEvent } from './types';
 
 export interface ChatMessage {
   role: 'user' | 'assistant';
   content: string;
+}
+
+/**
+ * Parse an SSE text/event-stream response body into typed StreamEvent objects.
+ * Handles chunked boundaries — buffers partial events until a full
+ * `event: ...\ndata: ...\n\n` block is received.
+ */
+async function* parseSSE(response: Response): AsyncGenerator<StreamEvent> {
+  const reader = response.body!.getReader();
+  const decoder = new TextDecoder();
+  let buffer = '';
+
+  while (true) {
+    const { done, value } = await reader.read();
+    if (done) break;
+
+    buffer += decoder.decode(value, { stream: true });
+
+    // Split on double-newline (SSE event boundary)
+    const blocks = buffer.split('\n\n');
+    // Last element may be incomplete — keep it in the buffer
+    buffer = blocks.pop() ?? '';
+
+    for (const block of blocks) {
+      const trimmed = block.trim();
+      if (!trimmed) continue;
+
+      const lines = trimmed.split('\n');
+      let eventType = '';
+      let dataStr = '';
+
+      for (const line of lines) {
+        if (line.startsWith('event: ')) {
+          eventType = line.slice(7);
+        } else if (line.startsWith('data: ')) {
+          dataStr = line.slice(6);
+        }
+      }
+
+      if (eventType && dataStr) {
+        try {
+          const data = JSON.parse(dataStr);
+          yield { type: eventType, data } as StreamEvent;
+        } catch {
+          // Skip malformed events
+        }
+      }
+    }
+  }
 }
 
 export const meridianApi = {
@@ -29,6 +78,40 @@ export const meridianApi = {
       const data = await res.json();
       if (res.ok || res.status === 422) return data as QueryResponse;
       throw new ApiError(data.detail || `Request failed: ${res.statusText}`, res.status);
+    } catch (err) {
+      if (err instanceof ApiError) throw err;
+      if (err instanceof Error && err.name === 'AbortError') {
+        throw new ApiError('Request timed out after 90000ms', 0);
+      }
+      throw err;
+    } finally {
+      clearTimeout(timeout);
+    }
+  },
+
+  // Streaming variant — POST /query?stream=true, returns SSE events (ADR-0010)
+  queryStream: async function* (question: string, conversationHistory?: ChatMessage[]): AsyncGenerator<StreamEvent> {
+    const controller = new AbortController();
+    const timeout = setTimeout(() => controller.abort(), 90_000);
+    try {
+      const body: Record<string, unknown> = { question };
+      if (conversationHistory?.length) {
+        body.conversation_history = conversationHistory;
+      }
+      const authHeaders = await getAuthHeaders();
+      const res = await fetch(`${config.apiBaseUrl}/query?stream=true`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', ...authHeaders },
+        body: JSON.stringify(body),
+        signal: controller.signal,
+      });
+
+      if (!res.ok) {
+        const errorData = await res.json().catch(() => ({}));
+        throw new ApiError(errorData.detail || `Request failed: ${res.statusText}`, res.status);
+      }
+
+      yield* parseSSE(res);
     } catch (err) {
       if (err instanceof ApiError) throw err;
       if (err instanceof Error && err.name === 'AbortError') {

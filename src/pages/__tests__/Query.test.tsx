@@ -14,6 +14,43 @@ import queryRefused from '../../__fixtures__/query-refused.json';
 // jsdom doesn't implement scrollIntoView
 Element.prototype.scrollIntoView = () => {};
 
+// ── SSE helpers ─────────────────────────────────────────────────────────────
+
+function sseFromOk(fixture: typeof queryOk): string {
+  const metadata = `event: metadata\ndata: ${JSON.stringify({
+    trace_id: fixture.trace_id,
+    status: fixture.status,
+    confidence_score: fixture.confidence_score,
+    raw_confidence: fixture.raw_confidence,
+    threshold: fixture.threshold,
+    retrieval_scores: fixture.retrieval_scores,
+    t_retrieve_ms: 12,
+  })}\n\n`;
+
+  // Emit answer as a single token event
+  const token = `event: token\ndata: ${JSON.stringify({ text: fixture.answer })}\n\n`;
+
+  const done = `event: done\ndata: ${JSON.stringify({
+    trace_id: fixture.trace_id,
+    t_retrieve_ms: 12,
+    t_generate_ms: 200,
+    t_total_ms: 212,
+  })}\n\n`;
+
+  return metadata + token + done;
+}
+
+function sseFromRefused(fixture: typeof queryRefused): string {
+  return `event: error\ndata: ${JSON.stringify({
+    trace_id: fixture.trace_id,
+    status: fixture.status,
+    refusal_reason: fixture.refusal_reason,
+    confidence_score: fixture.confidence_score,
+    raw_confidence: fixture.raw_confidence,
+    threshold: fixture.threshold,
+  })}\n\n`;
+}
+
 // ── MSW server ──────────────────────────────────────────────────────────────
 
 const server = setupServer(
@@ -86,7 +123,13 @@ describe('Query page — empty state', () => {
 describe('Query page — OK response', () => {
   it('shows the answer and follow-up prompts after a successful query', async () => {
     server.use(
-      http.post('http://localhost:8000/query', () => {
+      http.post('http://localhost:8000/query', ({ request }) => {
+        const url = new URL(request.url);
+        if (url.searchParams.get('stream') === 'true') {
+          return new HttpResponse(sseFromOk(queryOk), {
+            headers: { 'Content-Type': 'text/event-stream' },
+          });
+        }
         return HttpResponse.json(queryOk);
       }),
     );
@@ -114,7 +157,13 @@ describe('Query page — OK response', () => {
 
   it('populates input when a follow-up prompt chip is clicked', async () => {
     server.use(
-      http.post('http://localhost:8000/query', () => {
+      http.post('http://localhost:8000/query', ({ request }) => {
+        const url = new URL(request.url);
+        if (url.searchParams.get('stream') === 'true') {
+          return new HttpResponse(sseFromOk(queryOk), {
+            headers: { 'Content-Type': 'text/event-stream' },
+          });
+        }
         return HttpResponse.json(queryOk);
       }),
     );
@@ -137,7 +186,13 @@ describe('Query page — OK response', () => {
 describe('Query page — REFUSED response', () => {
   it('shows refusal reason, confidence explanation, and suggestion chips', async () => {
     server.use(
-      http.post('http://localhost:8000/query', () => {
+      http.post('http://localhost:8000/query', ({ request }) => {
+        const url = new URL(request.url);
+        if (url.searchParams.get('stream') === 'true') {
+          return new HttpResponse(sseFromRefused(queryRefused), {
+            headers: { 'Content-Type': 'text/event-stream' },
+          });
+        }
         return HttpResponse.json(queryRefused, { status: 422 });
       }),
     );
@@ -169,7 +224,13 @@ describe('Query page — REFUSED response', () => {
 
   it('populates input when a suggestion chip is clicked after refusal', async () => {
     server.use(
-      http.post('http://localhost:8000/query', () => {
+      http.post('http://localhost:8000/query', ({ request }) => {
+        const url = new URL(request.url);
+        if (url.searchParams.get('stream') === 'true') {
+          return new HttpResponse(sseFromRefused(queryRefused), {
+            headers: { 'Content-Type': 'text/event-stream' },
+          });
+        }
         return HttpResponse.json(queryRefused, { status: 422 });
       }),
     );
@@ -193,7 +254,13 @@ describe('Query page — REFUSED response', () => {
 
   it('does not show follow-up prompts on a REFUSED response', async () => {
     server.use(
-      http.post('http://localhost:8000/query', () => {
+      http.post('http://localhost:8000/query', ({ request }) => {
+        const url = new URL(request.url);
+        if (url.searchParams.get('stream') === 'true') {
+          return new HttpResponse(sseFromRefused(queryRefused), {
+            headers: { 'Content-Type': 'text/event-stream' },
+          });
+        }
         return HttpResponse.json(queryRefused, { status: 422 });
       }),
     );

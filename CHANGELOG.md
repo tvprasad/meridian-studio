@@ -10,6 +10,8 @@ Versioning follows [Semantic Versioning](https://semver.org/).
 ## [Unreleased]
 
 ### Added
+- **SSE streaming responses (ADR-0010)** — Ask Meridian now streams tokens in real-time via Server-Sent Events; confidence metadata and Citations panel appear before the answer completes; blinking cursor during generation; automatic fallback to non-streaming if SSE fails
+- **ADR-0010: Streaming Responses** — documents SSE streaming architecture, event types (metadata/token/done/error), parsing strategy, and non-streaming fallback
 - **ADR-0009: Release Lineage & Security Gates** — four-artifact release record (code, dependencies, auth config, bundle), security controls per pipeline stage (npm audit, secret scanning, container image scan, bundle size guard), phased rollout plan, aligned with backend ADR-0017
 
 ---

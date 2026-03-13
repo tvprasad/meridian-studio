@@ -15,6 +15,54 @@ export interface QueryResponse {
   retrieval_scores?: number[];
 }
 
+// ===========================================
+// SSE Streaming Types (ADR-0010)
+// ===========================================
+
+export type StreamEventType = 'metadata' | 'token' | 'done' | 'error';
+
+export interface StreamMetadataEvent {
+  type: 'metadata';
+  data: {
+    trace_id: string;
+    status: 'OK';
+    confidence_score: number;
+    raw_confidence?: number | null;
+    threshold: number;
+    retrieval_scores: number[];
+    t_retrieve_ms: number;
+  };
+}
+
+export interface StreamTokenEvent {
+  type: 'token';
+  data: { text: string };
+}
+
+export interface StreamDoneEvent {
+  type: 'done';
+  data: {
+    trace_id: string;
+    t_retrieve_ms: number;
+    t_generate_ms: number;
+    t_total_ms: number;
+  };
+}
+
+export interface StreamErrorEvent {
+  type: 'error';
+  data: {
+    trace_id: string;
+    status: 'REFUSED' | 'UNINITIALIZED';
+    refusal_reason: string;
+    confidence_score?: number;
+    raw_confidence?: number | null;
+    threshold?: number;
+  };
+}
+
+export type StreamEvent = StreamMetadataEvent | StreamTokenEvent | StreamDoneEvent | StreamErrorEvent;
+
 export interface McpQueryResult {
   status: string;
   trace_id: string;
