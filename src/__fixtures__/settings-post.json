@@ -1,5 +1,6 @@
 {
   "llm_provider": "local",
   "retrieval_provider": "chroma",
-  "retrieval_threshold": 0.75
+  "retrieval_threshold": 0.75,
+  "temperature": 0.3
 }

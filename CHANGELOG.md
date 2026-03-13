@@ -9,6 +9,10 @@ Versioning follows [Semantic Versioning](https://semver.org/).
 
 ## [Unreleased]
 
+### Added
+- **Temperature Lock on Settings page** — slider control (0.0–2.0) for LLM response randomness, integrated with backend `POST /settings` operator-only endpoint; Zod-validated form field with real-time display, three-point scale labels (Precise / Balanced / Creative)
+- **Temperature card on Dashboard** — 5th stat card showing current LLM temperature from `/settings`, rose-themed with Thermometer icon, 30s auto-refresh
+
 ---
 
 ## [0.14.0] — 2026-03-13

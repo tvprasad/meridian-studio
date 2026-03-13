@@ -3,7 +3,8 @@ import { Link } from 'react-router-dom';
 import { Card } from '../components/ui/Card';
 import { StatusBadge } from '../components/ui/StatusBadge';
 import { meridianApi } from '../api/meridian';
-import { Activity, Database, Cpu, Gauge, Settings } from 'lucide-react';
+import { Activity, Database, Cpu, Gauge, Thermometer, Settings } from 'lucide-react';
+import { type SettingsResponse } from '../api/types';
 
 const PROVIDER_LABELS: Record<string, string> = {
   local: 'Local (Ollama)',
@@ -18,6 +19,12 @@ export function Dashboard() {
     refetchInterval: 30000,
   });
 
+  const { data: settings } = useQuery<SettingsResponse>({
+    queryKey: ['settings'],
+    queryFn: meridianApi.getSettings,
+    refetchInterval: 30000,
+  });
+
   if (isLoading) {
     return (
       <div>
@@ -26,8 +33,8 @@ export function Dashboard() {
           <span className="inline-block w-1.5 h-1.5 rounded-full bg-blue-400 animate-pulse" />
           Connecting to API…
         </p>
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mt-8">
-          {Array.from({ length: 4 }).map((_, i) => (
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-6 mt-8">
+          {Array.from({ length: 5 }).map((_, i) => (
             <div key={i} className="bg-white dark:bg-white/[0.05] rounded-xl border border-gray-200 dark:border-white/10 border-l-4 border-l-gray-200 dark:border-l-gray-700 p-6 animate-pulse">
               <div className="flex items-start justify-between">
                 <div className="space-y-2">
@@ -108,6 +115,16 @@ export function Dashboard() {
       borderColor: 'border-l-amber-400',
       iconAnimation: 'group-hover:scale-125 transition-transform duration-200',
     },
+    {
+      label: 'Temperature',
+      description: 'LLM response randomness',
+      value: settings?.temperature?.toFixed(1) ?? '0.7',
+      icon: Thermometer,
+      iconColor: 'text-rose-600',
+      iconBg: 'bg-rose-50',
+      borderColor: 'border-l-rose-400',
+      iconAnimation: 'group-hover:scale-110 group-hover:-translate-y-0.5 transition-transform duration-200',
+    },
   ];
 
   return (
@@ -128,7 +145,7 @@ export function Dashboard() {
         </p>
       )}
 
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mt-8">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-6 mt-8">
         {stats.map(({ label, description, value, icon: Icon, iconColor, iconBg, borderColor, iconAnimation, render }) => (
           <Card key={label} className={`border-l-4 ${borderColor} group`}>
             <div className="flex items-start justify-between">

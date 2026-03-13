@@ -7,12 +7,13 @@ import { Card } from '../components/ui/Card';
 import { Button } from '../components/ui/Button';
 import { meridianApi } from '../api/meridian';
 import { type SettingsResponse } from '../api/types';
-import { CheckCircle, AlertCircle, BrainCircuit, Database, SlidersHorizontal, Languages, Eye, AudioLines, Loader2 } from 'lucide-react';
+import { CheckCircle, AlertCircle, BrainCircuit, Database, SlidersHorizontal, Thermometer, Languages, Eye, AudioLines, Loader2 } from 'lucide-react';
 
 const settingsSchema = z.object({
   llm_provider: z.enum(['local', 'azure']),
   retrieval_provider: z.enum(['chroma', 'azure']),
   retrieval_threshold: z.number().min(0).max(1),
+  temperature: z.number().min(0).max(2),
 });
 
 type SettingsForm = z.infer<typeof settingsSchema>;
@@ -22,6 +23,7 @@ function toFormValues(s: SettingsResponse | undefined): SettingsForm {
     llm_provider: (s?.llm_provider as SettingsForm['llm_provider']) ?? 'local',
     retrieval_provider: (s?.retrieval_provider as SettingsForm['retrieval_provider']) ?? 'chroma',
     retrieval_threshold: s?.retrieval_threshold ?? 0.6,
+    temperature: s?.temperature ?? 0.7,
   };
 }
 
@@ -57,6 +59,7 @@ export function Settings() {
   });
 
   const threshold = form.watch('retrieval_threshold');
+  const temperature = form.watch('temperature');
   const isDirty = form.formState.isDirty;
 
   const onSubmit = form.handleSubmit((data) => mutation.mutate(data));
@@ -144,6 +147,33 @@ export function Settings() {
               <div className="flex justify-between text-xs text-gray-400 dark:text-gray-500 mt-1">
                 <span>0%</span>
                 <span>100%</span>
+              </div>
+            </div>
+
+            <div>
+              <div className="flex items-center justify-between">
+                <label htmlFor="temperature" className="flex items-center gap-1.5 text-sm font-medium text-gray-700 dark:text-gray-200">
+                  <Thermometer className="w-4 h-4 text-gray-400 dark:text-gray-500" />
+                  Temperature
+                </label>
+                <span className="text-sm font-semibold tabular-nums text-gray-900 dark:text-white">
+                  {temperature.toFixed(1)}
+                </span>
+              </div>
+              <p className="text-xs text-gray-400 dark:text-gray-500 mt-0.5">Controls LLM response randomness. Lower values produce focused, deterministic answers. Higher values increase creativity and variation.</p>
+              <input
+                id="temperature"
+                type="range"
+                min="0"
+                max="2"
+                step="0.1"
+                {...form.register('temperature', { valueAsNumber: true })}
+                className="mt-2 block w-full accent-primary-600"
+              />
+              <div className="flex justify-between text-xs text-gray-400 dark:text-gray-500 mt-1">
+                <span>0.0 Precise</span>
+                <span>1.0 Balanced</span>
+                <span>2.0 Creative</span>
               </div>
             </div>
           </div>

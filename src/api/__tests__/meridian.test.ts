@@ -414,16 +414,19 @@ describe('meridianApi.getSettings', () => {
       llm_provider: 'azure',
       retrieval_provider: 'azure',
       retrieval_threshold: 0.6,
+      temperature: 0.7,
     });
   });
 
-  it('maps all three settings fields', async () => {
+  it('maps all settings fields including temperature', async () => {
     const result = await meridianApi.getSettings();
 
     expect(result).toHaveProperty('llm_provider');
     expect(result).toHaveProperty('retrieval_provider');
     expect(result).toHaveProperty('retrieval_threshold');
+    expect(result).toHaveProperty('temperature');
     expect(typeof result.retrieval_threshold).toBe('number');
+    expect(typeof result.temperature).toBe('number');
   });
 });
 
@@ -433,6 +436,7 @@ describe('meridianApi.updateSettings', () => {
       llm_provider: 'local' as const,
       retrieval_provider: 'chroma' as const,
       retrieval_threshold: 0.75,
+      temperature: 0.3,
     };
 
     const result = await meridianApi.updateSettings(payload);
@@ -442,6 +446,7 @@ describe('meridianApi.updateSettings', () => {
       llm_provider: 'local',
       retrieval_provider: 'chroma',
       retrieval_threshold: 0.75,
+      temperature: 0.3,
     });
   });
 });

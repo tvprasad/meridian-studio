@@ -1,5 +1,6 @@
 {
   "llm_provider": "azure",
   "retrieval_provider": "azure",
-  "retrieval_threshold": 0.6
+  "retrieval_threshold": 0.6,
+  "temperature": 0.7
 }
