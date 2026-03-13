@@ -9,6 +9,10 @@ Versioning follows [Semantic Versioning](https://semver.org/).
 
 ## [Unreleased]
 
+---
+
+## [0.14.0] — 2026-03-13
+
 ### Added
 - **SSE streaming responses (ADR-0010)** — Ask Meridian now streams tokens in real-time via Server-Sent Events; confidence metadata and Citations panel appear before the answer completes; blinking cursor during generation; automatic fallback to non-streaming if SSE fails
 - **ADR-0010: Streaming Responses** — documents SSE streaming architecture, event types (metadata/token/done/error), parsing strategy, and non-streaming fallback
@@ -281,7 +285,8 @@ Versioning follows [Semantic Versioning](https://semver.org/).
 - VPL logo in sidebar header
 - GitHub and LinkedIn social links in sidebar footer
 
-[Unreleased]: https://github.com/tvprasad/meridian-studio/compare/v0.13.0...HEAD
+[Unreleased]: https://github.com/tvprasad/meridian-studio/compare/v0.14.0...HEAD
+[0.14.0]: https://github.com/tvprasad/meridian-studio/compare/v0.13.0...v0.14.0
 [0.13.0]: https://github.com/tvprasad/meridian-studio/compare/v0.12.0...v0.13.0
 [0.12.0]: https://github.com/tvprasad/meridian-studio/compare/v0.11.0...v0.12.0
 [0.11.0]: https://github.com/tvprasad/meridian-studio/compare/v0.10.0...v0.11.0
