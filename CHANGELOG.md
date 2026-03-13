@@ -9,6 +9,11 @@ Versioning follows [Semantic Versioning](https://semver.org/).
 
 ## [Unreleased]
 
+### Added
+- **MSAL.js authentication** (ADR-0008) — Azure AD/Entra ID integration behind `VITE_AUTH_ENABLED` feature flag; popup-first login with redirect fallback for Firefox; silent-first token acquisition with interactive fallback; `getAuthHeaders()` utility injects Bearer tokens into all API calls; `AuthGuard` protects routes with branded sign-in screen (aurora background, neural network animation, floating keyword pills); `UserProfile` component in sidebar with initials, display name, and logout; 401 auto-redirect for expired tokens; zero behavioral change when flag is off (default)
+- **Build chunk splitting** — `manualChunks` in Vite config splits vendor dependencies into separate chunks (react, msal, query, markdown, forms, icons); main bundle reduced from 835 KB to 331 KB
+- **Dynamic version display** — sidebar version now imported from `package.json` instead of hardcoded; CLAUDE.md convention added to prevent stale versions
+
 ---
 
 ## [0.10.0] — 2026-03-11

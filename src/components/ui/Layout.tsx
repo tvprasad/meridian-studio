@@ -3,6 +3,8 @@ import { Outlet, NavLink, useLocation } from 'react-router-dom';
 import { LayoutDashboard, MessageSquare, Database, Settings, Github, Linkedin, Languages, Eye, Mic, FileSearch, Pin, PinOff, Sun, Moon, Bot, BarChart3 } from 'lucide-react';
 import { DiagnosticsPanel } from './DiagnosticsPanel';
 import { useDiagnostics } from '../../hooks/useDiagnosticsHook';
+import { version } from '../../../package.json';
+import { UserProfile } from '../../auth/UserProfile';
 
 const SIDEBAR_PINNED_KEY = 'meridian-sidebar-pinned';
 const THEME_KEY = 'meridian-theme';
@@ -176,6 +178,8 @@ export function Layout() {
           </button>
         </div>
 
+        <UserProfile collapsed={!expanded} />
+
         {expanded && (
           <div className="px-6 pb-6 space-y-2 shrink-0">
             {/* Version → releases */}
@@ -185,7 +189,7 @@ export function Layout() {
               rel="noreferrer"
               className="block text-xs opacity-70 hover:opacity-100 transition-opacity iridescent-text"
             >
-              v0.5.0
+              v{version}
             </a>
 
             {/* Name + social icons */}

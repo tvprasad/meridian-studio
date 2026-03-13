@@ -1,4 +1,5 @@
 import { config } from '../config';
+import { getAuthHeaders } from '../auth/getAuthHeaders';
 
 export class ApiError extends Error {
   status: number;
@@ -36,6 +37,8 @@ async function request<T>(
   const controller = new AbortController();
   const timeout = setTimeout(() => controller.abort(), timeoutMs);
 
+  const authHeaders = await getAuthHeaders();
+
   let response: Response;
   try {
     response = await fetch(url, {
@@ -43,6 +46,7 @@ async function request<T>(
       signal: init.signal ?? controller.signal,
       headers: {
         ...(!(init.body instanceof FormData) && { 'Content-Type': 'application/json' }),
+        ...authHeaders,
         ...init.headers,
       },
     });
@@ -56,6 +60,10 @@ async function request<T>(
   }
 
   if (!response.ok) {
+    if (response.status === 401 && config.authEnabled) {
+      const { getMsalInstance, loginRequest } = await import('../auth/msalConfig');
+      await getMsalInstance().acquireTokenPopup(loginRequest);
+    }
     const errorData = await response.json().catch(() => ({}));
     throw new ApiError(
       errorData.detail || `Request failed: ${response.statusText}`,
@@ -88,6 +96,7 @@ export const api = {
 
     const controller = new AbortController();
     const timeout = setTimeout(() => controller.abort(), timeoutMs);
+    const blobAuthHeaders = await getAuthHeaders();
 
     let response: Response;
     try {
@@ -95,7 +104,7 @@ export const api = {
         ...init,
         signal: init.signal ?? controller.signal,
         method: 'POST',
-        headers: { 'Content-Type': 'application/json', ...init.headers },
+        headers: { 'Content-Type': 'application/json', ...blobAuthHeaders, ...init.headers },
         body: data ? JSON.stringify(data) : undefined,
       });
     } catch (err) {

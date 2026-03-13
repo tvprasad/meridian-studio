@@ -58,6 +58,7 @@ This is enforced by a `postToolUse` hook on `git commit`. Never skip tagging.
 - No emojis in code or docs unless explicitly asked
 - Keep files focused — components, hooks, and context in separate files
 - API response fixtures come from real curl/backend output
+- Never hardcode version strings — import `version` from `package.json` (single source of truth)
 
 ### Testing (ADR-0003)
 - Every API mapping function gets a contract test

@@ -1,5 +1,6 @@
 import { api, ApiError } from './client';
 import { config } from '../config';
+import { getAuthHeaders } from '../auth/getAuthHeaders';
 import type { QueryResponse, HealthResponse, SettingsResponse, McpTool, UpdateSettingsPayload, IngestResponse, ServiceNowIngestRequest, ServiceNowIngestResponse, ServiceNowStatusResponse, AgentQueryResponse, EvaluationQueriesResponse, EvaluationMetricsResponse } from './types';
 
 export interface ChatMessage {
@@ -18,9 +19,10 @@ export const meridianApi = {
       if (conversationHistory?.length) {
         body.conversation_history = conversationHistory;
       }
+      const authHeaders = await getAuthHeaders();
       const res = await fetch(`${config.apiBaseUrl}/query`, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: { 'Content-Type': 'application/json', ...authHeaders },
         body: JSON.stringify(body),
         signal: controller.signal,
       });
