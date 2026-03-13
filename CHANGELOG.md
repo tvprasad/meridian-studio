@@ -9,6 +9,10 @@ Versioning follows [Semantic Versioning](https://semver.org/).
 
 ## [Unreleased]
 
+---
+
+## [0.15.0] — 2026-03-13
+
 ### Added
 - **Temperature Lock on Settings page** — slider control (0.0–2.0) for LLM response randomness, integrated with backend `POST /settings` operator-only endpoint; Zod-validated form field with real-time display, three-point scale labels (Precise / Balanced / Creative)
 - **Temperature card on Dashboard** — 5th stat card showing current LLM temperature from `/settings`, rose-themed with Thermometer icon, 30s auto-refresh
@@ -289,7 +293,8 @@ Versioning follows [Semantic Versioning](https://semver.org/).
 - VPL logo in sidebar header
 - GitHub and LinkedIn social links in sidebar footer
 
-[Unreleased]: https://github.com/tvprasad/meridian-studio/compare/v0.14.0...HEAD
+[Unreleased]: https://github.com/tvprasad/meridian-studio/compare/v0.15.0...HEAD
+[0.15.0]: https://github.com/tvprasad/meridian-studio/compare/v0.14.0...v0.15.0
 [0.14.0]: https://github.com/tvprasad/meridian-studio/compare/v0.13.0...v0.14.0
 [0.13.0]: https://github.com/tvprasad/meridian-studio/compare/v0.12.0...v0.13.0
 [0.12.0]: https://github.com/tvprasad/meridian-studio/compare/v0.11.0...v0.12.0
