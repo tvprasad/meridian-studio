@@ -9,6 +9,9 @@ Versioning follows [Semantic Versioning](https://semver.org/).
 
 ## [Unreleased]
 
+### Changed
+- **Sign-in screen redesign** — replaced neural network animation with geometric art (Delaunay triangular mesh, bezier curves, concentric rings), multi-agent orchestration hub (7 specialist agents in heptagon layout with animated hub-spoke pulses and cross-agent collaboration links), 18 floating capability icons (Agents, Ingestion, Cognitive AI Services), "Trusted by" customer logos row, and logo updated from vpllogo.jfif to logo.png
+
 ---
 
 ## [0.11.0] — 2026-03-12
