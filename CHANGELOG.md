@@ -9,6 +9,10 @@ Versioning follows [Semantic Versioning](https://semver.org/).
 
 ## [Unreleased]
 
+---
+
+## [0.12.0] — 2026-03-12
+
 ### Changed
 - **Sign-in screen redesign** — replaced neural network animation with geometric art (Delaunay triangular mesh, bezier curves, concentric rings), multi-agent orchestration hub (7 specialist agents in heptagon layout with animated hub-spoke pulses and cross-agent collaboration links), 18 floating capability icons (Agents, Ingestion, Cognitive AI Services), "Trusted by" customer logos row, and logo updated from vpllogo.jfif to logo.png
 
@@ -262,7 +266,8 @@ Versioning follows [Semantic Versioning](https://semver.org/).
 - VPL logo in sidebar header
 - GitHub and LinkedIn social links in sidebar footer
 
-[Unreleased]: https://github.com/tvprasad/meridian-studio/compare/v0.11.0...HEAD
+[Unreleased]: https://github.com/tvprasad/meridian-studio/compare/v0.12.0...HEAD
+[0.12.0]: https://github.com/tvprasad/meridian-studio/compare/v0.11.0...v0.12.0
 [0.11.0]: https://github.com/tvprasad/meridian-studio/compare/v0.10.0...v0.11.0
 [0.10.0]: https://github.com/tvprasad/meridian-studio/compare/v0.9.1...v0.10.0
 [0.9.1]: https://github.com/tvprasad/meridian-studio/compare/v0.9.0...v0.9.1
