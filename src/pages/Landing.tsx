@@ -68,9 +68,9 @@ export function Landing() {
       {/* Nav */}
       <header className="max-w-6xl mx-auto w-full px-6 py-6 flex items-center justify-between">
         <div className="flex items-center gap-3">
-          <div className="w-9 h-9 rounded-lg overflow-hidden shadow-lg">
-            <img src="/vpllogo.jfif" alt="VPL" className="w-full h-full object-contain" />
-          </div>
+          <a href="https://vplsolutions.com" target="_blank" rel="noopener noreferrer" className="w-9 h-9 rounded-lg overflow-hidden shadow-lg block">
+            <img src="/logo.png" alt="VPL" className="w-full h-full object-contain" />
+          </a>
           <span className="text-lg font-bold iridescent-text">Meridian Studio</span>
         </div>
         <div className="flex items-center gap-4">

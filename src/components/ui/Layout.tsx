@@ -107,9 +107,9 @@ export function Layout() {
         <div className="h-0.5 bg-gradient-to-r from-orange-400 via-violet-500 to-teal-400 shrink-0" />
         <div className={`border-b border-white/10 ${expanded ? 'p-6' : 'py-4 px-2'}`}>
           <div className={`flex items-center ${expanded ? 'gap-3' : 'justify-center'}`}>
-            <div className="w-8 h-8 rounded-lg overflow-hidden shrink-0 shadow-lg">
-              <img src="/vpllogo.jfif" alt="VPL" className="w-full h-full object-contain" />
-            </div>
+            <a href="https://vplsolutions.com" target="_blank" rel="noopener noreferrer" className="w-8 h-8 rounded-lg overflow-hidden shrink-0 shadow-lg block">
+              <img src="/logo.png" alt="VPL" className="w-full h-full object-contain" />
+            </a>
             {expanded && (
               <div className="iridescent-group flex-1 min-w-0">
                 <h1 className="text-base font-bold leading-tight iridescent-text">

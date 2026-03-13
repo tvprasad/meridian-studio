@@ -9,6 +9,12 @@ Versioning follows [Semantic Versioning](https://semver.org/).
 
 ## [Unreleased]
 
+### Changed
+- **Logo links to vplsolutions.com** — clicking logo on sign-in screen, sidebar, or landing page opens vplsolutions.com in a new tab; Layout and Landing now use logo.png (was vpllogo.jfif)
+
+### Added
+- **Post-deployment verification skill** (`.claude/skills/post-deploy-verify.md`) — monitors CI pipeline and runs smoke tests against Studio, API, and MCP endpoints after each deployment
+
 ---
 
 ## [0.12.0] — 2026-03-12
