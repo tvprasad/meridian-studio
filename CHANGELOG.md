@@ -9,6 +9,10 @@ Versioning follows [Semantic Versioning](https://semver.org/).
 
 ## [Unreleased]
 
+---
+
+## [0.11.0] — 2026-03-12
+
 ### Added
 - **MSAL.js authentication** (ADR-0008) — Azure AD/Entra ID integration behind `VITE_AUTH_ENABLED` feature flag; popup-first login with redirect fallback for Firefox; silent-first token acquisition with interactive fallback; `getAuthHeaders()` utility injects Bearer tokens into all API calls; `AuthGuard` protects routes with branded sign-in screen (aurora background, neural network animation, floating keyword pills); `UserProfile` component in sidebar with initials, display name, and logout; 401 auto-redirect for expired tokens; zero behavioral change when flag is off (default)
 - **Build chunk splitting** — `manualChunks` in Vite config splits vendor dependencies into separate chunks (react, msal, query, markdown, forms, icons); main bundle reduced from 835 KB to 331 KB
@@ -255,9 +259,8 @@ Versioning follows [Semantic Versioning](https://semver.org/).
 - VPL logo in sidebar header
 - GitHub and LinkedIn social links in sidebar footer
 
-[Unreleased]: https://github.com/tvprasad/meridian-studio/compare/v0.9.1...HEAD
-[0.9.1]: https://github.com/tvprasad/meridian-studio/compare/v0.9.0...v0.9.1
-[0.9.0]: https://github.com/tvprasad/meridian-studio/compare/v0.8.0...v0.9.0
+[Unreleased]: https://github.com/tvprasad/meridian-studio/compare/v0.11.0...HEAD
+[0.11.0]: https://github.com/tvprasad/meridian-studio/compare/v0.10.0...v0.11.0
 [0.10.0]: https://github.com/tvprasad/meridian-studio/compare/v0.9.1...v0.10.0
 [0.9.1]: https://github.com/tvprasad/meridian-studio/compare/v0.9.0...v0.9.1
 [0.9.0]: https://github.com/tvprasad/meridian-studio/compare/v0.8.0...v0.9.0
