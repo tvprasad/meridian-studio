@@ -1,3 +1,6 @@
+// Copyright (c) 2026 VPL Solutions. All rights reserved.
+// Licensed under the MIT License. See LICENSE for details.
+
 import { describe, it, expect, beforeAll, afterAll, afterEach } from 'vitest';
 import { http, HttpResponse } from 'msw';
 import { setupServer } from 'msw/node';

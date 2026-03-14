@@ -1,3 +1,6 @@
+// Copyright (c) 2026 VPL Solutions. All rights reserved.
+// Licensed under the MIT License. See LICENSE for details.
+
 import { useEffect, useState, useCallback } from 'react';
 import { Outlet, NavLink, useLocation } from 'react-router-dom';
 import { LayoutDashboard, MessageSquare, Database, Settings, Github, Linkedin, Languages, Eye, Mic, FileSearch, Pin, PinOff, Sun, Moon, Bot, BarChart3 } from 'lucide-react';

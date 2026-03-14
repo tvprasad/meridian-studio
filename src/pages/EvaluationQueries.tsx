@@ -1,3 +1,6 @@
+// Copyright (c) 2026 VPL Solutions. All rights reserved.
+// Licensed under the MIT License. See LICENSE for details.
+
 import { useState, useMemo } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { Card } from '../components/ui/Card';

@@ -1,3 +1,6 @@
+// Copyright (c) 2026 VPL Solutions. All rights reserved.
+// Licensed under the MIT License. See LICENSE for details.
+
 export const config = {
   apiBaseUrl: import.meta.env.VITE_API_BASE_URL || 'http://localhost:8000',
   mcpBaseUrl: import.meta.env.VITE_MCP_BASE_URL || 'http://localhost:8001',

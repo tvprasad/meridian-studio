@@ -1,3 +1,6 @@
+// Copyright (c) 2026 VPL Solutions. All rights reserved.
+// Licensed under the MIT License. See LICENSE for details.
+
 import { type ReactNode, useCallback, useEffect, useMemo, useState } from 'react';
 import { MsalProvider, useMsal, useIsAuthenticated } from '@azure/msal-react';
 import { InteractionRequiredAuthError, type AccountInfo } from '@azure/msal-browser';

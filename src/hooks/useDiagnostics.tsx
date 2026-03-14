@@ -1,3 +1,6 @@
+// Copyright (c) 2026 VPL Solutions. All rights reserved.
+// Licensed under the MIT License. See LICENSE for details.
+
 import { useCallback, useState, type ReactNode } from 'react';
 import {
   DiagnosticsContext,

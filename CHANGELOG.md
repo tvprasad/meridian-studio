@@ -9,6 +9,9 @@ Versioning follows [Semantic Versioning](https://semver.org/).
 
 ## [Unreleased]
 
+### Added
+- **MIT license headers** — added `// Copyright (c) 2026 VPL Solutions. All rights reserved.` header to all 39 source files (`.ts` and `.tsx`) for IP attribution
+
 ---
 
 ## [0.16.0] — 2026-03-14

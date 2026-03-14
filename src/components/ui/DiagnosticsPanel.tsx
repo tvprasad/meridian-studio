@@ -1,3 +1,6 @@
+// Copyright (c) 2026 VPL Solutions. All rights reserved.
+// Licensed under the MIT License. See LICENSE for details.
+
 import { useState } from 'react';
 import { useDiagnostics } from '../../hooks/useDiagnosticsHook';
 import { ChevronRight, ChevronDown, Activity, BarChart3, RotateCcw } from 'lucide-react';

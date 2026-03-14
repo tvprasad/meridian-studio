@@ -1,3 +1,6 @@
+// Copyright (c) 2026 VPL Solutions. All rights reserved.
+// Licensed under the MIT License. See LICENSE for details.
+
 import { useMutation, type UseMutationOptions } from '@tanstack/react-query';
 import { useDiagnostics } from './useDiagnosticsHook';
 
