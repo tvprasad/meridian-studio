@@ -11,7 +11,7 @@ import { Button } from '../components/ui/Button';
 import { meridianApi } from '../api/meridian';
 import { config } from '../config';
 import { type SettingsResponse } from '../api/types';
-import { CheckCircle, AlertCircle, BrainCircuit, Database, SlidersHorizontal, Thermometer, Languages, Eye, AudioLines, Loader2, Copy, Check, Link, Plug } from 'lucide-react';
+import { CheckCircle, AlertCircle, BrainCircuit, Database, SlidersHorizontal, Thermometer, Languages, Eye, AudioLines, Loader2, Copy, Check, Link, Plug, MessageSquare } from 'lucide-react';
 
 const settingsSchema = z.object({
   llm_provider: z.enum(['local', 'azure']),
@@ -139,7 +139,10 @@ function ConnectionDetails() {
       <div className="mt-6 space-y-4">
         <div>
           <div className="flex items-center justify-between mb-2">
-            <p className="text-sm font-medium text-gray-700 dark:text-gray-200">Claude Desktop Configuration</p>
+            <p className="flex items-center gap-1.5 text-sm font-medium text-gray-700 dark:text-gray-200">
+              <MessageSquare className="w-4 h-4 text-gray-400 dark:text-gray-500" />
+              Claude Desktop Configuration
+            </p>
             <CopyButton text={CLAUDE_DESKTOP_CONFIG(mcpUrl)} label="config" />
           </div>
           <pre className="text-xs font-mono bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-white/10 rounded-lg p-3 overflow-x-auto text-gray-800 dark:text-gray-200">
@@ -152,7 +155,13 @@ function ConnectionDetails() {
 
         <div>
           <div className="flex items-center justify-between mb-2">
-            <p className="text-sm font-medium text-gray-700 dark:text-gray-200">Semantic Kernel Plugin</p>
+            <p className="flex items-center gap-1.5 text-sm font-medium text-gray-700 dark:text-gray-200">
+              <svg className="w-4 h-4 text-gray-400 dark:text-gray-500" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M12 2L2 12l10 10 10-10L12 2z" />
+                <path d="M12 8v8M8 12h8" />
+              </svg>
+              Semantic Kernel Plugin
+            </p>
             <CopyButton text={SK_PLUGIN_CONFIG(apiUrl)} label="config" />
           </div>
           <pre className="text-xs font-mono bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-white/10 rounded-lg p-3 overflow-x-auto text-gray-800 dark:text-gray-200">
