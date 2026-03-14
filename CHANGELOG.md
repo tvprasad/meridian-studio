@@ -9,6 +9,10 @@ Versioning follows [Semantic Versioning](https://semver.org/).
 
 ## [Unreleased]
 
+---
+
+## [0.17.0] — 2026-03-14
+
 ### Added
 - **MIT license headers** — added `// Copyright (c) 2026 VPL Solutions. All rights reserved.` header to all 39 source files (`.ts` and `.tsx`) for IP attribution
 - **Hand-drawn architecture sketch on sign-in screen** — chalk-on-dark SVG overlay showing Meridian data flow (Documents -> RAG Engine -> Knowledge Base, MCP Server, AI Agents, Governance Gate) with wobbly hand-drawn paths, positioned bottom-right at 14% opacity
@@ -305,7 +309,8 @@ Versioning follows [Semantic Versioning](https://semver.org/).
 - VPL logo in sidebar header
 - GitHub and LinkedIn social links in sidebar footer
 
-[Unreleased]: https://github.com/tvprasad/meridian-studio/compare/v0.16.0...HEAD
+[Unreleased]: https://github.com/tvprasad/meridian-studio/compare/v0.17.0...HEAD
+[0.17.0]: https://github.com/tvprasad/meridian-studio/compare/v0.16.0...v0.17.0
 [0.16.0]: https://github.com/tvprasad/meridian-studio/compare/v0.15.0...v0.16.0
 [0.15.0]: https://github.com/tvprasad/meridian-studio/compare/v0.14.0...v0.15.0
 [0.14.0]: https://github.com/tvprasad/meridian-studio/compare/v0.13.0...v0.14.0
