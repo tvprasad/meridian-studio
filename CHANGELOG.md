@@ -11,6 +11,7 @@ Versioning follows [Semantic Versioning](https://semver.org/).
 
 ### Added
 - **MIT license headers** — added `// Copyright (c) 2026 VPL Solutions. All rights reserved.` header to all 39 source files (`.ts` and `.tsx`) for IP attribution
+- **Hand-drawn architecture sketch on sign-in screen** — chalk-on-dark SVG overlay showing Meridian data flow (Documents -> RAG Engine -> Knowledge Base, MCP Server, AI Agents, Governance Gate) with wobbly hand-drawn paths, positioned bottom-right at 14% opacity
 
 ---
 

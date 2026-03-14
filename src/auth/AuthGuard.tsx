@@ -9,6 +9,7 @@ import {
 } from 'lucide-react';
 import type { LucideIcon } from 'lucide-react';
 import { useAuth } from './useAuth';
+import { ArchitectureSketch } from '../components/ui/ArchitectureSketch';
 import { version } from '../../package.json';
 
 // ── Geometric art data ──────────────────────────────────────────────────────
@@ -346,6 +347,9 @@ export function AuthGuard({ children }: { children: ReactNode }) {
             </div>
           ))}
         </div>
+
+        {/* Hand-drawn architecture sketch — bottom-right, low opacity */}
+        <ArchitectureSketch />
 
         {/* Iridescent top accent */}
         <div className="h-1 bg-gradient-to-r from-orange-400 via-violet-500 to-teal-400 shrink-0 relative z-10" />
