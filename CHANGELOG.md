@@ -9,6 +9,10 @@ Versioning follows [Semantic Versioning](https://semver.org/).
 
 ## [Unreleased]
 
+---
+
+## [0.16.0] — 2026-03-14
+
 ### Added
 - **Connection Details card on Settings page** — displays API and MCP endpoint URLs with copy-to-clipboard buttons, MCP reachability status indicator (green/red dot with 30s polling), copy-ready Claude Desktop `claude_desktop_config.json` snippet, and copy-ready Semantic Kernel plugin configuration snippet
 - **MCP health check** — lightweight reachability probe (`GET /health` on MCP server) with 5s timeout, used by Connection Details status indicator
@@ -297,7 +301,8 @@ Versioning follows [Semantic Versioning](https://semver.org/).
 - VPL logo in sidebar header
 - GitHub and LinkedIn social links in sidebar footer
 
-[Unreleased]: https://github.com/tvprasad/meridian-studio/compare/v0.15.0...HEAD
+[Unreleased]: https://github.com/tvprasad/meridian-studio/compare/v0.16.0...HEAD
+[0.16.0]: https://github.com/tvprasad/meridian-studio/compare/v0.15.0...v0.16.0
 [0.15.0]: https://github.com/tvprasad/meridian-studio/compare/v0.14.0...v0.15.0
 [0.14.0]: https://github.com/tvprasad/meridian-studio/compare/v0.13.0...v0.14.0
 [0.13.0]: https://github.com/tvprasad/meridian-studio/compare/v0.12.0...v0.13.0
