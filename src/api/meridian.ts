@@ -169,4 +169,21 @@ export const meridianApi = {
   // PATCH /evaluation/queries/{trace_id}/feedback — submit human rating
   submitFeedback: (traceId: string, rating: 'up' | 'down' | null) =>
     api.post<void>(`/evaluation/queries/${traceId}/feedback`, { rating }),
+
+  // GET MCP server health — lightweight reachability check
+  mcpHealth: async (): Promise<{ reachable: boolean }> => {
+    try {
+      const controller = new AbortController();
+      const timeout = setTimeout(() => controller.abort(), 5_000);
+      const authHeaders = await getAuthHeaders();
+      const res = await fetch(`${config.mcpBaseUrl}/health`, {
+        signal: controller.signal,
+        headers: { ...authHeaders },
+      });
+      clearTimeout(timeout);
+      return { reachable: res.ok };
+    } catch {
+      return { reachable: false };
+    }
+  },
 };

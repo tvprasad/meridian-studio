@@ -1,4 +1,4 @@
-import { useEffect } from 'react';
+import { useEffect, useState, useCallback } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
@@ -6,8 +6,9 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { Card } from '../components/ui/Card';
 import { Button } from '../components/ui/Button';
 import { meridianApi } from '../api/meridian';
+import { config } from '../config';
 import { type SettingsResponse } from '../api/types';
-import { CheckCircle, AlertCircle, BrainCircuit, Database, SlidersHorizontal, Thermometer, Languages, Eye, AudioLines, Loader2 } from 'lucide-react';
+import { CheckCircle, AlertCircle, BrainCircuit, Database, SlidersHorizontal, Thermometer, Languages, Eye, AudioLines, Loader2, Copy, Check, Link, Plug } from 'lucide-react';
 
 const settingsSchema = z.object({
   llm_provider: z.enum(['local', 'azure']),
@@ -25,6 +26,142 @@ function toFormValues(s: SettingsResponse | undefined): SettingsForm {
     retrieval_threshold: s?.retrieval_threshold ?? 0.6,
     temperature: s?.temperature ?? 0.7,
   };
+}
+
+// ── Copy-to-clipboard button ─────────────────────────────────────────────────
+
+function CopyButton({ text, label }: { text: string; label?: string }) {
+  const [copied, setCopied] = useState(false);
+
+  const handleCopy = useCallback(async () => {
+    await navigator.clipboard.writeText(text);
+    setCopied(true);
+    setTimeout(() => setCopied(false), 2000);
+  }, [text]);
+
+  return (
+    <button
+      type="button"
+      onClick={handleCopy}
+      className="inline-flex items-center gap-1 text-xs text-primary-600 dark:text-primary-400 hover:text-primary-700 dark:hover:text-primary-300 transition-colors"
+      title={`Copy ${label ?? 'to clipboard'}`}
+    >
+      {copied ? <Check className="w-3.5 h-3.5" /> : <Copy className="w-3.5 h-3.5" />}
+      {copied ? 'Copied' : (label ?? 'Copy')}
+    </button>
+  );
+}
+
+// ── Connection Details card ──────────────────────────────────────────────────
+
+const CLAUDE_DESKTOP_CONFIG = (mcpUrl: string) =>
+  JSON.stringify(
+    {
+      mcpServers: {
+        meridian: {
+          url: `${mcpUrl}/mcp`,
+          headers: {
+            Authorization: 'Bearer <YOUR_MCP_API_KEY>',
+          },
+        },
+      },
+    },
+    null,
+    2,
+  );
+
+const SK_PLUGIN_CONFIG = (apiUrl: string) =>
+  `from integrations.semantic_kernel import MeridianPlugin
+
+plugin = MeridianPlugin(
+    base_url="${apiUrl}",
+    api_key="<YOUR_API_KEY>",
+)
+kernel.add_plugin(plugin, plugin_name="meridian")`;
+
+function ConnectionDetails() {
+  const mcpUrl = config.mcpBaseUrl;
+  const apiUrl = config.apiBaseUrl;
+
+  const { data: mcpStatus } = useQuery({
+    queryKey: ['mcp-health'],
+    queryFn: meridianApi.mcpHealth,
+    refetchInterval: 30_000,
+  });
+
+  return (
+    <Card className="mt-6">
+      <div className="flex items-center gap-2 mb-4">
+        <Plug className="w-5 h-5 text-gray-400 dark:text-gray-500" />
+        <h2 className="text-lg font-semibold dark:text-white">Connection Details</h2>
+      </div>
+      <p className="text-sm text-gray-600 dark:text-gray-300 -mt-2 mb-5">
+        Endpoint URLs and configuration snippets for connecting external agents and clients to Meridian.
+      </p>
+
+      {/* Endpoint URLs */}
+      <div className="space-y-3">
+        <div className="flex items-center justify-between rounded-lg border border-gray-200 dark:border-white/10 px-4 py-3">
+          <div className="flex items-center gap-2 min-w-0">
+            <Link className="w-4 h-4 text-gray-400 dark:text-gray-500 shrink-0" />
+            <div className="min-w-0">
+              <p className="text-xs font-medium text-gray-500 dark:text-gray-400">API Endpoint</p>
+              <p className="text-sm font-mono text-gray-900 dark:text-white truncate">{apiUrl}</p>
+            </div>
+          </div>
+          <CopyButton text={apiUrl} label="URL" />
+        </div>
+
+        <div className="flex items-center justify-between rounded-lg border border-gray-200 dark:border-white/10 px-4 py-3">
+          <div className="flex items-center gap-2 min-w-0">
+            <Link className="w-4 h-4 text-gray-400 dark:text-gray-500 shrink-0" />
+            <div className="min-w-0">
+              <p className="text-xs font-medium text-gray-500 dark:text-gray-400">MCP Server</p>
+              <p className="text-sm font-mono text-gray-900 dark:text-white truncate">{mcpUrl}/mcp</p>
+            </div>
+          </div>
+          <div className="flex items-center gap-3 shrink-0">
+            <span className="flex items-center gap-1.5 text-xs">
+              <span className={`w-2 h-2 rounded-full ${mcpStatus?.reachable ? 'bg-green-500' : 'bg-red-400'}`} />
+              <span className={mcpStatus?.reachable ? 'text-green-600 dark:text-green-400' : 'text-red-500 dark:text-red-400'}>
+                {mcpStatus === undefined ? 'Checking...' : mcpStatus.reachable ? 'Reachable' : 'Unreachable'}
+              </span>
+            </span>
+            <CopyButton text={`${mcpUrl}/mcp`} label="URL" />
+          </div>
+        </div>
+      </div>
+
+      {/* Config Snippets */}
+      <div className="mt-6 space-y-4">
+        <div>
+          <div className="flex items-center justify-between mb-2">
+            <p className="text-sm font-medium text-gray-700 dark:text-gray-200">Claude Desktop Configuration</p>
+            <CopyButton text={CLAUDE_DESKTOP_CONFIG(mcpUrl)} label="config" />
+          </div>
+          <pre className="text-xs font-mono bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-white/10 rounded-lg p-3 overflow-x-auto text-gray-800 dark:text-gray-200">
+            {CLAUDE_DESKTOP_CONFIG(mcpUrl)}
+          </pre>
+          <p className="text-xs text-gray-400 dark:text-gray-500 mt-1">
+            Paste into <span className="font-mono">claude_desktop_config.json</span> and replace <span className="font-mono">&lt;YOUR_MCP_API_KEY&gt;</span> with your MCP API key.
+          </p>
+        </div>
+
+        <div>
+          <div className="flex items-center justify-between mb-2">
+            <p className="text-sm font-medium text-gray-700 dark:text-gray-200">Semantic Kernel Plugin</p>
+            <CopyButton text={SK_PLUGIN_CONFIG(apiUrl)} label="config" />
+          </div>
+          <pre className="text-xs font-mono bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-white/10 rounded-lg p-3 overflow-x-auto text-gray-800 dark:text-gray-200">
+            {SK_PLUGIN_CONFIG(apiUrl)}
+          </pre>
+          <p className="text-xs text-gray-400 dark:text-gray-500 mt-1">
+            Add to your Semantic Kernel agent and replace <span className="font-mono">&lt;YOUR_API_KEY&gt;</span> with your API key.
+          </p>
+        </div>
+      </div>
+    </Card>
+  );
 }
 
 export function Settings() {
@@ -210,6 +347,8 @@ export function Settings() {
           </div>
         </Card>
       </form>
+
+      <ConnectionDetails />
 
       <Card className="mt-6">
         <h2 className="text-lg font-semibold dark:text-white mb-4">Cognitive AI Services</h2>

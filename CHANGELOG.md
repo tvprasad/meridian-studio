@@ -9,6 +9,10 @@ Versioning follows [Semantic Versioning](https://semver.org/).
 
 ## [Unreleased]
 
+### Added
+- **Connection Details card on Settings page** — displays API and MCP endpoint URLs with copy-to-clipboard buttons, MCP reachability status indicator (green/red dot with 30s polling), copy-ready Claude Desktop `claude_desktop_config.json` snippet, and copy-ready Semantic Kernel plugin configuration snippet
+- **MCP health check** — lightweight reachability probe (`GET /health` on MCP server) with 5s timeout, used by Connection Details status indicator
+
 ---
 
 ## [0.15.0] — 2026-03-13

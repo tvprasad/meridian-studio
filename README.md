@@ -18,7 +18,7 @@ The operator interface for [Meridian](https://github.com/tvprasad/meridian) — 
 | **AI Operations Agent** | ReAct reasoning agent with step-by-step tool execution timeline for complex operational queries |
 | **Ingestion Pipeline** | Multi-stage document ingestion (Upload → Extract → Chunk → Embed → Index) with ServiceNow connector |
 | **Evaluation** | Aggregate metrics dashboard (total queries, avg confidence, refusal rate, latency P50/P95) and paginated query log with sortable columns and filter dropdowns |
-| **Settings** | Switch LLM and retrieval providers at runtime |
+| **Settings** | Switch LLM/retrieval providers, adjust temperature, view connection details with copy-ready config snippets for Claude Desktop and Semantic Kernel |
 
 ### Cognitive AI Services
 

@@ -55,6 +55,9 @@ const server = setupServer(
     capturedBody = await request.json();
     return HttpResponse.json(settingsPostFixture);
   }),
+  http.get('http://localhost:8001/health', () => {
+    return HttpResponse.json({ status: 'ok' });
+  }),
 );
 
 beforeAll(() => server.listen({ onUnhandledRequest: 'error' }));
@@ -427,6 +430,40 @@ describe('meridianApi.getSettings', () => {
     expect(result).toHaveProperty('temperature');
     expect(typeof result.retrieval_threshold).toBe('number');
     expect(typeof result.temperature).toBe('number');
+  });
+});
+
+// ── MCP Health API tests ──────────────────────────────────────────────────
+
+describe('meridianApi.mcpHealth', () => {
+  it('returns reachable true when MCP server responds 200', async () => {
+    const result = await meridianApi.mcpHealth();
+
+    expect(result).toEqual({ reachable: true });
+  });
+
+  it('returns reachable false when MCP server returns non-200', async () => {
+    server.use(
+      http.get('http://localhost:8001/health', () => {
+        return HttpResponse.json({ status: 'error' }, { status: 503 });
+      }),
+    );
+
+    const result = await meridianApi.mcpHealth();
+
+    expect(result).toEqual({ reachable: false });
+  });
+
+  it('returns reachable false when MCP server is unreachable', async () => {
+    server.use(
+      http.get('http://localhost:8001/health', () => {
+        return HttpResponse.error();
+      }),
+    );
+
+    const result = await meridianApi.mcpHealth();
+
+    expect(result).toEqual({ reachable: false });
   });
 });
 
