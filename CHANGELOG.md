@@ -11,6 +11,13 @@ Versioning follows [Semantic Versioning](https://semver.org/).
 
 ---
 
+## [0.18.0] — 2026-03-14
+
+### Added
+- **Config snippet icons** — MessageSquare icon for Claude Desktop Configuration, inline SVG diamond icon for Semantic Kernel Plugin in Connection Details card
+
+---
+
 ## [0.17.0] — 2026-03-14
 
 ### Added
@@ -309,7 +316,8 @@ Versioning follows [Semantic Versioning](https://semver.org/).
 - VPL logo in sidebar header
 - GitHub and LinkedIn social links in sidebar footer
 
-[Unreleased]: https://github.com/tvprasad/meridian-studio/compare/v0.17.0...HEAD
+[Unreleased]: https://github.com/tvprasad/meridian-studio/compare/v0.18.0...HEAD
+[0.18.0]: https://github.com/tvprasad/meridian-studio/compare/v0.17.0...v0.18.0
 [0.17.0]: https://github.com/tvprasad/meridian-studio/compare/v0.16.0...v0.17.0
 [0.16.0]: https://github.com/tvprasad/meridian-studio/compare/v0.15.0...v0.16.0
 [0.15.0]: https://github.com/tvprasad/meridian-studio/compare/v0.14.0...v0.15.0
