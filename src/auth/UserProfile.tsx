@@ -36,7 +36,7 @@ export function UserProfile({ collapsed }: { collapsed: boolean }) {
             <button
               onClick={logout}
               title="Sign out"
-              className="text-white/40 hover:text-white/90 transition-colors"
+              className="text-white/40 hover:text-white/90 transition-colors cursor-pointer"
             >
               <LogOut className="w-3.5 h-3.5" />
             </button>
@@ -47,7 +47,7 @@ export function UserProfile({ collapsed }: { collapsed: boolean }) {
         <button
           onClick={logout}
           title="Sign out"
-          className="text-white/40 hover:text-white/90 transition-colors"
+          className="text-white/40 hover:text-white/90 transition-colors cursor-pointer"
         >
           <LogOut className="w-3.5 h-3.5" />
         </button>
