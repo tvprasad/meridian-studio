@@ -29,6 +29,10 @@ jobs:
           docker build \
             --build-arg VITE_API_BASE_URL=${{ vars.VITE_API_BASE_URL }} \
             --build-arg VITE_MCP_BASE_URL=${{ vars.VITE_MCP_BASE_URL }} \
+            --build-arg VITE_AUTH_ENABLED=${{ vars.VITE_AUTH_ENABLED }} \
+            --build-arg VITE_AZURE_CLIENT_ID=${{ vars.VITE_AZURE_CLIENT_ID }} \
+            --build-arg VITE_AZURE_TENANT_ID=${{ vars.VITE_AZURE_TENANT_ID }} \
+            --build-arg VITE_AZURE_REDIRECT_URI=${{ vars.VITE_AZURE_REDIRECT_URI }} \
             -t ${{ secrets.ACR_LOGIN_SERVER }}/${{ env.IMAGE_NAME }}:${{ github.sha }} \
             -t ${{ secrets.ACR_LOGIN_SERVER }}/${{ env.IMAGE_NAME }}:latest \
             .
