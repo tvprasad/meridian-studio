@@ -3,7 +3,7 @@
 
 import { useEffect, useState, useCallback } from 'react';
 import { Outlet, NavLink, useLocation } from 'react-router-dom';
-import { LayoutDashboard, MessageSquare, Database, Settings, Github, Linkedin, Languages, Eye, Mic, FileSearch, Pin, PinOff, Sun, Moon, Bot, BarChart3 } from 'lucide-react';
+import { LayoutDashboard, MessageSquare, Database, Settings, Github, Languages, Eye, Mic, FileSearch, Pin, PinOff, Sun, Moon, Bot, BarChart3 } from 'lucide-react';
 import { DiagnosticsPanel } from './DiagnosticsPanel';
 import { useDiagnostics } from '../../hooks/useDiagnosticsHook';
 import { version } from '../../../package.json';
@@ -195,33 +195,18 @@ export function Layout() {
               v{version}
             </a>
 
-            {/* Name + social icons */}
-            <div className="flex items-center justify-between">
-              <span className="text-xs opacity-70 iridescent-text">
-                Prasad Thiriveedi
-              </span>
-              <div className="flex items-center gap-2">
-                <a
-                  href="https://github.com/tvprasad/"
-                  target="_blank"
-                  rel="noreferrer"
-                  className="opacity-60 hover:opacity-100 transition-opacity"
-                  style={{ color: '#a78bfa' }}
-                  title="GitHub"
-                >
-                  <Github className="w-3.5 h-3.5" />
-                </a>
-                <a
-                  href="https://www.linkedin.com/in/-prasad"
-                  target="_blank"
-                  rel="noreferrer"
-                  className="opacity-60 hover:opacity-100 transition-opacity"
-                  style={{ color: '#2dd4bf' }}
-                  title="LinkedIn"
-                >
-                  <Linkedin className="w-3.5 h-3.5" />
-                </a>
-              </div>
+            {/* Social icon */}
+            <div className="flex items-center gap-2">
+              <a
+                href="https://github.com/tvprasad/"
+                target="_blank"
+                rel="noreferrer"
+                className="opacity-60 hover:opacity-100 transition-opacity"
+                style={{ color: '#a78bfa' }}
+                title="GitHub"
+              >
+                <Github className="w-3.5 h-3.5" />
+              </a>
             </div>
 
             {/* Repo links */}

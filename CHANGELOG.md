@@ -13,6 +13,7 @@ Versioning follows [Semantic Versioning](https://semver.org/).
 - **MSAL auth build args** — pass all 6 VITE_* env vars to Docker build so auth is enabled in production
 - **MSAL redirect flow** — use `loginRedirect`/`logoutRedirect` instead of popup to avoid second-window rendering issues
 - **Logout cursor** — add `cursor-pointer` to sign-out buttons in sidebar
+- **Sidebar cleanup** — remove author name and LinkedIn link from sidebar footer
 
 ---
 
