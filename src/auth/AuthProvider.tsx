@@ -64,25 +64,13 @@ function MsalAuthInner({ children }: { children: ReactNode }) {
   }, [instance, account]);
 
   const login = useCallback(async () => {
-    try {
-      await instance.loginPopup(loginRequest);
-    } catch {
-      // Popup blocked or failed (Firefox, strict settings) — fall back to redirect
-      await instance.loginRedirect(loginRequest);
-    }
+    await instance.loginRedirect(loginRequest);
   }, [instance]);
 
   const logout = useCallback(async () => {
-    try {
-      await instance.logoutPopup({
-        postLogoutRedirectUri: config.azure.redirectUri,
-      });
-    } catch {
-      // Popup blocked — fall back to redirect
-      await instance.logoutRedirect({
-        postLogoutRedirectUri: config.azure.redirectUri,
-      });
-    }
+    await instance.logoutRedirect({
+      postLogoutRedirectUri: config.azure.redirectUri,
+    });
   }, [instance]);
 
   const value = useMemo<AuthContextValue>(
