@@ -2,6 +2,7 @@
 // Licensed under the MIT License. See LICENSE for details.
 
 import { useEffect, useState, useCallback } from 'react';
+import { Link as RouterLink } from 'react-router-dom';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
@@ -11,7 +12,7 @@ import { Button } from '../components/ui/Button';
 import { meridianApi } from '../api/meridian';
 import { config } from '../config';
 import { type SettingsResponse } from '../api/types';
-import { CheckCircle, AlertCircle, BrainCircuit, Database, SlidersHorizontal, Thermometer, Languages, Eye, AudioLines, Loader2, Copy, Check, Link, Plug, MessageSquare } from 'lucide-react';
+import { CheckCircle, AlertCircle, BrainCircuit, Database, SlidersHorizontal, Thermometer, Languages, Eye, AudioLines, FileText, Loader2, Copy, Check, Link, Plug, MessageSquare, ChevronRight } from 'lucide-react';
 
 const settingsSchema = z.object({
   llm_provider: z.enum(['local', 'azure']),
@@ -368,22 +369,28 @@ export function Settings() {
           Standalone Azure AI capabilities available alongside the RAG engine.
           These services are configured via backend environment variables and do not affect query behavior.
         </p>
-        <ul className="mt-4 space-y-2 text-sm">
-          <li className="flex items-center gap-2">
-            <span className="w-2 h-2 bg-green-500 rounded-full"></span>
-            <Languages className="w-4 h-4 text-gray-400 dark:text-gray-500" />
-            Language Service
-          </li>
-          <li className="flex items-center gap-2">
-            <span className="w-2 h-2 bg-green-500 rounded-full"></span>
-            <Eye className="w-4 h-4 text-gray-400 dark:text-gray-500" />
-            Vision Service
-          </li>
-          <li className="flex items-center gap-2">
-            <span className="w-2 h-2 bg-green-500 rounded-full"></span>
-            <AudioLines className="w-4 h-4 text-gray-400 dark:text-gray-500" />
-            Speech Service
-          </li>
+        <ul className="mt-4 space-y-1 text-sm">
+          {[
+            { to: '/language', icon: Languages, label: 'Language Service', desc: 'Sentiment, entities, key phrases' },
+            { to: '/vision', icon: Eye, label: 'Vision Service', desc: 'Image analysis, captions, OCR' },
+            { to: '/speech', icon: AudioLines, label: 'Speech Service', desc: 'Transcription and text-to-speech' },
+            { to: '/document', icon: FileText, label: 'Document Intelligence', desc: 'Form recognition, table extraction' },
+          ].map(({ to, icon: Icon, label, desc }) => (
+            <li key={to}>
+              <RouterLink
+                to={to}
+                className="flex items-center gap-2 px-3 py-2 -mx-3 rounded-lg hover:bg-gray-50 dark:hover:bg-white/5 transition-colors group"
+              >
+                <span className="w-2 h-2 bg-green-500 rounded-full shrink-0" />
+                <Icon className="w-4 h-4 text-gray-400 dark:text-gray-500 shrink-0" />
+                <div className="flex-1 min-w-0">
+                  <span className="text-gray-900 dark:text-gray-200">{label}</span>
+                  <span className="text-xs text-gray-400 dark:text-gray-500 ml-2">{desc}</span>
+                </div>
+                <ChevronRight className="w-3.5 h-3.5 text-gray-300 dark:text-gray-600 opacity-0 group-hover:opacity-100 transition-opacity shrink-0" />
+              </RouterLink>
+            </li>
+          ))}
         </ul>
       </Card>
     </div>

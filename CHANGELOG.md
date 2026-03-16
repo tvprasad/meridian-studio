@@ -9,6 +9,9 @@ Versioning follows [Semantic Versioning](https://semver.org/).
 
 ## [Unreleased]
 
+### Added
+- **Cognitive AI Services links on Settings** — each service is now a clickable link with description and hover chevron; added missing Document Intelligence entry
+
 ---
 
 ## [0.19.0] — 2026-03-16
