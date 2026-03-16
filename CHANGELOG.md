@@ -9,6 +9,13 @@ Versioning follows [Semantic Versioning](https://semver.org/).
 
 ## [Unreleased]
 
+### Added
+- **Collapsible AI Lab section** — sidebar "AI Lab Preview" header is now a toggle button with rotating chevron; collapsed state persisted in localStorage
+
+### Changed
+- **VPL logo update** — replaced `logo.png` with `vpllogo.jfif` across sign-in screen, sidebar, landing page, favicon, and web manifest
+- **Web manifest** — renamed app from "VPL Solutions — AI Products" to "Meridian Studio"
+
 ---
 
 ## [0.20.0] — 2026-03-16

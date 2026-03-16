@@ -3,7 +3,7 @@
 
 import { useEffect, useState, useCallback } from 'react';
 import { Outlet, NavLink, useLocation } from 'react-router-dom';
-import { LayoutDashboard, MessageSquare, Database, Settings, Github, Languages, Eye, Mic, FileSearch, Pin, PinOff, Sun, Moon, Bot, BarChart3 } from 'lucide-react';
+import { LayoutDashboard, MessageSquare, Database, Settings, Github, Languages, Eye, Mic, FileSearch, Pin, PinOff, Sun, Moon, Bot, BarChart3, ChevronDown } from 'lucide-react';
 import { DiagnosticsPanel } from './DiagnosticsPanel';
 import { useDiagnostics } from '../../hooks/useDiagnosticsHook';
 import { version } from '../../../package.json';
@@ -11,6 +11,7 @@ import { UserProfile } from '../../auth/UserProfile';
 
 const SIDEBAR_PINNED_KEY = 'meridian-sidebar-pinned';
 const THEME_KEY = 'meridian-theme';
+const AI_LAB_OPEN_KEY = 'meridian-ai-lab-open';
 
 const coreNavItems = [
   { to: '/', icon: LayoutDashboard, label: 'Dashboard' },
@@ -93,6 +94,20 @@ export function Layout() {
 
   const toggleTheme = useCallback(() => setDark((prev) => !prev), []);
 
+  // AI Lab collapsible — persisted in localStorage
+  const [aiLabOpen, setAiLabOpen] = useState(() => {
+    const stored = localStorage.getItem(AI_LAB_OPEN_KEY);
+    return stored === null ? true : stored === 'true';
+  });
+
+  const toggleAiLab = useCallback(() => {
+    setAiLabOpen((prev) => {
+      const next = !prev;
+      localStorage.setItem(AI_LAB_OPEN_KEY, String(next));
+      return next;
+    });
+  }, []);
+
   // Reset diagnostics & governance when navigating between AI service pages
   useEffect(() => {
     if (showDiagnostics) reset();
@@ -111,7 +126,7 @@ export function Layout() {
         <div className={`border-b border-white/10 ${expanded ? 'p-6' : 'py-4 px-2'}`}>
           <div className={`flex items-center ${expanded ? 'gap-3' : 'justify-center'}`}>
             <a href="https://vplsolutions.com" target="_blank" rel="noopener noreferrer" className="w-8 h-8 rounded-lg overflow-hidden shrink-0 shadow-lg block">
-              <img src="/logo.png" alt="VPL" className="w-full h-full object-contain" />
+              <img src="/vpllogo.jfif" alt="VPL" className="w-full h-full object-contain" />
             </a>
             {expanded && (
               <div className="iridescent-group flex-1 min-w-0">
@@ -130,15 +145,19 @@ export function Layout() {
           ))}
 
           {expanded ? (
-            <div className="px-6 pt-5 pb-1 flex items-center gap-2">
+            <button
+              onClick={toggleAiLab}
+              className="w-full px-6 pt-5 pb-1 flex items-center gap-2 hover:opacity-80 transition-opacity cursor-pointer"
+            >
               <p className="text-[10px] font-semibold uppercase tracking-widest text-white/25">AI Lab</p>
               <span className="text-[9px] font-semibold uppercase tracking-wide px-1.5 py-0.5 rounded-full bg-violet-500/20 text-violet-400">Preview</span>
-            </div>
+              <ChevronDown className={`w-3 h-3 text-white/25 ml-auto transition-transform duration-200 ${aiLabOpen ? '' : '-rotate-90'}`} />
+            </button>
           ) : (
             <div className="mx-2 my-3 border-t border-white/10" />
           )}
 
-          {aiNavItems.map((item) => (
+          {(aiLabOpen || !expanded) && aiNavItems.map((item) => (
             <NavItem key={item.to} {...item} collapsed={!expanded} />
           ))}
         </nav>

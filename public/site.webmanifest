@@ -1,0 +1,11 @@
+{
+  "name": "Meridian Studio",
+  "short_name": "Meridian",
+  "icons": [
+    { "src": "/vpllogo.jfif", "sizes": "100x100", "type": "image/jpeg" },
+    { "src": "/favicon.svg", "sizes": "any", "type": "image/svg+xml" }
+  ],
+  "theme_color": "#0B0F19",
+  "background_color": "#0B0F19",
+  "display": "standalone"
+}

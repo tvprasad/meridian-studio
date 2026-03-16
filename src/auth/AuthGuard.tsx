@@ -384,7 +384,7 @@ export function AuthGuard({ children }: { children: ReactNode }) {
                 </svg>
                 {/* Logo */}
                 <a href="https://vplsolutions.com" target="_blank" rel="noopener noreferrer" className="relative w-14 h-14 rounded-xl overflow-hidden shadow-lg ring-1 ring-white/10 block">
-                  <img src="/logo.png" alt="Meridian Studio" className="w-full h-full object-contain" />
+                  <img src="/vpllogo.jfif" alt="Meridian Studio" className="w-full h-full object-contain" />
                 </a>
               </div>
               <div>
