@@ -9,12 +9,16 @@ Versioning follows [Semantic Versioning](https://semver.org/).
 
 ## [Unreleased]
 
+---
+
+## [0.18.2] — 2026-03-15
+
 ### Changed
-- **Sidebar footer** — merged version, GitHub icon, and repo links into a single compact `v0.18.1` link with inline GitHub icon; removed separate social icon and repo links blocks
+- **Sidebar footer** — merged version, GitHub icon, and repo links into a single compact link with inline GitHub icon
+- **MSAL login** — switched from popup to redirect flow (popup loaded full SPA in second window)
 
 ### Fixed
 - **Cursor pointer on logout buttons** — added `cursor-pointer` to both expanded and collapsed logout buttons
-- **LinkedIn banner HTML** — gitignored as non-source asset
 
 ---
 
@@ -333,7 +337,8 @@ Versioning follows [Semantic Versioning](https://semver.org/).
 - VPL logo in sidebar header
 - GitHub and LinkedIn social links in sidebar footer
 
-[Unreleased]: https://github.com/tvprasad/meridian-studio/compare/v0.18.1...HEAD
+[Unreleased]: https://github.com/tvprasad/meridian-studio/compare/v0.18.2...HEAD
+[0.18.2]: https://github.com/tvprasad/meridian-studio/compare/v0.18.1...v0.18.2
 [0.18.1]: https://github.com/tvprasad/meridian-studio/compare/v0.18.0...v0.18.1
 [0.18.0]: https://github.com/tvprasad/meridian-studio/compare/v0.17.0...v0.18.0
 [0.17.0]: https://github.com/tvprasad/meridian-studio/compare/v0.16.0...v0.17.0
