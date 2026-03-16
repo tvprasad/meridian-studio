@@ -9,6 +9,10 @@ Versioning follows [Semantic Versioning](https://semver.org/).
 
 ## [Unreleased]
 
+---
+
+## [0.21.0] — 2026-03-16
+
 ### Added
 - **Collapsible AI Lab section** — sidebar "AI Lab Preview" header is now a toggle button with rotating chevron; collapsed state persisted in localStorage
 
@@ -363,7 +367,8 @@ Versioning follows [Semantic Versioning](https://semver.org/).
 - VPL logo in sidebar header
 - GitHub and LinkedIn social links in sidebar footer
 
-[Unreleased]: https://github.com/tvprasad/meridian-studio/compare/v0.20.0...HEAD
+[Unreleased]: https://github.com/tvprasad/meridian-studio/compare/v0.21.0...HEAD
+[0.21.0]: https://github.com/tvprasad/meridian-studio/compare/v0.20.0...v0.21.0
 [0.20.0]: https://github.com/tvprasad/meridian-studio/compare/v0.19.0...v0.20.0
 [0.19.0]: https://github.com/tvprasad/meridian-studio/compare/v0.18.2...v0.19.0
 [0.18.2]: https://github.com/tvprasad/meridian-studio/compare/v0.18.1...v0.18.2
