@@ -59,7 +59,7 @@ export function VisionIntelligence() {
             <h1 className="text-2xl font-bold text-gray-900 dark:text-white">Vision Intelligence</h1>
             <span className="text-[10px] font-semibold uppercase tracking-wide px-2 py-0.5 rounded-full bg-violet-100 text-violet-600 dark:bg-violet-900/30 dark:text-violet-400">AI Lab — Preview</span>
           </div>
-          <p className="text-gray-500 dark:text-gray-400 text-sm mt-0.5">Analyze images for captions, tags, objects, and extract text via OCR.</p>
+          <p className="text-gray-500 dark:text-gray-400 text-sm mt-0.5">Upload an image to generate captions, detect objects, and extract text using OCR. This is a standalone Cognitive AI capability, independent of the RAG query engine.</p>
         </div>
       </div>
 

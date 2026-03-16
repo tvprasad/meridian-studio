@@ -9,6 +9,14 @@ Versioning follows [Semantic Versioning](https://semver.org/).
 
 ## [Unreleased]
 
+### Changed
+- **Ask Meridian** — subtitle now explains governance threshold and refusal behavior
+- **Dashboard** — added getting-started hint card when knowledge base has 0 documents, linking to Ingestion Pipeline
+- **Ingestion Pipeline** — subtitle describes the four-stage pipeline (extraction, chunking, embedding, indexing)
+- **AI Operations Agent** — empty state title changed to "Your AI operations analyst" with ReAct reasoning explanation
+- **Evaluation** — renamed "Query Log" to "Query Telemetry Log" with descriptive empty state explaining what gets recorded
+- **Cognitive AI Services** — all 4 pages (Language, Vision, Speech, Document Intelligence) now describe the service in plain language and note independence from the RAG engine
+
 ---
 
 ## [0.18.2] — 2026-03-15

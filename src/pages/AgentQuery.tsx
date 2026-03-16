@@ -408,9 +408,9 @@ export function AgentQuery() {
             <div className="w-14 h-14 rounded-full bg-violet-50 dark:bg-violet-900/30 flex items-center justify-center mb-4">
               <Bot className="w-7 h-7 text-violet-500 dark:text-violet-400" />
             </div>
-            <h3 className="text-gray-700 dark:text-gray-200 font-medium">Ask about incidents, alerts, and operations</h3>
-            <p className="text-sm text-gray-400 dark:text-gray-500 mt-1 mb-6">
-              The agent reasons step-by-step, calling tools to investigate before answering.
+            <h3 className="text-gray-700 dark:text-gray-200 font-medium">Your AI operations analyst</h3>
+            <p className="text-sm text-gray-400 dark:text-gray-500 mt-1 max-w-md mb-6">
+              The agent uses ReAct reasoning to break down your question, search the knowledge base, cross-reference sources, and synthesize a grounded answer — showing every step of its thought process.
             </p>
             <div className="flex flex-wrap gap-2 justify-center max-w-lg mb-8">
               {EXAMPLE_QUESTIONS.map((q) => (

@@ -6,7 +6,7 @@ import { Link } from 'react-router-dom';
 import { Card } from '../components/ui/Card';
 import { StatusBadge } from '../components/ui/StatusBadge';
 import { meridianApi } from '../api/meridian';
-import { Activity, Database, Cpu, Gauge, Thermometer, Settings } from 'lucide-react';
+import { Activity, Database, Cpu, Gauge, Thermometer, Settings, Upload } from 'lucide-react';
 import { type SettingsResponse } from '../api/types';
 
 const PROVIDER_LABELS: Record<string, string> = {
@@ -168,6 +168,24 @@ export function Dashboard() {
           </Card>
         ))}
       </div>
+
+      {health && health.document_count === 0 && (
+        <Card className="mt-6 border-l-4 border-l-amber-400">
+          <div className="flex items-start gap-3">
+            <div className="p-2 rounded-lg bg-amber-50 dark:bg-amber-900/20">
+              <Upload className="w-5 h-5 text-amber-600" />
+            </div>
+            <div>
+              <p className="text-sm font-medium text-gray-800 dark:text-gray-200">Your knowledge base is empty</p>
+              <p className="text-xs text-gray-500 dark:text-gray-400 mt-0.5">
+                Upload documents through the{' '}
+                <Link to="/ingest" className="text-primary-600 dark:text-primary-400 hover:underline">Ingestion Pipeline</Link>
+                {' '}to start building your knowledge base. Once indexed, you can query them through Ask Meridian.
+              </p>
+            </div>
+          </div>
+        </Card>
+      )}
 
       <Card className="mt-8">
         <h2 className="text-lg font-semibold dark:text-white">Configuration</h2>

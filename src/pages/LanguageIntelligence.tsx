@@ -70,7 +70,7 @@ export function LanguageIntelligence() {
             <h1 className="text-2xl font-bold text-gray-900 dark:text-white">Language Intelligence</h1>
             <span className="text-[10px] font-semibold uppercase tracking-wide px-2 py-0.5 rounded-full bg-violet-100 text-violet-600 dark:bg-violet-900/30 dark:text-violet-400">AI Lab — Preview</span>
           </div>
-          <p className="text-gray-500 dark:text-gray-400 text-sm mt-0.5">Sentiment analysis, entity recognition, key phrase extraction, and language detection.</p>
+          <p className="text-gray-500 dark:text-gray-400 text-sm mt-0.5">Analyze text to detect sentiment, recognize named entities, extract key phrases, and identify languages. This is a standalone Cognitive AI capability, independent of the RAG query engine.</p>
         </div>
       </div>
 

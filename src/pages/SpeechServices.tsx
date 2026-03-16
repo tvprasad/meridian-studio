@@ -74,7 +74,7 @@ export function SpeechServices() {
             <h1 className="text-2xl font-bold text-gray-900 dark:text-white">Speech Services</h1>
             <span className="text-[10px] font-semibold uppercase tracking-wide px-2 py-0.5 rounded-full bg-violet-100 text-violet-600 dark:bg-violet-900/30 dark:text-violet-400">AI Lab — Preview</span>
           </div>
-          <p className="text-gray-500 dark:text-gray-400 text-sm mt-0.5">Transcribe audio to text, or synthesize speech from text.</p>
+          <p className="text-gray-500 dark:text-gray-400 text-sm mt-0.5">Convert spoken audio into text transcriptions, or generate natural-sounding speech from written text. This is a standalone Cognitive AI capability, independent of the RAG query engine.</p>
         </div>
       </div>
 

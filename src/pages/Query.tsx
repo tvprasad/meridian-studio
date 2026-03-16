@@ -572,7 +572,7 @@ export function Query() {
       <div className="shrink-0 flex items-start justify-between gap-4">
         <div>
           <h1 className="text-2xl font-bold text-gray-900 dark:text-white">Ask Meridian</h1>
-          <p className="text-gray-500 dark:text-gray-400 mt-1">Ask questions in plain language — Meridian searches your documents and returns a grounded answer.</p>
+          <p className="text-gray-500 dark:text-gray-400 mt-1">Ask questions in plain language. Meridian searches your ingested documents, evaluates confidence against a governance threshold, and returns a grounded answer — or explains why it can't.</p>
           {health && (
             <p className="mt-2 text-xs text-gray-400 flex items-center gap-1.5">
               Using

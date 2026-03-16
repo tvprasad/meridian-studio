@@ -383,7 +383,7 @@ export function Ingest() {
   return (
     <div>
       <h1 className="text-2xl font-bold text-gray-900 dark:text-white">Ingestion Pipeline</h1>
-      <p className="text-gray-500 dark:text-gray-400 mt-1">Ingest documents into the knowledge base. Files are chunked, embedded, and indexed so Meridian can reference them when answering questions.</p>
+      <p className="text-gray-500 dark:text-gray-400 mt-1">Upload documents to build your knowledge base. Each file passes through a four-stage pipeline — extraction, chunking, embedding, and indexing — so Meridian can retrieve relevant passages when answering questions.</p>
       {health && (
         <p className="mt-2 text-xs text-gray-400 dark:text-gray-500 flex items-center gap-1.5">
           Documents will be indexed into

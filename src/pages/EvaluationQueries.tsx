@@ -399,7 +399,7 @@ export function EvaluationQueries() {
         <div className="px-6 py-4 border-b border-gray-100 dark:border-white/10 flex items-center justify-between">
           <div className="flex items-center gap-2">
             <DatabaseZap className="w-4 h-4 text-gray-400" />
-            <h2 className="font-semibold text-gray-900 dark:text-white">Query Log</h2>
+            <h2 className="font-semibold text-gray-900 dark:text-white">Query Telemetry Log</h2>
             {total > 0 && (
               <span className="text-xs text-gray-400 dark:text-gray-500">
                 {hasFilters ? `${filteredAndSorted.length} of ` : ''}{total.toLocaleString()} {total === 1 ? 'entry' : 'entries'}
@@ -482,8 +482,8 @@ export function EvaluationQueries() {
         ) : !queries?.queries?.length ? (
           <div className="p-12 text-center">
             <DatabaseZap className="w-8 h-8 text-gray-300 dark:text-gray-600 mx-auto" />
-            <p className="text-gray-500 dark:text-gray-400 mt-2 text-sm">No queries recorded yet.</p>
-            <p className="text-gray-400 dark:text-gray-500 text-xs mt-1">Query telemetry will appear here after the first query.</p>
+            <p className="text-gray-500 dark:text-gray-400 mt-2 text-sm">No telemetry data recorded yet.</p>
+            <p className="text-gray-400 dark:text-gray-500 text-xs mt-1">Every query to Ask Meridian is logged here with confidence scores, latency, retrieval stats, and governance decisions. Ask your first question to start collecting data.</p>
           </div>
         ) : filteredAndSorted.length === 0 ? (
           <div className="p-12 text-center">
