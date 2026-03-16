@@ -9,6 +9,10 @@ Versioning follows [Semantic Versioning](https://semver.org/).
 
 ## [Unreleased]
 
+---
+
+## [0.19.0] — 2026-03-16
+
 ### Changed
 - **Ask Meridian** — subtitle now explains governance threshold and refusal behavior
 - **Dashboard** — added getting-started hint card when knowledge base has 0 documents, linking to Ingestion Pipeline
@@ -345,7 +349,8 @@ Versioning follows [Semantic Versioning](https://semver.org/).
 - VPL logo in sidebar header
 - GitHub and LinkedIn social links in sidebar footer
 
-[Unreleased]: https://github.com/tvprasad/meridian-studio/compare/v0.18.2...HEAD
+[Unreleased]: https://github.com/tvprasad/meridian-studio/compare/v0.19.0...HEAD
+[0.19.0]: https://github.com/tvprasad/meridian-studio/compare/v0.18.2...v0.19.0
 [0.18.2]: https://github.com/tvprasad/meridian-studio/compare/v0.18.1...v0.18.2
 [0.18.1]: https://github.com/tvprasad/meridian-studio/compare/v0.18.0...v0.18.1
 [0.18.0]: https://github.com/tvprasad/meridian-studio/compare/v0.17.0...v0.18.0
