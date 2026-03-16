@@ -185,50 +185,17 @@ export function Layout() {
 
         {expanded && (
           <div className="px-6 pb-6 space-y-2 shrink-0">
-            {/* Version → releases */}
+            {/* Version + GitHub */}
             <a
-              href="https://github.com/tvprasad/meridian/releases"
+              href="https://github.com/tvprasad/meridian-studio/releases"
               target="_blank"
               rel="noreferrer"
-              className="block text-xs opacity-70 hover:opacity-100 transition-opacity iridescent-text"
+              className="inline-flex items-center gap-1.5 text-xs opacity-70 hover:opacity-100 transition-opacity iridescent-text"
+              title="View releases on GitHub"
             >
               v{version}
+              <Github className="w-3 h-3" />
             </a>
-
-            {/* Social icon */}
-            <div className="flex items-center gap-2">
-              <a
-                href="https://github.com/tvprasad/"
-                target="_blank"
-                rel="noreferrer"
-                className="opacity-60 hover:opacity-100 transition-opacity"
-                style={{ color: '#a78bfa' }}
-                title="GitHub"
-              >
-                <Github className="w-3.5 h-3.5" />
-              </a>
-            </div>
-
-            {/* Repo links */}
-            <div className="flex items-center gap-1.5 text-xs">
-              <a
-                href="https://github.com/tvprasad/meridian"
-                target="_blank"
-                rel="noreferrer"
-                className="opacity-60 hover:opacity-100 transition-opacity iridescent-text"
-              >
-                meridian
-              </a>
-              <span className="text-white/50">·</span>
-              <a
-                href="https://github.com/tvprasad/meridian-studio"
-                target="_blank"
-                rel="noreferrer"
-                className="opacity-60 hover:opacity-100 transition-opacity iridescent-text"
-              >
-                studio
-              </a>
-            </div>
           </div>
         )}
       </aside>

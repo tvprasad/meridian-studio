@@ -9,6 +9,13 @@ Versioning follows [Semantic Versioning](https://semver.org/).
 
 ## [Unreleased]
 
+### Changed
+- **Sidebar footer** — merged version, GitHub icon, and repo links into a single compact `v0.18.1` link with inline GitHub icon; removed separate social icon and repo links blocks
+
+### Fixed
+- **Cursor pointer on logout buttons** — added `cursor-pointer` to both expanded and collapsed logout buttons
+- **LinkedIn banner HTML** — gitignored as non-source asset
+
 ---
 
 ## [0.18.1] — 2026-03-15
