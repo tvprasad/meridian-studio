@@ -9,6 +9,10 @@ Versioning follows [Semantic Versioning](https://semver.org/).
 
 ## [Unreleased]
 
+---
+
+## [0.22.1] — 2026-03-17
+
 ### Fixed
 - **Evaluation query log intermittent empty state** — add exponential backoff retry (1s -> 2s -> 4s, max 3 attempts) to handle Azure SQL serverless cold start timeouts
 
@@ -377,7 +381,8 @@ Versioning follows [Semantic Versioning](https://semver.org/).
 - VPL logo in sidebar header
 - GitHub and LinkedIn social links in sidebar footer
 
-[Unreleased]: https://github.com/tvprasad/meridian-studio/compare/v0.22.0...HEAD
+[Unreleased]: https://github.com/tvprasad/meridian-studio/compare/v0.22.1...HEAD
+[0.22.1]: https://github.com/tvprasad/meridian-studio/compare/v0.22.0...v0.22.1
 [0.22.0]: https://github.com/tvprasad/meridian-studio/compare/v0.21.0...v0.22.0
 [0.21.0]: https://github.com/tvprasad/meridian-studio/compare/v0.20.0...v0.21.0
 [0.20.0]: https://github.com/tvprasad/meridian-studio/compare/v0.19.0...v0.20.0
