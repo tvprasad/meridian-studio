@@ -9,6 +9,10 @@ Versioning follows [Semantic Versioning](https://semver.org/).
 
 ## [Unreleased]
 
+---
+
+## [0.24.1] — 2026-03-17
+
 ### Fixed
 - **Application Insights not collecting in production** — added `VITE_APPINSIGHTS_CONNECTION_STRING` as a Docker build arg in Dockerfile and azure-deploy.yml so the connection string is inlined by Vite at build time
 - **Azure Deploy failing** — quoted all `--build-arg` values in azure-deploy.yml to prevent shell interpretation of semicolons in the App Insights connection string
@@ -401,6 +405,7 @@ Versioning follows [Semantic Versioning](https://semver.org/).
 - GitHub and LinkedIn social links in sidebar footer
 
 [Unreleased]: https://github.com/tvprasad/meridian-studio/compare/v0.24.0...HEAD
+[0.24.1]: https://github.com/tvprasad/meridian-studio/compare/v0.24.0...v0.24.1
 [0.24.0]: https://github.com/tvprasad/meridian-studio/compare/v0.23.0...v0.24.0
 [0.23.0]: https://github.com/tvprasad/meridian-studio/compare/v0.22.1...v0.23.0
 [0.22.1]: https://github.com/tvprasad/meridian-studio/compare/v0.22.0...v0.22.1
