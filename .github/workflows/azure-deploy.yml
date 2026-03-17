@@ -33,6 +33,7 @@ jobs:
             --build-arg VITE_AZURE_CLIENT_ID=${{ vars.VITE_AZURE_CLIENT_ID }} \
             --build-arg VITE_AZURE_TENANT_ID=${{ vars.VITE_AZURE_TENANT_ID }} \
             --build-arg VITE_AZURE_REDIRECT_URI=${{ vars.VITE_AZURE_REDIRECT_URI }} \
+            --build-arg VITE_APPINSIGHTS_CONNECTION_STRING=${{ vars.VITE_APPINSIGHTS_CONNECTION_STRING }} \
             -t ${{ secrets.ACR_LOGIN_SERVER }}/${{ env.IMAGE_NAME }}:${{ github.sha }} \
             -t ${{ secrets.ACR_LOGIN_SERVER }}/${{ env.IMAGE_NAME }}:latest \
             .

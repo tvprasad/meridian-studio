@@ -9,6 +9,9 @@ Versioning follows [Semantic Versioning](https://semver.org/).
 
 ## [Unreleased]
 
+### Fixed
+- **Application Insights not collecting in production** — added `VITE_APPINSIGHTS_CONNECTION_STRING` as a Docker build arg in Dockerfile and azure-deploy.yml so the connection string is inlined by Vite at build time
+
 ---
 
 ## [0.24.0] — 2026-03-17
