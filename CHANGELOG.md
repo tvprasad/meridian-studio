@@ -9,6 +9,10 @@ Versioning follows [Semantic Versioning](https://semver.org/).
 
 ## [Unreleased]
 
+---
+
+## [0.24.0] — 2026-03-17
+
 ### Changed
 - **REFUSED UX improvements** — context-aware refusal header ("Outside the knowledge base" vs "Not enough evidence to answer"), confidence pill shows threshold (`52.1% / 60% threshold`), actionable link to Ingestion page, suggestion chips left-aligned directly under refusal card
 
@@ -391,7 +395,8 @@ Versioning follows [Semantic Versioning](https://semver.org/).
 - VPL logo in sidebar header
 - GitHub and LinkedIn social links in sidebar footer
 
-[Unreleased]: https://github.com/tvprasad/meridian-studio/compare/v0.23.0...HEAD
+[Unreleased]: https://github.com/tvprasad/meridian-studio/compare/v0.24.0...HEAD
+[0.24.0]: https://github.com/tvprasad/meridian-studio/compare/v0.23.0...v0.24.0
 [0.23.0]: https://github.com/tvprasad/meridian-studio/compare/v0.22.1...v0.23.0
 [0.22.1]: https://github.com/tvprasad/meridian-studio/compare/v0.22.0...v0.22.1
 [0.22.0]: https://github.com/tvprasad/meridian-studio/compare/v0.21.0...v0.22.0
