@@ -212,6 +212,7 @@ export function Settings() {
   const temperature = form.watch('temperature');
   const isDirty = form.formState.isDirty;
 
+  const isHosted = !config.apiBaseUrl.includes('localhost');
   const onSubmit = form.handleSubmit((data) => mutation.mutate(data));
 
   return (
@@ -253,7 +254,7 @@ export function Settings() {
                 {...form.register('llm_provider')}
                 className="mt-1 block w-full rounded-lg border-gray-300 dark:border-white/15 shadow-sm focus:border-primary-500 focus:ring-primary-500 border p-2 dark:bg-gray-900 dark:text-gray-200"
               >
-                <option value="local">Local (Ollama)</option>
+                <option value="local" disabled={isHosted}>Local (Ollama){isHosted ? ' — unavailable in hosted mode' : ''}</option>
                 <option value="azure">Azure OpenAI</option>
               </select>
             </div>
@@ -269,7 +270,7 @@ export function Settings() {
                 {...form.register('retrieval_provider')}
                 className="mt-1 block w-full rounded-lg border-gray-300 dark:border-white/15 shadow-sm focus:border-primary-500 focus:ring-primary-500 border p-2 dark:bg-gray-900 dark:text-gray-200"
               >
-                <option value="chroma">Local (Chroma)</option>
+                <option value="chroma" disabled={isHosted}>Local (Chroma){isHosted ? ' — unavailable in hosted mode' : ''}</option>
                 <option value="azure">Azure AI Search</option>
               </select>
             </div>

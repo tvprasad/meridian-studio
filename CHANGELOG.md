@@ -9,6 +9,9 @@ Versioning follows [Semantic Versioning](https://semver.org/).
 
 ## [Unreleased]
 
+### Changed
+- **Settings provider dropdowns** — disable Local (Ollama) and Local (Chroma) options when API points to a hosted endpoint; options remain visible with "unavailable in hosted mode" label
+
 ---
 
 ## [0.22.1] — 2026-03-17
