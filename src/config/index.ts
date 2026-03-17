@@ -11,4 +11,5 @@ export const config = {
     redirectUri: import.meta.env.VITE_AZURE_REDIRECT_URI || window.location.origin,
     apiScope: import.meta.env.VITE_AZURE_API_SCOPE || '',
   },
+  appInsightsConnectionString: import.meta.env.VITE_APPINSIGHTS_CONNECTION_STRING || '',
 } as const;

@@ -9,6 +9,9 @@ Versioning follows [Semantic Versioning](https://semver.org/).
 
 ## [Unreleased]
 
+### Added
+- **Azure Application Insights** — visitor telemetry with auto page view tracking, session duration, geography, and browser metrics; initialized from `VITE_APPINSIGHTS_CONNECTION_STRING` env var
+
 ---
 
 ## [0.21.0] — 2026-03-16
