@@ -9,6 +9,9 @@ Versioning follows [Semantic Versioning](https://semver.org/).
 
 ## [Unreleased]
 
+### Fixed
+- **Evaluation query log intermittent empty state** — add exponential backoff retry (1s -> 2s -> 4s, max 3 attempts) to handle Azure SQL serverless cold start timeouts
+
 ---
 
 ## [0.22.0] — 2026-03-16

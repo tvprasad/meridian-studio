@@ -283,6 +283,8 @@ export function EvaluationQueries() {
     queryKey: ['evaluation-queries', pageSize, offset],
     queryFn: () => meridianApi.evaluationQueries(pageSize, offset),
     refetchInterval: 30_000,
+    retry: 3,
+    retryDelay: (attempt) => Math.min(1000 * 2 ** attempt, 10_000),
   });
 
   const isLoading = metricsLoading || queriesLoading;
