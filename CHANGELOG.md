@@ -9,6 +9,10 @@ Versioning follows [Semantic Versioning](https://semver.org/).
 
 ## [Unreleased]
 
+---
+
+## [0.22.0] — 2026-03-16
+
 ### Added
 - **Azure Application Insights** — visitor telemetry with auto page view tracking, session duration, geography, and browser metrics; initialized from `VITE_APPINSIGHTS_CONNECTION_STRING` env var
 
@@ -370,7 +374,8 @@ Versioning follows [Semantic Versioning](https://semver.org/).
 - VPL logo in sidebar header
 - GitHub and LinkedIn social links in sidebar footer
 
-[Unreleased]: https://github.com/tvprasad/meridian-studio/compare/v0.21.0...HEAD
+[Unreleased]: https://github.com/tvprasad/meridian-studio/compare/v0.22.0...HEAD
+[0.22.0]: https://github.com/tvprasad/meridian-studio/compare/v0.21.0...v0.22.0
 [0.21.0]: https://github.com/tvprasad/meridian-studio/compare/v0.20.0...v0.21.0
 [0.20.0]: https://github.com/tvprasad/meridian-studio/compare/v0.19.0...v0.20.0
 [0.19.0]: https://github.com/tvprasad/meridian-studio/compare/v0.18.2...v0.19.0
