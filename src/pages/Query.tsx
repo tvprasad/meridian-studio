@@ -63,7 +63,7 @@ function ConfidencePill({ score, rawScore, threshold }: { score: number; rawScor
           {(rawScore * 100).toFixed(1)}% → {pct}%
         </span>
       ) : (
-        <>{pct}% confidence</>
+        <>{pct}%{threshold != null ? ` / ${(threshold * 100).toFixed(0)}% threshold` : ' confidence'}</>
       )}
     </span>
   );
@@ -282,7 +282,9 @@ function AssistantMessage({ msg, isLatest, isStreamingMsg, onSuggestionClick }: 
             <div className="bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-700 rounded-2xl rounded-tl-sm px-4 py-3">
               <div className="flex items-center gap-2 mb-1">
                 <AlertTriangle className="w-4 h-4 text-amber-500 shrink-0" />
-                <span className="text-xs font-medium text-amber-700 dark:text-amber-400">Could not answer</span>
+                <span className="text-xs font-medium text-amber-700 dark:text-amber-400">
+                  {score != null && score < 0.2 ? 'Outside the knowledge base' : 'Not enough evidence to answer'}
+                </span>
               </div>
               <p className="text-sm text-amber-800 dark:text-amber-300">{msg.metadata?.refusal_reason ?? 'Retrieval confidence below threshold.'}</p>
               {score != null && threshold != null && (
@@ -291,7 +293,9 @@ function AssistantMessage({ msg, isLatest, isStreamingMsg, onSuggestionClick }: 
                     ? `Raw confidence was ${(rawScore * 100).toFixed(1)}%, calibrated to ${(score * 100).toFixed(1)}%`
                     : `Confidence was ${(score * 100).toFixed(1)}%`}
                   {` — the minimum threshold is ${(threshold * 100).toFixed(0)}%.`}
-                  {' '}Try rephrasing with more specific terms or ask about a different topic.
+                  {' '}Try rephrasing with more specific terms, or{' '}
+                  <Link to="/ingest" className="underline hover:text-amber-700 dark:hover:text-amber-300">ingest more documents</Link>
+                  {' '}to broaden coverage.
                 </p>
               )}
             </div>
@@ -677,17 +681,19 @@ export function Query() {
                     onSuggestionClick={handleChipClick}
                   />
                   {isLatest && msg.metadata?.status === 'REFUSED' && exampleQuestions.length > 0 && (
-                    <div className="flex flex-col items-end gap-2 mt-4">
-                      <p className="text-xs text-gray-400 dark:text-gray-500 mr-1">Try one of these instead:</p>
-                      {exampleQuestions.map((q) => (
-                        <button
-                          key={q}
-                          onClick={() => handleChipClick(q)}
-                          className="max-w-2xl text-left text-sm px-4 py-2.5 rounded-2xl rounded-tr-sm border border-primary-200 dark:border-primary-700 text-primary-700 dark:text-primary-300 bg-primary-50 dark:bg-primary-900/30 hover:bg-primary-600 hover:text-white hover:border-primary-600 transition-colors shadow-sm cursor-pointer"
-                        >
-                          {q}
-                        </button>
-                      ))}
+                    <div className="max-w-3xl pl-11 mt-3">
+                      <p className="text-xs text-gray-400 dark:text-gray-500 mb-2">Try one of these instead:</p>
+                      <div className="flex flex-wrap gap-2">
+                        {exampleQuestions.map((q) => (
+                          <button
+                            key={q}
+                            onClick={() => handleChipClick(q)}
+                            className="text-left text-sm px-4 py-2 rounded-2xl border border-primary-200 dark:border-primary-700 text-primary-700 dark:text-primary-300 bg-primary-50 dark:bg-primary-900/30 hover:bg-primary-600 hover:text-white hover:border-primary-600 transition-colors shadow-sm cursor-pointer"
+                          >
+                            {q}
+                          </button>
+                        ))}
+                      </div>
                     </div>
                   )}
                 </div>

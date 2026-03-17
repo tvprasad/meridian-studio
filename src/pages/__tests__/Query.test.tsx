@@ -154,8 +154,8 @@ describe('Query page — OK response', () => {
     expect(screen.getByText('What are the key takeaways?')).toBeInTheDocument();
     expect(screen.getByText('How does this compare to alternatives?')).toBeInTheDocument();
 
-    // Should show confidence pill
-    expect(screen.getByText('87.0% confidence')).toBeInTheDocument();
+    // Should show confidence pill with threshold
+    expect(screen.getByText('87.0% / 60% threshold')).toBeInTheDocument();
   });
 
   it('populates input when a follow-up prompt chip is clicked', async () => {
@@ -207,7 +207,7 @@ describe('Query page — REFUSED response', () => {
 
     // Wait for refused response
     await waitFor(() => {
-      expect(screen.getByText('Could not answer')).toBeInTheDocument();
+      expect(screen.getByText('Not enough evidence to answer')).toBeInTheDocument();
     });
 
     // Should show refusal reason
@@ -221,8 +221,8 @@ describe('Query page — REFUSED response', () => {
     expect(screen.getByText('Try one of these instead:')).toBeInTheDocument();
     expect(screen.queryByText('Keep the conversation going:')).not.toBeInTheDocument();
 
-    // Should show confidence pill
-    expect(screen.getByText('51.4% confidence')).toBeInTheDocument();
+    // Should show confidence pill with threshold
+    expect(screen.getByText('51.4% / 60% threshold')).toBeInTheDocument();
   });
 
   it('populates input when a suggestion chip is clicked after refusal', async () => {
@@ -274,7 +274,7 @@ describe('Query page — REFUSED response', () => {
     await submitQuery(user, 'Something random');
 
     await waitFor(() => {
-      expect(screen.getByText('Could not answer')).toBeInTheDocument();
+      expect(screen.getByText('Not enough evidence to answer')).toBeInTheDocument();
     });
 
     // Follow-up prompts should NOT appear on refused responses
