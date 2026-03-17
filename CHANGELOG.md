@@ -9,6 +9,10 @@ Versioning follows [Semantic Versioning](https://semver.org/).
 
 ## [Unreleased]
 
+---
+
+## [0.23.0] — 2026-03-17
+
 ### Changed
 - **Settings provider dropdowns** — disable Local (Ollama) and Local (Chroma) options when API points to a hosted endpoint; options remain visible with "unavailable in hosted mode" label
 
@@ -384,7 +388,8 @@ Versioning follows [Semantic Versioning](https://semver.org/).
 - VPL logo in sidebar header
 - GitHub and LinkedIn social links in sidebar footer
 
-[Unreleased]: https://github.com/tvprasad/meridian-studio/compare/v0.22.1...HEAD
+[Unreleased]: https://github.com/tvprasad/meridian-studio/compare/v0.23.0...HEAD
+[0.23.0]: https://github.com/tvprasad/meridian-studio/compare/v0.22.1...v0.23.0
 [0.22.1]: https://github.com/tvprasad/meridian-studio/compare/v0.22.0...v0.22.1
 [0.22.0]: https://github.com/tvprasad/meridian-studio/compare/v0.21.0...v0.22.0
 [0.21.0]: https://github.com/tvprasad/meridian-studio/compare/v0.20.0...v0.21.0
