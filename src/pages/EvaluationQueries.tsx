@@ -276,12 +276,14 @@ export function EvaluationQueries() {
   const { data: metrics, isLoading: metricsLoading } = useQuery({
     queryKey: ['evaluation-metrics'],
     queryFn: () => meridianApi.evaluationMetrics(),
+    staleTime: 60_000,
     refetchInterval: 60_000,
   });
 
   const { data: queries, isLoading: queriesLoading } = useQuery({
     queryKey: ['evaluation-queries', pageSize, offset],
     queryFn: () => meridianApi.evaluationQueries(pageSize, offset),
+    staleTime: 30_000,
     refetchInterval: 30_000,
     retry: 3,
     retryDelay: (attempt) => Math.min(1000 * 2 ** attempt, 10_000),

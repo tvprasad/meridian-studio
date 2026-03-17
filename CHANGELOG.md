@@ -12,6 +12,7 @@ Versioning follows [Semantic Versioning](https://semver.org/).
 ### Fixed
 - **Application Insights not collecting in production** — added `VITE_APPINSIGHTS_CONNECTION_STRING` as a Docker build arg in Dockerfile and azure-deploy.yml so the connection string is inlined by Vite at build time
 - **Azure Deploy failing** — quoted all `--build-arg` values in azure-deploy.yml to prevent shell interpretation of semicolons in the App Insights connection string
+- **Evaluation page duplicate API calls** — disabled `refetchOnWindowFocus` globally and added `staleTime` to evaluation queries/metrics so each endpoint fires once per polling interval instead of 3-5 times per page load
 
 ---
 
