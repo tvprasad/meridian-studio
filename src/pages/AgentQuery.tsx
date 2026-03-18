@@ -6,6 +6,7 @@ import { useMutation } from '@tanstack/react-query';
 import ReactMarkdown from 'react-markdown';
 import { meridianApi } from '../api/meridian';
 import type { AgentQueryResponse, AgentStep } from '../api/types';
+import { ConfidencePill } from '../components/ui/ConfidencePill';
 import {
   Send, Bot, Wrench, Clock, ChevronDown, ChevronRight,
   Copy, Check, AlertCircle, Loader2, Fingerprint, RotateCcw,
@@ -157,6 +158,13 @@ function StepCard({ step, isLast }: { step: AgentStep; isLast: boolean }) {
             <Clock className="w-3 h-3" />
             {step.elapsed_ms.toLocaleString()}ms
           </span>
+          {step.confidence_score != null && (
+            <ConfidencePill
+              score={step.confidence_score}
+              rawScore={step.raw_confidence}
+              threshold={step.threshold ?? undefined}
+            />
+          )}
         </div>
 
         <button

@@ -192,6 +192,10 @@ export interface AgentStep {
   input: Record<string, unknown>;
   output_preview: string;
   elapsed_ms: number;
+  // KB tool confidence (optional — only present for query_knowledge_base steps)
+  confidence_score?: number | null;
+  raw_confidence?: number | null;
+  threshold?: number | null;
 }
 
 export interface AgentQueryResponse {

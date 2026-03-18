@@ -297,9 +297,9 @@ describe('meridianApi.agentQuery', () => {
 
     expect(result.status).toBe('OK');
     expect(result.trace_id).toBe('agt-7f3a2e01-b9c4-4d8f-a1e2-c3d4e5f6a7b8');
-    expect(result.steps_taken).toBe(3);
+    expect(result.steps_taken).toBe(4);
     expect(result.elapsed_ms).toBe(27000);
-    expect(result.steps).toHaveLength(3);
+    expect(result.steps).toHaveLength(4);
     expect(result.steps[0]).toEqual(expect.objectContaining({
       step: 1,
       tool: 'search_incidents',

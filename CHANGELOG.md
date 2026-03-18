@@ -9,6 +9,17 @@ Versioning follows [Semantic Versioning](https://semver.org/).
 
 ## [Unreleased]
 
+### Added
+- **Dashboard telemetry cards** — Total Queries, Avg Confidence, Refusal Rate, Latency P50/P95 with "View full telemetry" link to Evaluation page; hidden when database is not configured
+- **Agent KB step confidence display** — ConfidencePill shown inline on `query_knowledge_base` steps in the Agent reasoning timeline, using the same Raw -> Calibrated format as Ask Meridian (#4)
+
+### Refactored
+- **ConfidencePill** extracted to shared component (`src/components/ui/ConfidencePill.tsx`) — reused by Query and Agent pages
+- **MetricCard** extracted to shared component (`src/components/ui/MetricCard.tsx`) — reused by Evaluation and Dashboard pages
+
+### Tests
+- 6 new ConfidencePill unit tests, 3 Agent page tests (KB confidence display), 2 Dashboard telemetry tests (64 total)
+
 ---
 
 ## [0.25.1] — 2026-03-18

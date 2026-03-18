@@ -19,12 +19,22 @@
     },
     {
       "step": 3,
+      "tool": "query_knowledge_base",
+      "input": {"question": "What is the TLS certificate rotation schedule for auth-gateway?"},
+      "output_preview": "TLS certificates for auth-gateway are rotated quarterly per security policy SP-2024-07. Current cert: auth-gw-2026Q1.",
+      "elapsed_ms": 890,
+      "confidence_score": 0.82,
+      "raw_confidence": 0.76,
+      "threshold": 0.45
+    },
+    {
+      "step": 4,
       "tool": "query_metrics",
       "input": {"metric": "http_5xx_rate", "service": "auth-gateway", "region": "us-east", "window": "6h"},
       "output_preview": "5xx rate spiked from 0.1% to 34.7% at 2026-03-09T08:12:00Z",
       "elapsed_ms": 580
     }
   ],
-  "steps_taken": 3,
+  "steps_taken": 4,
   "elapsed_ms": 27000
 }
