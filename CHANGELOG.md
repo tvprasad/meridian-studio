@@ -9,6 +9,10 @@ Versioning follows [Semantic Versioning](https://semver.org/).
 
 ## [Unreleased]
 
+---
+
+## [0.26.0] — 2026-03-18
+
 ### Added
 - **Dashboard telemetry cards** — Total Queries, Avg Confidence, Refusal Rate, Latency P50/P95 with "View full telemetry" link to Evaluation page; hidden when database is not configured
 - **Agent KB step confidence display** — ConfidencePill shown inline on `query_knowledge_base` steps in the Agent reasoning timeline, using the same Raw -> Calibrated format as Ask Meridian (#4)
@@ -437,7 +441,8 @@ Versioning follows [Semantic Versioning](https://semver.org/).
 - VPL logo in sidebar header
 - GitHub and LinkedIn social links in sidebar footer
 
-[Unreleased]: https://github.com/tvprasad/meridian-studio/compare/v0.25.1...HEAD
+[Unreleased]: https://github.com/tvprasad/meridian-studio/compare/v0.26.0...HEAD
+[0.26.0]: https://github.com/tvprasad/meridian-studio/compare/v0.25.1...v0.26.0
 [0.25.1]: https://github.com/tvprasad/meridian-studio/compare/v0.25.0...v0.25.1
 [0.25.0]: https://github.com/tvprasad/meridian-studio/compare/v0.24.1...v0.25.0
 [0.24.1]: https://github.com/tvprasad/meridian-studio/compare/v0.24.0...v0.24.1
