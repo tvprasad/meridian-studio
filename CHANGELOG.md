@@ -9,6 +9,14 @@ Versioning follows [Semantic Versioning](https://semver.org/).
 
 ## [Unreleased]
 
+### Added
+- **"How Ask Meridian works" guide** — collapsible explainer on Query page covering retrieval, governance gate, grounded generation, and multi-turn context
+- **"How the Ops Agent works" guide** — collapsible explainer on Agent page covering ReAct reasoning, available tools, multi-step reasoning, and step budget
+- **ADR-0011** — graph pipeline UX support, aligning with backend ADR-0023 (deferred until backend v1.2)
+
+### Documentation
+- **Architecture validation report** — internal doc validating all public claims against the actual codebase (gitignored)
+
 ---
 
 ## [0.24.1] — 2026-03-17

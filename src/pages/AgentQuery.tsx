@@ -9,8 +9,49 @@ import type { AgentQueryResponse, AgentStep } from '../api/types';
 import {
   Send, Bot, Wrench, Clock, ChevronDown, ChevronRight,
   Copy, Check, AlertCircle, Loader2, Fingerprint, RotateCcw,
-  MessageCircle, ThumbsUp, ThumbsDown,
+  MessageCircle, ThumbsUp, ThumbsDown, HelpCircle,
 } from 'lucide-react';
+
+// ── Guide ────────────────────────────────────────────────────────────────────
+
+function AgentGuide() {
+  const [open, setOpen] = useState(false);
+
+  return (
+    <div className="mt-3">
+      <button
+        onClick={() => setOpen(!open)}
+        className="inline-flex items-center gap-1.5 text-xs text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300 transition-colors"
+      >
+        <HelpCircle className="w-3.5 h-3.5" />
+        <span className="font-medium">How the Ops Agent works</span>
+        <ChevronDown className={`w-3 h-3 transition-transform ${open ? 'rotate-180' : ''}`} />
+      </button>
+      {open && (
+        <div className="mt-3 bg-white dark:bg-white/[0.03] border border-gray-200 dark:border-white/10 rounded-xl p-4 text-xs text-gray-600 dark:text-gray-400 leading-relaxed">
+          <dl className="space-y-2">
+            <div>
+              <dt className="font-medium text-gray-700 dark:text-gray-300">ReAct reasoning</dt>
+              <dd>The agent follows a think-act-observe loop: it reasons about what information it needs, selects a tool, executes it, observes the result, and decides whether to continue or answer. Each step is logged for full auditability.</dd>
+            </div>
+            <div>
+              <dt className="font-medium text-gray-700 dark:text-gray-300">Available tools</dt>
+              <dd>The agent can search the knowledge base (same retrieval as Ask Meridian), search ServiceNow incidents and change requests, and retrieve incident details — all through governed MCP tool calls.</dd>
+            </div>
+            <div>
+              <dt className="font-medium text-gray-700 dark:text-gray-300">Multi-step reasoning</dt>
+              <dd>Unlike Ask Meridian (single retrieval), the agent can chain multiple tool calls to answer complex operational questions — for example, finding related incidents across systems and correlating them.</dd>
+            </div>
+            <div>
+              <dt className="font-medium text-gray-700 dark:text-gray-300">Step budget</dt>
+              <dd>The agent has a maximum number of reasoning steps to prevent runaway execution. If it reaches the limit, it synthesizes the best answer from what it has gathered so far.</dd>
+            </div>
+          </dl>
+        </div>
+      )}
+    </div>
+  );
+}
 
 // ── Constants ────────────────────────────────────────────────────────────────
 
@@ -388,6 +429,7 @@ export function AgentQuery() {
           <p className="text-gray-500 dark:text-gray-400 mt-1">
             Ask operational questions — the agent uses ReAct reasoning to search incidents, logs, and metrics, then synthesizes an answer.
           </p>
+          <AgentGuide />
         </div>
         {!isEmpty && (
           <button

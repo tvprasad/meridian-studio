@@ -11,7 +11,7 @@ import {
   Send, Settings, BrainCircuit, AlertTriangle, MessageCircle,
   RotateCcw, Copy, Check, WifiOff, ChevronDown, ChevronRight,
   FileText, ShieldCheck, ShieldAlert, Fingerprint,
-  ThumbsUp, ThumbsDown,
+  ThumbsUp, ThumbsDown, HelpCircle,
 } from 'lucide-react';
 
 // ── Types & Constants ────────────────────────────────────────────────────────
@@ -46,6 +46,47 @@ const FOLLOW_UP_PROMPTS = [
   'What are the key takeaways?',
   'How does this compare to alternatives?',
 ];
+
+// ── Guide ────────────────────────────────────────────────────────────────────
+
+function QueryGuide() {
+  const [open, setOpen] = useState(false);
+
+  return (
+    <div className="mt-3">
+      <button
+        onClick={() => setOpen(!open)}
+        className="inline-flex items-center gap-1.5 text-xs text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300 transition-colors"
+      >
+        <HelpCircle className="w-3.5 h-3.5" />
+        <span className="font-medium">How Ask Meridian works</span>
+        <ChevronDown className={`w-3 h-3 transition-transform ${open ? 'rotate-180' : ''}`} />
+      </button>
+      {open && (
+        <div className="mt-3 bg-white dark:bg-white/[0.03] border border-gray-200 dark:border-white/10 rounded-xl p-4 text-xs text-gray-600 dark:text-gray-400 leading-relaxed">
+          <dl className="space-y-2">
+            <div>
+              <dt className="font-medium text-gray-700 dark:text-gray-300">Retrieval</dt>
+              <dd>Your question is converted to an embedding and matched against the ingested knowledge base using vector search. The most relevant document chunks are retrieved with similarity scores.</dd>
+            </div>
+            <div>
+              <dt className="font-medium text-gray-700 dark:text-gray-300">Governance gate</dt>
+              <dd>If the best retrieval score falls below the confidence threshold (configurable in Settings), the system refuses to answer rather than guessing. This is a deliberate governance decision — not an error.</dd>
+            </div>
+            <div>
+              <dt className="font-medium text-gray-700 dark:text-gray-300">Grounded generation</dt>
+              <dd>When confidence passes the threshold, the LLM generates an answer grounded strictly in the retrieved documents, with source citations. It will not fabricate information beyond what was retrieved.</dd>
+            </div>
+            <div>
+              <dt className="font-medium text-gray-700 dark:text-gray-300">Multi-turn context</dt>
+              <dd>Conversation history is sent with each question, so follow-up queries like "tell me more" or "what about X?" are interpreted in context of the previous exchange.</dd>
+            </div>
+          </dl>
+        </div>
+      )}
+    </div>
+  );
+}
 
 // ── Small Components ─────────────────────────────────────────────────────────
 
@@ -590,6 +631,7 @@ export function Query() {
               </Link>
             </p>
           )}
+          <QueryGuide />
         </div>
         {!isEmpty && (
           <button
