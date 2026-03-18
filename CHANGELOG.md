@@ -9,6 +9,10 @@ Versioning follows [Semantic Versioning](https://semver.org/).
 
 ## [Unreleased]
 
+---
+
+## [0.25.0] — 2026-03-18
+
 ### Added
 - **"How Ask Meridian works" guide** — collapsible explainer on Query page covering retrieval, governance gate, grounded generation, and multi-turn context
 - **"How the Ops Agent works" guide** — collapsible explainer on Agent page covering ReAct reasoning, available tools, multi-step reasoning, and step budget
@@ -412,7 +416,8 @@ Versioning follows [Semantic Versioning](https://semver.org/).
 - VPL logo in sidebar header
 - GitHub and LinkedIn social links in sidebar footer
 
-[Unreleased]: https://github.com/tvprasad/meridian-studio/compare/v0.24.0...HEAD
+[Unreleased]: https://github.com/tvprasad/meridian-studio/compare/v0.25.0...HEAD
+[0.25.0]: https://github.com/tvprasad/meridian-studio/compare/v0.24.1...v0.25.0
 [0.24.1]: https://github.com/tvprasad/meridian-studio/compare/v0.24.0...v0.24.1
 [0.24.0]: https://github.com/tvprasad/meridian-studio/compare/v0.23.0...v0.24.0
 [0.23.0]: https://github.com/tvprasad/meridian-studio/compare/v0.22.1...v0.23.0
