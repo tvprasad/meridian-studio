@@ -9,6 +9,9 @@ Versioning follows [Semantic Versioning](https://semver.org/).
 
 ## [Unreleased]
 
+### Fixed
+- **Evaluation page flashing "no data" during refetches** — added `placeholderData: keepPreviousData` to both evaluation queries so stale data stays visible while background refetches complete, preventing the empty state from appearing mid-session
+
 ---
 
 ## [0.25.0] — 2026-03-18

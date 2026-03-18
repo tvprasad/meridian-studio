@@ -1,0 +1,112 @@
+// Copyright (c) 2026 VPL Solutions. All rights reserved.
+// Licensed under the MIT License. See LICENSE for details.
+
+import { describe, it, expect, beforeAll, afterAll, afterEach } from 'vitest';
+import { render, screen, waitFor, cleanup } from '@testing-library/react';
+import { http, HttpResponse } from 'msw';
+import { setupServer } from 'msw/node';
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import { MemoryRouter } from 'react-router-dom';
+import { EvaluationQueries } from '../EvaluationQueries';
+
+import metricsFixture from '../../__fixtures__/evaluation-metrics.json';
+import queriesFixture from '../../__fixtures__/evaluation-queries.json';
+import unconfiguredFixture from '../../__fixtures__/evaluation-unconfigured.json';
+
+// ── MSW server ──────────────────────────────────────────────────────────────
+
+const server = setupServer(
+  http.get('http://localhost:8000/evaluation/metrics', () =>
+    HttpResponse.json(metricsFixture),
+  ),
+  http.get('http://localhost:8000/evaluation/queries', () =>
+    HttpResponse.json(queriesFixture),
+  ),
+);
+
+beforeAll(() => server.listen({ onUnhandledRequest: 'error' }));
+afterEach(() => {
+  cleanup();
+  server.resetHandlers();
+  localStorage.clear();
+});
+afterAll(() => server.close());
+
+// ── Helpers ─────────────────────────────────────────────────────────────────
+
+function renderEvaluation() {
+  const queryClient = new QueryClient({
+    defaultOptions: { queries: { retry: false }, mutations: { retry: false } },
+  });
+  return render(
+    <QueryClientProvider client={queryClient}>
+      <MemoryRouter>
+        <EvaluationQueries />
+      </MemoryRouter>
+    </QueryClientProvider>,
+  );
+}
+
+// ── Tests ───────────────────────────────────────────────────────────────────
+
+describe('EvaluationQueries — initial load', () => {
+  it('renders metric cards with fixture data', async () => {
+    renderEvaluation();
+    await waitFor(() => {
+      expect(screen.getByText('127')).toBeInTheDocument();
+    });
+    expect(screen.getByText('72.3%')).toBeInTheDocument();
+    expect(screen.getByText('15.8%')).toBeInTheDocument();
+  });
+
+  it('renders query log rows', async () => {
+    renderEvaluation();
+    await waitFor(() => {
+      expect(screen.getByText('How do I reset my password?')).toBeInTheDocument();
+    });
+    expect(screen.getByText('What is the vacation policy for contractors?')).toBeInTheDocument();
+    expect(screen.getByText('Why are login requests failing for region us-east?')).toBeInTheDocument();
+  });
+});
+
+describe('EvaluationQueries — unconfigured', () => {
+  it('shows database not configured message', async () => {
+    server.use(
+      http.get('http://localhost:8000/evaluation/metrics', () =>
+        HttpResponse.json(unconfiguredFixture),
+      ),
+      http.get('http://localhost:8000/evaluation/queries', () =>
+        HttpResponse.json(unconfiguredFixture),
+      ),
+    );
+    renderEvaluation();
+    await waitFor(() => {
+      expect(screen.getByText('Database not configured')).toBeInTheDocument();
+    });
+  });
+});
+
+describe('EvaluationQueries — data persistence during refetch', () => {
+  it('keeps previous data visible when a refetch fails', async () => {
+    renderEvaluation();
+
+    // Wait for initial data to load
+    await waitFor(() => {
+      expect(screen.getByText('How do I reset my password?')).toBeInTheDocument();
+    });
+
+    // Simulate backend failure on next request
+    server.use(
+      http.get('http://localhost:8000/evaluation/queries', () =>
+        HttpResponse.error(),
+      ),
+    );
+
+    // Previous data should still be visible (keepPreviousData)
+    expect(screen.getByText('How do I reset my password?')).toBeInTheDocument();
+    expect(screen.getByText('127')).toBeInTheDocument();
+
+    // "No telemetry data" empty state should NOT appear
+    expect(screen.queryByText('No telemetry data recorded yet.')).not.toBeInTheDocument();
+  });
+});

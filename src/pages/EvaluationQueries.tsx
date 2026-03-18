@@ -2,7 +2,7 @@
 // Licensed under the MIT License. See LICENSE for details.
 
 import { useState, useMemo } from 'react';
-import { useQuery } from '@tanstack/react-query';
+import { useQuery, keepPreviousData } from '@tanstack/react-query';
 import { Card } from '../components/ui/Card';
 import { meridianApi } from '../api/meridian';
 import {
@@ -278,6 +278,7 @@ export function EvaluationQueries() {
     queryFn: () => meridianApi.evaluationMetrics(),
     staleTime: 60_000,
     refetchInterval: 60_000,
+    placeholderData: keepPreviousData,
   });
 
   const { data: queries, isLoading: queriesLoading } = useQuery({
@@ -285,6 +286,7 @@ export function EvaluationQueries() {
     queryFn: () => meridianApi.evaluationQueries(pageSize, offset),
     staleTime: 30_000,
     refetchInterval: 30_000,
+    placeholderData: keepPreviousData,
     retry: 3,
     retryDelay: (attempt) => Math.min(1000 * 2 ** attempt, 10_000),
   });
