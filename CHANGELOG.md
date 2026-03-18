@@ -9,8 +9,15 @@ Versioning follows [Semantic Versioning](https://semver.org/).
 
 ## [Unreleased]
 
+---
+
+## [0.25.1] — 2026-03-18
+
 ### Fixed
 - **Evaluation page flashing "no data" during refetches** — added `placeholderData: keepPreviousData` to both evaluation queries so stale data stays visible while background refetches complete, preventing the empty state from appearing mid-session
+
+### Tests
+- 4 new Evaluation page contract tests: metric card rendering, query log rows, unconfigured state, data persistence during failed refetch (53 total)
 
 ---
 
@@ -419,7 +426,8 @@ Versioning follows [Semantic Versioning](https://semver.org/).
 - VPL logo in sidebar header
 - GitHub and LinkedIn social links in sidebar footer
 
-[Unreleased]: https://github.com/tvprasad/meridian-studio/compare/v0.25.0...HEAD
+[Unreleased]: https://github.com/tvprasad/meridian-studio/compare/v0.25.1...HEAD
+[0.25.1]: https://github.com/tvprasad/meridian-studio/compare/v0.25.0...v0.25.1
 [0.25.0]: https://github.com/tvprasad/meridian-studio/compare/v0.24.1...v0.25.0
 [0.24.1]: https://github.com/tvprasad/meridian-studio/compare/v0.24.0...v0.24.1
 [0.24.0]: https://github.com/tvprasad/meridian-studio/compare/v0.23.0...v0.24.0
