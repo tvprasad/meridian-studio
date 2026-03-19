@@ -9,6 +9,12 @@ Versioning follows [Semantic Versioning](https://semver.org/).
 
 ## [Unreleased]
 
+### Fixed
+- **Evaluation page false empty state on DB auto-pause** — distinguish between API error (shows "Unable to load telemetry data" with auto-pause explanation) and genuinely empty results ("No telemetry data recorded yet"). Previously, a failed API call after retries rendered the empty state, misleading operators into thinking no data existed.
+
+### Tests
+- 2 new Evaluation error-state tests: queries endpoint failure shows error message, metrics endpoint failure shows skeleton cards (66 total)
+
 ---
 
 ## [0.26.0] — 2026-03-18

@@ -240,7 +240,7 @@ export function EvaluationQueries() {
   const [statusFilter, setStatusFilter] = useState<StatusFilter>('ALL');
   const [sourceFilter, setSourceFilter] = useState<SourceFilter>('ALL');
 
-  const { data: metrics, isLoading: metricsLoading } = useQuery({
+  const { data: metrics, isLoading: metricsLoading, isError: metricsError } = useQuery({
     queryKey: ['evaluation-metrics'],
     queryFn: () => meridianApi.evaluationMetrics(),
     staleTime: 60_000,
@@ -248,14 +248,12 @@ export function EvaluationQueries() {
     placeholderData: keepPreviousData,
   });
 
-  const { data: queries, isLoading: queriesLoading } = useQuery({
+  const { data: queries, isLoading: queriesLoading, isError: queriesError } = useQuery({
     queryKey: ['evaluation-queries', pageSize, offset],
     queryFn: () => meridianApi.evaluationQueries(pageSize, offset),
     staleTime: 30_000,
     refetchInterval: 30_000,
     placeholderData: keepPreviousData,
-    retry: 3,
-    retryDelay: (attempt) => Math.min(1000 * 2 ** attempt, 10_000),
   });
 
   const isLoading = metricsLoading || queriesLoading;
@@ -313,7 +311,7 @@ export function EvaluationQueries() {
       <EvaluationGuide />
 
       {/* Metrics summary cards */}
-      {isLoading ? (
+      {isLoading || (metricsError && !metrics) ? (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mt-8">
           {Array.from({ length: 4 }).map((_, i) => (
             <div key={i} className="bg-white dark:bg-white/[0.05] rounded-xl border border-gray-200 dark:border-white/10 p-6 animate-pulse">
@@ -451,6 +449,12 @@ export function EvaluationQueries() {
             {Array.from({ length: 5 }).map((_, i) => (
               <div key={i} className="h-10 bg-gray-100 dark:bg-gray-800 rounded animate-pulse" />
             ))}
+          </div>
+        ) : queriesError && !queries ? (
+          <div className="p-12 text-center">
+            <AlertCircle className="w-8 h-8 text-amber-400 mx-auto" />
+            <p className="text-gray-500 dark:text-gray-400 mt-2 text-sm">Unable to load telemetry data.</p>
+            <p className="text-gray-400 dark:text-gray-500 text-xs mt-1">The database may be waking up from auto-pause. Data will appear automatically when the connection is established.</p>
           </div>
         ) : !queries?.queries?.length ? (
           <div className="p-12 text-center">

@@ -86,6 +86,38 @@ describe('EvaluationQueries — unconfigured', () => {
   });
 });
 
+describe('EvaluationQueries — API error on initial load', () => {
+  it('shows error state instead of empty state when queries endpoint fails', async () => {
+    server.use(
+      http.get('http://localhost:8000/evaluation/queries', () =>
+        HttpResponse.error(),
+      ),
+    );
+    renderEvaluation();
+    await waitFor(() => {
+      expect(screen.getByText('Unable to load telemetry data.')).toBeInTheDocument();
+    });
+    expect(screen.getByText(/database may be waking up/)).toBeInTheDocument();
+    // Must NOT show the "no data" empty state
+    expect(screen.queryByText('No telemetry data recorded yet.')).not.toBeInTheDocument();
+  });
+
+  it('shows skeleton cards when metrics endpoint fails', async () => {
+    server.use(
+      http.get('http://localhost:8000/evaluation/metrics', () =>
+        HttpResponse.error(),
+      ),
+    );
+    renderEvaluation();
+    // Queries should still load and render rows
+    await waitFor(() => {
+      expect(screen.getByText('How do I reset my password?')).toBeInTheDocument();
+    });
+    // Metric cards should NOT show "No telemetry" — they should show skeleton or nothing
+    expect(screen.queryByText('127')).not.toBeInTheDocument();
+  });
+});
+
 describe('EvaluationQueries — data persistence during refetch', () => {
   it('keeps previous data visible when a refetch fails', async () => {
     renderEvaluation();
