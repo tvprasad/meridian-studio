@@ -9,6 +9,10 @@ Versioning follows [Semantic Versioning](https://semver.org/).
 
 ## [Unreleased]
 
+---
+
+## [0.26.1] — 2026-03-18
+
 ### Fixed
 - **Evaluation page false empty state on DB auto-pause** — distinguish between API error (shows "Unable to load telemetry data" with auto-pause explanation) and genuinely empty results ("No telemetry data recorded yet"). Previously, a failed API call after retries rendered the empty state, misleading operators into thinking no data existed.
 
@@ -447,7 +451,8 @@ Versioning follows [Semantic Versioning](https://semver.org/).
 - VPL logo in sidebar header
 - GitHub and LinkedIn social links in sidebar footer
 
-[Unreleased]: https://github.com/tvprasad/meridian-studio/compare/v0.26.0...HEAD
+[Unreleased]: https://github.com/tvprasad/meridian-studio/compare/v0.26.1...HEAD
+[0.26.1]: https://github.com/tvprasad/meridian-studio/compare/v0.26.0...v0.26.1
 [0.26.0]: https://github.com/tvprasad/meridian-studio/compare/v0.25.1...v0.26.0
 [0.25.1]: https://github.com/tvprasad/meridian-studio/compare/v0.25.0...v0.25.1
 [0.25.0]: https://github.com/tvprasad/meridian-studio/compare/v0.24.1...v0.25.0
