@@ -11,6 +11,16 @@ Versioning follows [Semantic Versioning](https://semver.org/).
 
 ---
 
+## [0.26.2] — 2026-03-19
+
+### Changed
+- **Dashboard telemetry section simplified** — removed 4 metric cards (`/evaluation/metrics` polling) to eliminate unnecessary Azure SQL DB calls; replaced with a static "Query Telemetry" label + "View full telemetry" link card
+
+### Tests
+- Updated Dashboard test suite to match simplified telemetry section (no longer tests metric card values)
+
+---
+
 ## [0.26.1] — 2026-03-18
 
 ### Fixed
@@ -451,7 +461,8 @@ Versioning follows [Semantic Versioning](https://semver.org/).
 - VPL logo in sidebar header
 - GitHub and LinkedIn social links in sidebar footer
 
-[Unreleased]: https://github.com/tvprasad/meridian-studio/compare/v0.26.1...HEAD
+[Unreleased]: https://github.com/tvprasad/meridian-studio/compare/v0.26.2...HEAD
+[0.26.2]: https://github.com/tvprasad/meridian-studio/compare/v0.26.1...v0.26.2
 [0.26.1]: https://github.com/tvprasad/meridian-studio/compare/v0.26.0...v0.26.1
 [0.26.0]: https://github.com/tvprasad/meridian-studio/compare/v0.25.1...v0.26.0
 [0.25.1]: https://github.com/tvprasad/meridian-studio/compare/v0.25.0...v0.25.1

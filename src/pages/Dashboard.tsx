@@ -1,15 +1,14 @@
 // Copyright (c) 2026 VPL Solutions. All rights reserved.
 // Licensed under the MIT License. See LICENSE for details.
 
-import { useQuery, keepPreviousData } from '@tanstack/react-query';
+import { useQuery } from '@tanstack/react-query';
 import { Link } from 'react-router-dom';
 import { Card } from '../components/ui/Card';
-import { MetricCard } from '../components/ui/MetricCard';
 import { StatusBadge } from '../components/ui/StatusBadge';
 import { meridianApi } from '../api/meridian';
 import {
   Activity, Database, Cpu, Gauge, Thermometer, Settings, Upload,
-  BarChart3, ShieldAlert, Timer, ChevronRight,
+  ChevronRight,
 } from 'lucide-react';
 import { type SettingsResponse } from '../api/types';
 
@@ -30,14 +29,6 @@ export function Dashboard() {
     queryKey: ['settings'],
     queryFn: meridianApi.getSettings,
     refetchInterval: 30000,
-  });
-
-  const { data: metrics } = useQuery({
-    queryKey: ['evaluation-metrics'],
-    queryFn: () => meridianApi.evaluationMetrics(),
-    staleTime: 60_000,
-    refetchInterval: 60_000,
-    placeholderData: keepPreviousData,
   });
 
   if (isLoading) {
@@ -213,56 +204,19 @@ export function Dashboard() {
         </dl>
       </Card>
 
-      {metrics?.configured !== false && metrics?.total_queries != null && (
-        <>
-          <div className="flex items-center justify-between mt-8 mb-4">
-            <h2 className="text-lg font-semibold text-gray-900 dark:text-white">Query Telemetry</h2>
-            <Link
-              to="/evaluation"
-              className="inline-flex items-center gap-1 text-xs text-primary-600 hover:text-primary-700 dark:text-primary-400 dark:hover:text-primary-300 transition-colors"
-            >
-              View full telemetry
-              <ChevronRight className="w-3.5 h-3.5" />
-            </Link>
-          </div>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-            <MetricCard
-              label="Total Queries"
-              value={metrics.total_queries.toLocaleString()}
-              icon={BarChart3}
-              iconColor="text-blue-600"
-              iconBg="bg-blue-50 dark:bg-blue-900/20"
-              subtitle={metrics.queries_by_source ? `${metrics.queries_by_source.query ?? 0} direct · ${metrics.queries_by_source.agent ?? 0} agent` : undefined}
-            />
-            <MetricCard
-              label="Avg Confidence"
-              value={metrics.avg_confidence != null ? `${(metrics.avg_confidence * 100).toFixed(1)}%` : '—'}
-              icon={Activity}
-              iconColor="text-emerald-600"
-              iconBg="bg-emerald-50 dark:bg-emerald-900/20"
-            />
-            <MetricCard
-              label="Refusal Rate"
-              value={metrics.refusal_rate != null ? `${(metrics.refusal_rate * 100).toFixed(1)}%` : '—'}
-              icon={ShieldAlert}
-              iconColor="text-red-600"
-              iconBg="bg-red-50 dark:bg-red-900/20"
-              subtitle={metrics.queries_by_status ? `${metrics.queries_by_status.REFUSED ?? 0} refused of ${metrics.total_queries}` : undefined}
-            />
-            <MetricCard
-              label="Latency P50 / P95"
-              value={
-                metrics.latency_p50_ms != null && metrics.latency_p95_ms != null
-                  ? `${(metrics.latency_p50_ms / 1000).toFixed(1)}s / ${(metrics.latency_p95_ms / 1000).toFixed(1)}s`
-                  : '—'
-              }
-              icon={Timer}
-              iconColor="text-violet-600"
-              iconBg="bg-violet-50 dark:bg-violet-900/20"
-            />
-          </div>
-        </>
-      )}
+      <Card className="mt-8">
+        <div className="flex items-center justify-between">
+          <h2 className="text-lg font-semibold text-gray-900 dark:text-white">Query Telemetry</h2>
+          <Link
+            to="/evaluation"
+            className="inline-flex items-center gap-1 text-sm text-primary-600 hover:text-primary-700 dark:text-primary-400 dark:hover:text-primary-300 transition-colors"
+          >
+            View full telemetry
+            <ChevronRight className="w-4 h-4" />
+          </Link>
+        </div>
+        <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">Retrieval confidence, refusal rates, latency, and query logs.</p>
+      </Card>
     </div>
   );
 }
