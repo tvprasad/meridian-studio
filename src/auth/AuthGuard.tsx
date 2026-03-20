@@ -1,7 +1,7 @@
 // Copyright (c) 2026 VPL Solutions. All rights reserved.
 // Licensed under the MIT License. See LICENSE for details.
 
-import { type ReactNode } from 'react';
+import { type ReactNode, useState } from 'react';
 import {
   LogIn, Bot, Brain, Search, Upload, Scissors, Layers, Database,
   Shield, Eye, Mic, FileText, Languages, MessageSquare, Workflow, Sparkles,
@@ -10,6 +10,14 @@ import {
 import type { LucideIcon } from 'lucide-react';
 import { useAuth } from './useAuth';
 import { ArchitectureSketch } from '../components/ui/ArchitectureSketch';
+import { IntentProbe } from '../components/ui/IntentProbe';
+import {
+  getStoredProbe,
+  storeProbeResult,
+  markProbeSkipped,
+  type IntentKey,
+  type TopologyKey,
+} from '../data/intentResponses';
 import { version } from '../../package.json';
 
 // ── Geometric art data ──────────────────────────────────────────────────────
@@ -110,6 +118,17 @@ const TRIANGLES: [number, number, number][] = [
 
 export function AuthGuard({ children }: { children: ReactNode }) {
   const { authEnabled, isAuthenticated, login } = useAuth();
+  const [probeComplete, setProbeComplete] = useState(() => getStoredProbe() !== null);
+
+  function handleProbeComplete(intent: IntentKey, topology: TopologyKey) {
+    storeProbeResult(intent, topology);
+    setProbeComplete(true);
+  }
+
+  function handleProbeSkip() {
+    markProbeSkipped();
+    setProbeComplete(true);
+  }
 
   // Auth disabled — everything is accessible
   if (!authEnabled) return <>{children}</>;
@@ -406,6 +425,14 @@ export function AuthGuard({ children }: { children: ReactNode }) {
                 Sign In
               </button>
             </div>
+
+            {/* Intent probe — shown once, before first sign-in */}
+            {!probeComplete && (
+              <IntentProbe
+                onComplete={handleProbeComplete}
+                onSkip={handleProbeSkip}
+              />
+            )}
 
             {/* Trusted by */}
             <div className="space-y-2">
