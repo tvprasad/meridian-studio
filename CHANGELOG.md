@@ -9,6 +9,10 @@ Versioning follows [Semantic Versioning](https://semver.org/).
 
 ## [Unreleased]
 
+---
+
+## [0.28.0] — 2026-03-20
+
 ### Added
 - **Sign-in intent probe (ADR-0012)** — lightweight 2-question guided setup on sign-in screen: captures usage intent (evaluate, build, test-local, explore) and deployment topology (cloud, hybrid, on-prem); displays contextual 2-3 line response about system behavior; fully skippable, shown once per browser profile, stored in localStorage
 
