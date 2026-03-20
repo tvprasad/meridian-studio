@@ -14,9 +14,11 @@ import { SpeechServices } from './pages/SpeechServices';
 import { DocumentIntelligence } from './pages/DocumentIntelligence';
 import { AgentQuery } from './pages/AgentQuery';
 import { EvaluationQueries } from './pages/EvaluationQueries';
+import { Standby } from './pages/Standby';
 import { DiagnosticsProvider } from './hooks/useDiagnostics';
 import { AuthProvider } from './auth/AuthProvider';
 import { AuthGuard } from './auth/AuthGuard';
+import { IdleGuard } from './auth/IdleGuard';
 import { Landing } from './pages/Landing';
 
 const queryClient = new QueryClient({
@@ -37,7 +39,8 @@ function App() {
       <BrowserRouter>
         <Routes>
           <Route path="/welcome" element={<Landing />} />
-          <Route path="/" element={<AuthGuard><Layout /></AuthGuard>}>
+          <Route path="/standby" element={<Standby />} />
+          <Route path="/" element={<AuthGuard><IdleGuard><Layout /></IdleGuard></AuthGuard>}>
             <Route index element={<Dashboard />} />
             <Route path="query" element={<Query />} />
             <Route path="ingest" element={<Ingest />} />

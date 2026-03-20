@@ -11,6 +11,15 @@ Versioning follows [Semantic Versioning](https://semver.org/).
 
 ---
 
+## [0.27.0] — 2026-03-19
+
+### Added
+- **Idle session timeout** — `useIdleTimer` hook tracks user activity across the window; after 15 minutes of inactivity, authenticated sessions are redirected to the new Standby page
+- **`IdleGuard` component** — wraps all authenticated routes; fires on idle, passes the current path as `returnTo` state so the session can resume exactly where the user left off
+- **Standby page (`/standby`)** — zero-API parking page shown on idle: rotating operational principles (7 VPL philosophy lines), a 5-minute countdown progress bar, and a "Resume session" button; any user activity (mouse, keyboard, touch) resumes immediately; countdown reaching zero triggers `logoutRedirect()`
+
+---
+
 ## [0.26.2] — 2026-03-19
 
 ### Changed
