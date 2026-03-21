@@ -13,6 +13,8 @@ import { VisionIntelligence } from './pages/VisionIntelligence';
 import { SpeechServices } from './pages/SpeechServices';
 import { DocumentIntelligence } from './pages/DocumentIntelligence';
 import { AgentQuery } from './pages/AgentQuery';
+import { Investigations } from './pages/Investigations';
+import { InvestigationDetail } from './pages/InvestigationDetail';
 import { EvaluationQueries } from './pages/EvaluationQueries';
 import { Standby } from './pages/Standby';
 import { DiagnosticsProvider } from './hooks/useDiagnostics';
@@ -50,6 +52,8 @@ function App() {
             <Route path="speech" element={<SpeechServices />} />
             <Route path="document" element={<DocumentIntelligence />} />
             <Route path="agent" element={<AgentQuery />} />
+            <Route path="investigations" element={<Investigations />} />
+            <Route path="investigations/:traceId" element={<InvestigationDetail />} />
             <Route path="evaluation" element={<EvaluationQueries />} />
           </Route>
         </Routes>

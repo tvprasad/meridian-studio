@@ -311,7 +311,11 @@ export function Settings() {
                   {temperature.toFixed(1)}
                 </span>
               </div>
-              <p className="text-xs text-gray-400 dark:text-gray-500 mt-0.5">Controls LLM response randomness. Lower values produce focused, deterministic answers. Higher values increase creativity and variation.</p>
+              <p className="text-xs text-gray-400 dark:text-gray-500 mt-0.5">
+                Controls how deterministic or creative the model is when selecting the next token.
+                At low values, the model picks the highest-probability token almost every time, producing consistent, factual output.
+                At high values, probability spreads more evenly across tokens, introducing variation and creativity.
+              </p>
               <input
                 id="temperature"
                 type="range"
@@ -322,9 +326,23 @@ export function Settings() {
                 className="mt-2 block w-full accent-primary-600"
               />
               <div className="flex justify-between text-xs text-gray-400 dark:text-gray-500 mt-1">
-                <span>0.0 Precise</span>
+                <span>0.0 Deterministic</span>
                 <span>1.0 Balanced</span>
                 <span>2.0 Creative</span>
+              </div>
+              <div className="mt-3 grid grid-cols-3 gap-2 text-[10px]">
+                <div className={`rounded-lg border p-2 ${temperature <= 0.3 ? 'border-primary-300 dark:border-primary-600 bg-primary-50 dark:bg-primary-900/20' : 'border-gray-200 dark:border-white/10'}`}>
+                  <p className="font-semibold text-gray-700 dark:text-gray-300">Low (0.0–0.3)</p>
+                  <p className="text-gray-400 dark:text-gray-500 mt-0.5">Factual answers, data extraction, retrieval validation</p>
+                </div>
+                <div className={`rounded-lg border p-2 ${temperature > 0.3 && temperature <= 0.7 ? 'border-primary-300 dark:border-primary-600 bg-primary-50 dark:bg-primary-900/20' : 'border-gray-200 dark:border-white/10'}`}>
+                  <p className="font-semibold text-gray-700 dark:text-gray-300">Medium (0.4–0.7)</p>
+                  <p className="text-gray-400 dark:text-gray-500 mt-0.5">Summarization, problem-solving, educational content</p>
+                </div>
+                <div className={`rounded-lg border p-2 ${temperature > 0.7 ? 'border-primary-300 dark:border-primary-600 bg-primary-50 dark:bg-primary-900/20' : 'border-gray-200 dark:border-white/10'}`}>
+                  <p className="font-semibold text-gray-700 dark:text-gray-300">High (0.8–1.0+)</p>
+                  <p className="text-gray-400 dark:text-gray-500 mt-0.5">Brainstorming, creative writing, exploration</p>
+                </div>
               </div>
             </div>
           </div>

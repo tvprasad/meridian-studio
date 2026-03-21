@@ -3,7 +3,7 @@
 
 import { useEffect, useState, useCallback } from 'react';
 import { Outlet, NavLink, useLocation } from 'react-router-dom';
-import { LayoutDashboard, MessageSquare, Database, Settings, Github, Languages, Eye, Mic, FileSearch, Pin, PinOff, Sun, Moon, Bot, BarChart3, ChevronDown } from 'lucide-react';
+import { LayoutDashboard, MessageSquare, Database, Settings, Github, Languages, Eye, Mic, FileSearch, Pin, PinOff, Sun, Moon, Bot, BarChart3, ChevronDown, ClipboardList } from 'lucide-react';
 import { DiagnosticsPanel } from './DiagnosticsPanel';
 import { useDiagnostics } from '../../hooks/useDiagnosticsHook';
 import { version } from '../../../package.json';
@@ -17,6 +17,7 @@ const coreNavItems = [
   { to: '/', icon: LayoutDashboard, label: 'Dashboard' },
   { to: '/query', icon: MessageSquare, label: 'Ask Meridian' },
   { to: '/agent', icon: Bot, label: 'Ops Agent' },
+  { to: '/investigations', icon: ClipboardList, label: 'Investigations' },
   { to: '/ingest', icon: Database, label: 'Ingest' },
   { to: '/evaluation', icon: BarChart3, label: 'Evaluation' },
   { to: '/settings', icon: Settings, label: 'Settings' },

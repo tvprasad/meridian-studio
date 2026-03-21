@@ -123,7 +123,7 @@ export function Dashboard() {
     },
     {
       label: 'Temperature',
-      description: 'LLM response randomness',
+      description: 'How deterministic or creative the model responds',
       value: settings?.temperature?.toFixed(1) ?? '0.7',
       icon: Thermometer,
       iconColor: 'text-rose-600',

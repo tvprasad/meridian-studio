@@ -9,6 +9,23 @@ Versioning follows [Semantic Versioning](https://semver.org/).
 
 ## [Unreleased]
 
+### Added
+- **Ops Copilot Investigations UI (ADR-0013)** — full governed workflow visibility for Jira-triggered investigations
+  - **Investigations list page** (`/investigations`) — paginated table with KPI cards (Active, Awaiting Approval, Completed, Rejected/Expired), search by Jira key or trace ID, filter tabs (All/Active/Pending/Closed), governance footer
+  - **Investigation detail page** (`/investigations/:traceId`) — header with Jira link + status badge + trace ID copy, collapsible agent output sections (Investigation Plan, Evidence, Analysis, Policy Decision, Execution Result), metadata card
+  - **WorkflowTimeline** — horizontal 12-state workflow visualization with approval gate divider, completed/current/future state indicators, responsive mobile vertical layout
+  - **ApprovalPanel** — approve/reject actions for AWAITING_APPROVAL investigations: plan summary, blast radius, bounded steps with rollback commands, confirmation dialogs, governance warning banner
+  - **AuditTrace** — chronological step timeline: agent role badges, state transitions, tool usage with input/output hashes, elapsed times, approval boundary marker, trace integrity footer
+  - **InvestigationBadge** — color-coded status badge with pulse animation for pending approvals
+  - **PendingBadge** — sidebar count of awaiting-approval investigations (30s polling)
+  - Sidebar navigation: "Investigations" item with ClipboardList icon between Ops Agent and Ingest
+- **Investigation API client** (`src/api/investigation.ts`) — TypeScript types mirroring backend `ops_copilot/state.py`, API methods for list/get/pendingCount/approve/reject
+- **Investigation state data** (`src/data/investigationStates.ts`) — status metadata (labels, colors, groups), timeline states, agent role display config
+- **Test fixtures** — investigation-list.json (3 investigations) and investigation-detail.json (OPS-1234 payments ETL scenario with 11 audit steps)
+
+### Tests
+- 12 investigation tests: list page (title, KPI cards, rows, status badges, search), detail page (Jira key, summary, workflow timeline, approval panel, audit trace, governance badge, metadata)
+
 ---
 
 ## [0.28.0] — 2026-03-20
