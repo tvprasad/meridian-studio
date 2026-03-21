@@ -44,14 +44,20 @@ describe('Investigation detail page', () => {
     await waitFor(() => {
       expect(screen.getByText('OPS-1234')).toBeInTheDocument();
     });
-    // Multiple "Awaiting Approval" badges (header + approval panel + timeline)
     expect(screen.getAllByText('Awaiting Approval').length).toBeGreaterThanOrEqual(1);
   });
 
-  it('renders ticket summary', async () => {
+  it('renders title from safe DTO', async () => {
     renderDetail();
     await waitFor(() => {
       expect(screen.getByText(/Payments ETL mismatch/)).toBeInTheDocument();
+    });
+  });
+
+  it('renders description', async () => {
+    renderDetail();
+    await waitFor(() => {
+      expect(screen.getByText(/Settlement totals diverge/)).toBeInTheDocument();
     });
   });
 
@@ -65,11 +71,16 @@ describe('Investigation detail page', () => {
   it('renders approval panel when AWAITING_APPROVAL', async () => {
     renderDetail();
     await waitFor(() => {
-      expect(screen.getByText('Execution Plan')).toBeInTheDocument();
+      expect(screen.getByText(/Execution requires explicit approval/)).toBeInTheDocument();
     });
-    expect(screen.getByText(/Execution requires explicit approval/)).toBeInTheDocument();
-    expect(screen.getByText('Approve')).toBeInTheDocument();
-    expect(screen.getByText('Reject')).toBeInTheDocument();
+  });
+
+  it('renders execution plan summary in approval panel', async () => {
+    const { container } = renderDetail();
+    await waitFor(() => {
+      expect(container.textContent).toContain('PLAN-OPS-1234-001');
+    });
+    expect(container.textContent).toContain('MEDIUM');
   });
 
   it('renders audit trace with step count', async () => {

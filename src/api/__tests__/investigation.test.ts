@@ -21,7 +21,7 @@ const server = setupServer(
     return HttpResponse.json(listFixture);
   }),
   http.get('http://localhost:8000/ops/investigations/pending', () =>
-    HttpResponse.json(['OPS-1234-inv-20260320-143200']),
+    HttpResponse.json(listFixture.filter((i) => i.status === 'AWAITING_APPROVAL')),
   ),
   http.get('http://localhost:8000/ops/investigations/OPS-1234-inv-20260320-143200', () =>
     HttpResponse.json(detailFixture),
@@ -39,10 +39,13 @@ afterEach(() => server.resetHandlers());
 afterAll(() => server.close());
 
 describe('investigationApi', () => {
-  it('list() returns array of investigations', async () => {
+  it('list() returns array of InvestigationSummary', async () => {
     const result = await investigationApi.list();
     expect(result).toHaveLength(3);
     expect(result[0].jira_key).toBe('OPS-1234');
+    expect(result[0].title).toBe('Payments ETL mismatch in settlement totals');
+    expect(result[0].confidence).toBe(0.87);
+    expect(result[0].is_terminal).toBe(false);
   });
 
   it('list() passes status filter', async () => {
@@ -51,36 +54,46 @@ describe('investigationApi', () => {
     expect(result[0].status).toBe('AWAITING_APPROVAL');
   });
 
-  it('get() returns full investigation state', async () => {
+  it('get() returns InvestigationDetail with safe DTO fields', async () => {
     const result = await investigationApi.get('OPS-1234-inv-20260320-143200');
     expect(result.trace_id).toBe('OPS-1234-inv-20260320-143200');
-    expect(result.jira_key).toBe('OPS-1234');
-    expect(result.status).toBe('AWAITING_APPROVAL');
-    expect(result.step_log).toHaveLength(11);
-    expect(result.investigation_plan).not.toBeNull();
-    expect(result.evidence).not.toBeNull();
-    expect(result.analysis).not.toBeNull();
-    expect(result.policy_decision).not.toBeNull();
+    expect(result.title).toBe('Payments ETL mismatch in settlement totals');
+    expect(result.description).toBeTruthy();
+    expect(result.confidence).toBe(0.87);
+    expect(result.root_cause_hypothesis).toBeTruthy();
+    expect(result.severity).toBe('high');
+    expect(result.findings).toHaveLength(3);
+    expect(result.steps).toHaveLength(11);
+    expect(result.step_count).toBe(11);
   });
 
-  it('get() returns valid execution plan in policy decision', async () => {
+  it('get() returns execution plan summary (no raw parameters)', async () => {
     const result = await investigationApi.get('OPS-1234-inv-20260320-143200');
-    const plan = result.policy_decision!.execution_plan!;
+    const plan = result.execution_plan!;
     expect(plan.plan_id).toBe('PLAN-OPS-1234-001');
-    expect(plan.plan_hash).toBeTruthy();
-    expect(plan.steps).toHaveLength(2);
     expect(plan.blast_radius).toBe('medium');
+    expect(plan.total_steps).toBe(2);
     expect(plan.reversible).toBe(true);
-    plan.steps.forEach((step) => {
-      expect(step.rollback_command).toBeTruthy();
-      expect(step.precondition).toBeTruthy();
-    });
+    // No raw parameters, preconditions, or rollback commands in the summary DTO
+    expect((plan as unknown as Record<string, unknown>)['steps']).toBeUndefined();
   });
 
-  it('pendingTraceIds() returns array of trace IDs', async () => {
-    const result = await investigationApi.pendingTraceIds();
+  it('get() returns finding summaries (no tool queries or hashes)', async () => {
+    const result = await investigationApi.get('OPS-1234-inv-20260320-143200');
+    const finding = result.findings[0];
+    expect(finding.id).toBe('F-001');
+    expect(finding.source).toBe('postgres_payments');
+    expect(finding.summary).toBeTruthy();
+    // No tool_used, query, raw_result_hash in the safe DTO
+    expect((finding as unknown as Record<string, unknown>)['tool_used']).toBeUndefined();
+    expect((finding as unknown as Record<string, unknown>)['query']).toBeUndefined();
+  });
+
+  it('pendingList() returns InvestigationSummary[]', async () => {
+    const result = await investigationApi.pendingList();
     expect(result).toHaveLength(1);
-    expect(result[0]).toBe('OPS-1234-inv-20260320-143200');
+    expect(result[0].status).toBe('AWAITING_APPROVAL');
+    expect(result[0].jira_key).toBe('OPS-1234');
   });
 
   it('approve() sends trace_id and approval_ref', async () => {

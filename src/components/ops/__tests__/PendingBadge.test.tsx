@@ -26,10 +26,14 @@ function renderBadge() {
 }
 
 describe('PendingBadge', () => {
-  it('renders count when there are pending approvals', async () => {
+  it('renders count when there are pending investigations', async () => {
     server.use(
       http.get('http://localhost:8000/ops/investigations/pending', () =>
-        HttpResponse.json(['trace-1', 'trace-2', 'trace-3']),
+        HttpResponse.json([
+          { trace_id: 't1', jira_key: 'OPS-1', jira_url: '', status: 'AWAITING_APPROVAL', title: '', investigation_type: '', confidence: null, created_at: '', step_count: 0, is_terminal: false },
+          { trace_id: 't2', jira_key: 'OPS-2', jira_url: '', status: 'AWAITING_APPROVAL', title: '', investigation_type: '', confidence: null, created_at: '', step_count: 0, is_terminal: false },
+          { trace_id: 't3', jira_key: 'OPS-3', jira_url: '', status: 'AWAITING_APPROVAL', title: '', investigation_type: '', confidence: null, created_at: '', step_count: 0, is_terminal: false },
+        ]),
       ),
     );
     renderBadge();
@@ -45,7 +49,6 @@ describe('PendingBadge', () => {
       ),
     );
     const { container } = renderBadge();
-    // Wait for query to settle
     await waitFor(() => {
       expect(container.innerHTML).toBe('');
     });
@@ -54,7 +57,12 @@ describe('PendingBadge', () => {
   it('caps display at 99+', async () => {
     server.use(
       http.get('http://localhost:8000/ops/investigations/pending', () =>
-        HttpResponse.json(Array.from({ length: 150 }, (_, i) => `trace-${i}`)),
+        HttpResponse.json(
+          Array.from({ length: 150 }, (_, i) => ({
+            trace_id: `t${i}`, jira_key: `OPS-${i}`, jira_url: '', status: 'AWAITING_APPROVAL',
+            title: '', investigation_type: '', confidence: null, created_at: '', step_count: 0, is_terminal: false,
+          })),
+        ),
       ),
     );
     renderBadge();

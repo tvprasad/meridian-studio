@@ -2,24 +2,24 @@
 // Licensed under the MIT License. See LICENSE for details.
 
 import { useState } from 'react';
-import { ShieldCheck, ShieldX, AlertTriangle, Lock, RotateCcw } from 'lucide-react';
-import type { PolicyDecision } from '../../api/investigation';
+import { ShieldCheck, ShieldX, Lock, RotateCcw } from 'lucide-react';
+import type { ExecutionPlanSummary } from '../../api/investigation';
 import { Card } from '../ui/Card';
 
 interface ApprovalPanelProps {
-  policyDecision: PolicyDecision;
+  executionPlan: ExecutionPlanSummary;
+  policyRationale: string | null;
   traceId: string;
   onApprove: (approvalRef: string, planId: string) => void;
   onReject: (reason: string) => void;
   isSubmitting?: boolean;
 }
 
-export function ApprovalPanel({ policyDecision, traceId, onApprove, onReject, isSubmitting }: ApprovalPanelProps) {
+export function ApprovalPanel({ executionPlan, policyRationale, traceId, onApprove, onReject, isSubmitting }: ApprovalPanelProps) {
   const [mode, setMode] = useState<'idle' | 'approve' | 'reject'>('idle');
   const [rejectReason, setRejectReason] = useState('');
-  const plan = policyDecision.execution_plan;
 
-  if (!plan) return null;
+  const plan = executionPlan;
 
   const blastColors: Record<string, string> = {
     low: 'text-emerald-600 bg-emerald-50 dark:bg-emerald-900/20',
@@ -46,6 +46,10 @@ export function ApprovalPanel({ policyDecision, traceId, onApprove, onReject, is
           <p className="text-sm text-gray-600 dark:text-gray-300 mt-1">{plan.action_summary}</p>
         </div>
 
+        {policyRationale && (
+          <p className="text-sm text-gray-600 dark:text-gray-300 italic">{policyRationale}</p>
+        )}
+
         <div className="grid grid-cols-2 gap-4 text-sm">
           <div>
             <dt className="text-gray-500 dark:text-gray-400">Plan ID</dt>
@@ -67,53 +71,12 @@ export function ApprovalPanel({ policyDecision, traceId, onApprove, onReject, is
             <dt className="text-gray-500 dark:text-gray-400">Reversible</dt>
             <dd className="mt-0.5">
               <span className={`inline-flex items-center gap-1 text-xs font-medium ${plan.reversible ? 'text-emerald-600' : 'text-red-600'}`}>
-                {plan.reversible ? <RotateCcw className="w-3 h-3" /> : <AlertTriangle className="w-3 h-3" />}
+                <RotateCcw className="w-3 h-3" />
                 {plan.reversible ? 'Yes' : 'No'}
               </span>
             </dd>
           </div>
         </div>
-
-        {/* Plan steps */}
-        <div>
-          <h4 className="text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-2">Bounded Steps</h4>
-          <div className="space-y-2">
-            {plan.steps.map((step) => (
-              <div key={step.step_number} className="p-3 rounded-lg bg-gray-50 dark:bg-white/[0.03] border border-gray-200 dark:border-white/10">
-                <div className="flex items-center gap-2">
-                  <span className="text-xs font-mono text-gray-400">{step.step_number}.</span>
-                  <span className="text-sm font-medium text-gray-800 dark:text-gray-200">{step.action}</span>
-                </div>
-                <div className="mt-1 grid grid-cols-2 gap-2 text-xs text-gray-500 dark:text-gray-400">
-                  <span>Tool: {step.tool}</span>
-                  <span>Target: {step.target}</span>
-                </div>
-                <div className="mt-1 text-xs text-gray-500 dark:text-gray-400">
-                  Precondition: {step.precondition}
-                </div>
-                <div className="mt-1 text-xs text-gray-500 dark:text-gray-400">
-                  Rollback: <span className="font-mono text-gray-600 dark:text-gray-300">{step.rollback_command}</span>
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
-
-        {/* Risk and policy */}
-        {policyDecision.policy_violations.length > 0 && (
-          <div className="p-3 rounded-lg bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800">
-            <p className="text-xs font-semibold text-red-700 dark:text-red-400 uppercase tracking-wider">Policy Violations</p>
-            <ul className="mt-1 text-sm text-red-600 dark:text-red-400 list-disc list-inside">
-              {policyDecision.policy_violations.map((v, i) => (
-                <li key={i}>{v}</li>
-              ))}
-            </ul>
-          </div>
-        )}
-
-        <p className="text-xs text-gray-400 dark:text-gray-500 italic">
-          Risk score: {(policyDecision.risk_score * 100).toFixed(0)}% — Plan hash: {plan.plan_hash.slice(0, 12)}...
-        </p>
 
         {/* Action buttons */}
         {mode === 'idle' && (

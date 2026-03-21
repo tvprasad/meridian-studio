@@ -6,7 +6,7 @@ import { useParams, Link } from 'react-router-dom';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import {
   ArrowLeft, ExternalLink, Copy, Check, Shield, Clock,
-  Target, FileSearch, BarChart3, BookOpen, Zap, ChevronDown, ChevronRight,
+  FileSearch, BarChart3, ChevronDown, ChevronRight,
 } from 'lucide-react';
 import { Card } from '../components/ui/Card';
 import { InvestigationBadge } from '../components/ops/InvestigationBadge';
@@ -20,9 +20,9 @@ export function InvestigationDetail() {
   const { traceId } = useParams<{ traceId: string }>();
   const queryClient = useQueryClient();
   const [copiedField, setCopiedField] = useState<string | null>(null);
-  const [expandedSections, setExpandedSections] = useState<Set<string>>(new Set(['summary', 'trace']));
+  const [expandedSections, setExpandedSections] = useState<Set<string>>(new Set(['trace']));
 
-  const { data: investigation, isLoading, error } = useQuery({
+  const { data: inv, isLoading, error } = useQuery({
     queryKey: ['investigation', traceId],
     queryFn: () => investigationApi.get(traceId!),
     enabled: !!traceId,
@@ -71,11 +71,11 @@ export function InvestigationDetail() {
     );
   }
 
-  if (error || !investigation) {
+  if (error || !inv) {
     return (
       <Card className="border-l-4 border-l-red-400">
         <p className="text-sm text-red-600 dark:text-red-400">
-          Failed to load investigation {traceId}. The backend may not have GET /ops/investigations/:trace_id implemented yet.
+          Failed to load investigation {traceId}.
         </p>
         <Link to="/investigations" className="inline-flex items-center gap-1 text-sm text-primary-600 hover:text-primary-700 mt-2">
           <ArrowLeft className="w-4 h-4" /> Back to list
@@ -83,8 +83,6 @@ export function InvestigationDetail() {
       </Card>
     );
   }
-
-  const inv = investigation;
 
   return (
     <div className="space-y-6">
@@ -103,8 +101,8 @@ export function InvestigationDetail() {
             </a>
             <InvestigationBadge status={inv.status} />
           </div>
-          {inv.ticket_summary && (
-            <p className="text-gray-600 dark:text-gray-300 mt-1">{inv.ticket_summary}</p>
+          {inv.title && (
+            <p className="text-gray-600 dark:text-gray-300 mt-1">{inv.title}</p>
           )}
           <div className="flex items-center gap-4 mt-2 text-xs text-gray-400 dark:text-gray-500">
             <span className="flex items-center gap-1">
@@ -140,9 +138,10 @@ export function InvestigationDetail() {
       </Card>
 
       {/* Approval panel — shown when AWAITING_APPROVAL */}
-      {inv.status === 'AWAITING_APPROVAL' && inv.policy_decision && (
+      {inv.status === 'AWAITING_APPROVAL' && inv.execution_plan && (
         <ApprovalPanel
-          policyDecision={inv.policy_decision}
+          executionPlan={inv.execution_plan}
+          policyRationale={inv.policy_rationale}
           traceId={inv.trace_id}
           onApprove={(ref, planId) => approveMutation.mutate({ approvalRef: ref, planId })}
           onReject={(reason) => rejectMutation.mutate(reason)}
@@ -150,75 +149,78 @@ export function InvestigationDetail() {
         />
       )}
 
-      {/* Two-column layout: Summary/Evidence | Plan/Metadata */}
+      {/* Two-column layout */}
       <div className="grid grid-cols-1 lg:grid-cols-5 gap-6">
         {/* Left column (3/5) */}
         <div className="lg:col-span-3 space-y-4">
-          {/* Investigation Plan */}
-          {inv.investigation_plan && (
+          {/* Description */}
+          {inv.description && (
+            <Card>
+              <h3 className="text-sm font-semibold text-gray-900 dark:text-white">Description</h3>
+              <p className="text-sm text-gray-700 dark:text-gray-300 mt-2">{inv.description}</p>
+            </Card>
+          )}
+
+          {/* Analysis */}
+          {inv.root_cause_hypothesis && (
             <CollapsibleSection
-              title="Investigation Plan"
-              icon={<Target className="w-4 h-4 text-sky-500" />}
-              expanded={expandedSections.has('plan')}
-              onToggle={() => toggleSection('plan')}
+              title="Analysis"
+              icon={<BarChart3 className="w-4 h-4 text-violet-500" />}
+              expanded={expandedSections.has('analysis')}
+              onToggle={() => toggleSection('analysis')}
             >
               <div className="space-y-3 text-sm">
-                <div>
-                  <dt className="text-gray-500 dark:text-gray-400 text-xs uppercase tracking-wider">Scope</dt>
-                  <dd className="mt-0.5 text-gray-700 dark:text-gray-300">{inv.investigation_plan.scope}</dd>
-                </div>
-                <div>
-                  <dt className="text-gray-500 dark:text-gray-400 text-xs uppercase tracking-wider">Priority</dt>
-                  <dd className="mt-0.5">
-                    <span className={`inline-flex px-2 py-0.5 rounded text-xs font-medium ${
-                      inv.investigation_plan.priority === 'critical' ? 'bg-red-100 text-red-700 dark:bg-red-900/20 dark:text-red-400' :
-                      inv.investigation_plan.priority === 'high' ? 'bg-orange-100 text-orange-700 dark:bg-orange-900/20 dark:text-orange-400' :
+                <div className="flex items-center gap-3">
+                  {inv.confidence != null && <ConfidencePill score={inv.confidence} />}
+                  {inv.severity && (
+                    <span className={`px-2 py-0.5 rounded text-xs font-medium ${
+                      inv.severity === 'critical' ? 'bg-red-100 text-red-700 dark:bg-red-900/20 dark:text-red-400' :
+                      inv.severity === 'high' ? 'bg-orange-100 text-orange-700 dark:bg-orange-900/20 dark:text-orange-400' :
+                      inv.severity === 'medium' ? 'bg-amber-100 text-amber-700 dark:bg-amber-900/20 dark:text-amber-400' :
                       'bg-gray-100 text-gray-600 dark:bg-gray-800 dark:text-gray-400'
                     }`}>
-                      {inv.investigation_plan.priority}
+                      {inv.severity} severity
                     </span>
-                  </dd>
+                  )}
                 </div>
                 <div>
-                  <dt className="text-gray-500 dark:text-gray-400 text-xs uppercase tracking-wider">Data Sources</dt>
-                  <dd className="mt-1 flex flex-wrap gap-1">
-                    {inv.investigation_plan.data_sources.map((ds) => (
-                      <span key={ds} className="px-2 py-0.5 rounded bg-blue-50 dark:bg-blue-900/20 text-blue-700 dark:text-blue-400 text-xs">{ds}</span>
-                    ))}
-                  </dd>
+                  <dt className="text-gray-500 dark:text-gray-400 text-xs uppercase tracking-wider">Root Cause Hypothesis</dt>
+                  <dd className="mt-0.5 text-gray-700 dark:text-gray-300">{inv.root_cause_hypothesis}</dd>
                 </div>
-                <div>
-                  <dt className="text-gray-500 dark:text-gray-400 text-xs uppercase tracking-wider">Questions</dt>
-                  <dd className="mt-1">
-                    <ol className="list-decimal list-inside text-gray-700 dark:text-gray-300 space-y-1">
-                      {inv.investigation_plan.questions.map((q, i) => (
-                        <li key={i}>{q}</li>
-                      ))}
-                    </ol>
-                  </dd>
-                </div>
+                {inv.confidence_rationale && (
+                  <div>
+                    <dt className="text-gray-500 dark:text-gray-400 text-xs uppercase tracking-wider">Confidence Rationale</dt>
+                    <dd className="mt-0.5 text-gray-700 dark:text-gray-300">{inv.confidence_rationale}</dd>
+                  </div>
+                )}
+                {inv.gaps.length > 0 && (
+                  <div>
+                    <dt className="text-gray-500 dark:text-gray-400 text-xs uppercase tracking-wider">Gaps</dt>
+                    <dd className="mt-1 text-gray-600 dark:text-gray-400">
+                      <ul className="list-disc list-inside">{inv.gaps.map((g, i) => <li key={i}>{g}</li>)}</ul>
+                    </dd>
+                  </div>
+                )}
               </div>
             </CollapsibleSection>
           )}
 
           {/* Evidence */}
-          {inv.evidence && (
+          {inv.findings.length > 0 && (
             <CollapsibleSection
-              title={`Evidence (${inv.evidence.findings.length} findings)`}
+              title={`Evidence (${inv.findings.length} findings)`}
               icon={<FileSearch className="w-4 h-4 text-blue-500" />}
               expanded={expandedSections.has('evidence')}
               onToggle={() => toggleSection('evidence')}
             >
               <div className="space-y-3">
                 <div className="flex items-center gap-4 text-xs text-gray-500 dark:text-gray-400">
-                  <span>{inv.evidence.total_queries} queries</span>
-                  <span>{inv.evidence.data_sources_queried.length} sources queried</span>
-                  {inv.evidence.data_sources_failed.length > 0 && (
-                    <span className="text-red-500">{inv.evidence.data_sources_failed.length} sources failed</span>
+                  <span>{inv.data_sources_queried.length} sources queried</span>
+                  {inv.data_sources_failed.length > 0 && (
+                    <span className="text-red-500">{inv.data_sources_failed.length} sources failed</span>
                   )}
-                  <span>{(inv.evidence.collection_time_ms / 1000).toFixed(1)}s</span>
                 </div>
-                {inv.evidence.findings.map((finding) => (
+                {inv.findings.map((finding) => (
                   <div key={finding.id} className="p-3 rounded-lg bg-gray-50 dark:bg-white/[0.03] border border-gray-200 dark:border-white/10">
                     <div className="flex items-center gap-2">
                       <span className="text-xs font-mono text-gray-400">{finding.id}</span>
@@ -232,57 +234,8 @@ export function InvestigationDetail() {
                       <span className="text-xs text-gray-400">{finding.source}</span>
                     </div>
                     <p className="text-sm text-gray-700 dark:text-gray-300 mt-1">{finding.summary}</p>
-                    <span className="text-xs text-gray-400 mt-1 block">via {finding.tool_used}</span>
                   </div>
                 ))}
-              </div>
-            </CollapsibleSection>
-          )}
-
-          {/* Analysis */}
-          {inv.analysis && (
-            <CollapsibleSection
-              title="Analysis"
-              icon={<BarChart3 className="w-4 h-4 text-violet-500" />}
-              expanded={expandedSections.has('analysis')}
-              onToggle={() => toggleSection('analysis')}
-            >
-              <div className="space-y-3 text-sm">
-                <div className="flex items-center gap-3">
-                  <ConfidencePill score={inv.analysis.confidence} />
-                  <span className={`px-2 py-0.5 rounded text-xs font-medium ${
-                    inv.analysis.severity === 'critical' ? 'bg-red-100 text-red-700 dark:bg-red-900/20 dark:text-red-400' :
-                    inv.analysis.severity === 'high' ? 'bg-orange-100 text-orange-700 dark:bg-orange-900/20 dark:text-orange-400' :
-                    inv.analysis.severity === 'medium' ? 'bg-amber-100 text-amber-700 dark:bg-amber-900/20 dark:text-amber-400' :
-                    'bg-gray-100 text-gray-600 dark:bg-gray-800 dark:text-gray-400'
-                  }`}>
-                    {inv.analysis.severity} severity
-                  </span>
-                </div>
-                <div>
-                  <dt className="text-gray-500 dark:text-gray-400 text-xs uppercase tracking-wider">Summary</dt>
-                  <dd className="mt-0.5 text-gray-700 dark:text-gray-300">{inv.analysis.summary}</dd>
-                </div>
-                <div>
-                  <dt className="text-gray-500 dark:text-gray-400 text-xs uppercase tracking-wider">Root Cause Hypothesis</dt>
-                  <dd className="mt-0.5 text-gray-700 dark:text-gray-300">{inv.analysis.root_cause_hypothesis}</dd>
-                </div>
-                <div>
-                  <dt className="text-gray-500 dark:text-gray-400 text-xs uppercase tracking-wider">Affected Systems</dt>
-                  <dd className="mt-1 flex flex-wrap gap-1">
-                    {inv.analysis.affected_systems.map((s) => (
-                      <span key={s} className="px-2 py-0.5 rounded bg-violet-50 dark:bg-violet-900/20 text-violet-700 dark:text-violet-400 text-xs">{s}</span>
-                    ))}
-                  </dd>
-                </div>
-                {inv.analysis.gaps.length > 0 && (
-                  <div>
-                    <dt className="text-gray-500 dark:text-gray-400 text-xs uppercase tracking-wider">Gaps</dt>
-                    <dd className="mt-1 text-sm text-gray-600 dark:text-gray-400">
-                      <ul className="list-disc list-inside">{inv.analysis.gaps.map((g, i) => <li key={i}>{g}</li>)}</ul>
-                    </dd>
-                  </div>
-                )}
               </div>
             </CollapsibleSection>
           )}
@@ -290,78 +243,56 @@ export function InvestigationDetail() {
 
         {/* Right column (2/5) */}
         <div className="lg:col-span-2 space-y-4">
-          {/* Policy Decision */}
-          {inv.policy_decision && (
-            <CollapsibleSection
-              title="Policy Decision"
-              icon={<BookOpen className="w-4 h-4 text-amber-500" />}
-              expanded={expandedSections.has('policy')}
-              onToggle={() => toggleSection('policy')}
-            >
-              <div className="space-y-3 text-sm">
-                <div className="flex items-center gap-2">
-                  <span className={`px-2 py-0.5 rounded text-xs font-medium ${
-                    inv.policy_decision.action_recommended
-                      ? 'bg-amber-100 text-amber-700 dark:bg-amber-900/20 dark:text-amber-400'
-                      : 'bg-gray-100 text-gray-600 dark:bg-gray-800 dark:text-gray-400'
-                  }`}>
-                    {inv.policy_decision.action_recommended ? 'Action Recommended' : 'No Action'}
-                  </span>
-                  <span className="text-xs text-gray-400">Risk: {(inv.policy_decision.risk_score * 100).toFixed(0)}%</span>
+          {/* Execution Plan (when not awaiting approval — approval panel handles that case) */}
+          {inv.execution_plan && inv.status !== 'AWAITING_APPROVAL' && (
+            <Card>
+              <h3 className="text-sm font-semibold text-gray-900 dark:text-white mb-3">Execution Plan</h3>
+              <dl className="space-y-2 text-xs">
+                <div className="flex justify-between">
+                  <dt className="text-gray-500 dark:text-gray-400">Plan ID</dt>
+                  <dd className="font-mono text-gray-600 dark:text-gray-300">{inv.execution_plan.plan_id}</dd>
                 </div>
-                <p className="text-gray-700 dark:text-gray-300">{inv.policy_decision.rationale}</p>
-                {inv.policy_decision.requires_approval_from.length > 0 && (
-                  <div>
-                    <dt className="text-gray-500 dark:text-gray-400 text-xs uppercase tracking-wider">Requires Approval From</dt>
-                    <dd className="mt-1 flex flex-wrap gap-1">
-                      {inv.policy_decision.requires_approval_from.map((r) => (
-                        <span key={r} className="px-2 py-0.5 rounded bg-amber-50 dark:bg-amber-900/20 text-amber-700 dark:text-amber-400 text-xs">{r}</span>
-                      ))}
-                    </dd>
-                  </div>
-                )}
-              </div>
-            </CollapsibleSection>
+                <div className="flex justify-between">
+                  <dt className="text-gray-500 dark:text-gray-400">Action</dt>
+                  <dd className="text-gray-600 dark:text-gray-300">{inv.execution_plan.action_summary}</dd>
+                </div>
+                <div className="flex justify-between">
+                  <dt className="text-gray-500 dark:text-gray-400">Blast Radius</dt>
+                  <dd className="font-medium text-gray-600 dark:text-gray-300">{inv.execution_plan.blast_radius}</dd>
+                </div>
+                <div className="flex justify-between">
+                  <dt className="text-gray-500 dark:text-gray-400">Reversible</dt>
+                  <dd className="text-gray-600 dark:text-gray-300">{inv.execution_plan.reversible ? 'Yes' : 'No'}</dd>
+                </div>
+              </dl>
+            </Card>
           )}
 
           {/* Execution Result */}
-          {inv.execution_result && (
-            <CollapsibleSection
-              title="Execution Result"
-              icon={<Zap className="w-4 h-4 text-emerald-500" />}
-              expanded={expandedSections.has('execution')}
-              onToggle={() => toggleSection('execution')}
-            >
-              <div className="space-y-3 text-sm">
-                <div className="flex items-center gap-2">
-                  <span className={`px-2 py-0.5 rounded text-xs font-medium ${
-                    inv.execution_result.status === 'success'
-                      ? 'bg-emerald-100 text-emerald-700 dark:bg-emerald-900/20 dark:text-emerald-400'
-                      : 'bg-red-100 text-red-700 dark:bg-red-900/20 dark:text-red-400'
-                  }`}>
-                    {inv.execution_result.status}
-                  </span>
-                  <span className="text-xs text-gray-400">{(inv.execution_result.elapsed_ms / 1000).toFixed(1)}s</span>
-                </div>
-                <div>
-                  <dt className="text-gray-500 dark:text-gray-400 text-xs uppercase tracking-wider">Verification</dt>
-                  <dd className="mt-0.5 text-gray-700 dark:text-gray-300">{inv.execution_result.verification}</dd>
-                  <dd className="mt-0.5">
-                    <span className={`text-xs font-medium ${inv.execution_result.verification_passed ? 'text-emerald-600' : 'text-red-600'}`}>
-                      {inv.execution_result.verification_passed ? 'Passed' : 'Failed'}
-                    </span>
+          {inv.execution_status && (
+            <Card>
+              <h3 className="text-sm font-semibold text-gray-900 dark:text-white mb-3">Execution Result</h3>
+              <dl className="space-y-2 text-xs">
+                <div className="flex justify-between">
+                  <dt className="text-gray-500 dark:text-gray-400">Status</dt>
+                  <dd className={`font-medium ${inv.execution_status === 'success' ? 'text-emerald-600' : 'text-red-600'}`}>
+                    {inv.execution_status}
                   </dd>
                 </div>
-                <div>
-                  <dt className="text-gray-500 dark:text-gray-400 text-xs uppercase tracking-wider">Tool</dt>
-                  <dd className="mt-0.5 font-mono text-xs text-gray-600 dark:text-gray-400">{inv.execution_result.tool_used}</dd>
-                </div>
-                <div>
-                  <dt className="text-gray-500 dark:text-gray-400 text-xs uppercase tracking-wider">Output Hash</dt>
-                  <dd className="mt-0.5 font-mono text-xs text-gray-400">{inv.execution_result.tool_output_hash.slice(0, 16)}...</dd>
-                </div>
-              </div>
-            </CollapsibleSection>
+                {inv.execution_verification && (
+                  <div className="flex justify-between">
+                    <dt className="text-gray-500 dark:text-gray-400">Verification</dt>
+                    <dd className="text-gray-600 dark:text-gray-300">{inv.execution_verification}</dd>
+                  </div>
+                )}
+                {inv.rollback_script && (
+                  <div>
+                    <dt className="text-gray-500 dark:text-gray-400">Rollback</dt>
+                    <dd className="font-mono text-gray-600 dark:text-gray-300 mt-0.5 break-all">{inv.rollback_script}</dd>
+                  </div>
+                )}
+              </dl>
+            </Card>
           )}
 
           {/* Metadata */}
@@ -369,16 +300,12 @@ export function InvestigationDetail() {
             <h3 className="text-sm font-semibold text-gray-900 dark:text-white mb-3">Metadata</h3>
             <dl className="space-y-2 text-xs">
               <div className="flex justify-between">
-                <dt className="text-gray-500 dark:text-gray-400">Version</dt>
-                <dd className="font-mono text-gray-600 dark:text-gray-300">{inv.version}</dd>
+                <dt className="text-gray-500 dark:text-gray-400">Steps</dt>
+                <dd className="font-mono text-gray-600 dark:text-gray-300">{inv.step_count}</dd>
               </div>
               <div className="flex justify-between">
-                <dt className="text-gray-500 dark:text-gray-400">Retries</dt>
-                <dd className="font-mono text-gray-600 dark:text-gray-300">{inv.retry_count}</dd>
-              </div>
-              <div className="flex justify-between">
-                <dt className="text-gray-500 dark:text-gray-400">Steps Logged</dt>
-                <dd className="font-mono text-gray-600 dark:text-gray-300">{inv.step_log.length}</dd>
+                <dt className="text-gray-500 dark:text-gray-400">Terminal</dt>
+                <dd className="font-mono text-gray-600 dark:text-gray-300">{inv.is_terminal ? 'Yes' : 'No'}</dd>
               </div>
               {inv.approval_ref && (
                 <div className="flex justify-between">
@@ -393,13 +320,13 @@ export function InvestigationDetail() {
 
       {/* Audit Trace — full width */}
       <CollapsibleSection
-        title={`Audit Trace (${inv.step_log.length} steps)`}
+        title={`Audit Trace (${inv.step_count} steps)`}
         icon={<Shield className="w-4 h-4 text-gray-500" />}
         expanded={expandedSections.has('trace')}
         onToggle={() => toggleSection('trace')}
         className="bg-white dark:bg-white/[0.02] rounded-xl border border-gray-200 dark:border-white/10 p-6"
       >
-        <AuditTrace steps={inv.step_log} />
+        <AuditTrace steps={inv.steps} />
       </CollapsibleSection>
     </div>
   );

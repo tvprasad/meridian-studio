@@ -1,12 +1,12 @@
 // Copyright (c) 2026 VPL Solutions. All rights reserved.
 // Licensed under the MIT License. See LICENSE for details.
 
-import { Shield, Wrench, Clock, ArrowRight } from 'lucide-react';
-import type { StepRecord } from '../../api/investigation';
+import { Shield, Clock, ArrowRight } from 'lucide-react';
+import type { StepSummary } from '../../api/investigation';
 import { AGENT_ROLE_META } from '../../data/investigationStates';
 
 interface AuditTraceProps {
-  steps: StepRecord[];
+  steps: StepSummary[];
 }
 
 function formatTimestamp(ts: string): string {
@@ -43,7 +43,7 @@ export function AuditTrace({ steps }: AuditTraceProps) {
           const isTransition = step.status_before !== step.status_after && step.status_after;
 
           return (
-            <div key={`${step.trace_id}-${step.step_number}`} className="relative pl-10 pb-4">
+            <div key={`${step.step_number}`} className="relative pl-10 pb-4">
               {/* Step marker */}
               <div className="absolute left-2 w-5 h-5 rounded-full bg-white dark:bg-gray-900 border-2 border-gray-300 dark:border-gray-600 flex items-center justify-center z-10">
                 <span className="text-[9px] font-bold text-gray-500 dark:text-gray-400">{step.step_number}</span>
@@ -77,41 +77,9 @@ export function AuditTrace({ steps }: AuditTraceProps) {
                     <span className="text-xs font-mono font-semibold text-gray-700 dark:text-gray-300">{step.status_after}</span>
                   </div>
                 )}
-
-                {/* Metadata row */}
-                <div className="mt-2 flex items-center gap-3 flex-wrap">
-                  {step.tool_name && (
-                    <span className="inline-flex items-center gap-1 text-xs text-gray-500 dark:text-gray-400">
-                      <Wrench className="w-3 h-3" />
-                      {step.tool_name}
-                    </span>
-                  )}
-                  {step.tool_input_hash && (
-                    <span className="inline-flex items-center gap-1 text-xs text-gray-400 dark:text-gray-500">
-                      <Shield className="w-3 h-3" />
-                      <span className="font-mono">in:{step.tool_input_hash.slice(0, 8)}</span>
-                    </span>
-                  )}
-                  {step.tool_output_hash && (
-                    <span className="text-xs font-mono text-gray-400 dark:text-gray-500">
-                      out:{step.tool_output_hash.slice(0, 8)}
-                    </span>
-                  )}
-                  {step.approval_ref && (
-                    <span className="inline-flex items-center gap-1 text-xs text-amber-600 dark:text-amber-400">
-                      <Shield className="w-3 h-3" />
-                      {step.approval_ref.slice(0, 20)}...
-                    </span>
-                  )}
-                  {step.plan_id && (
-                    <span className="text-xs font-mono text-violet-600 dark:text-violet-400">
-                      plan:{step.plan_id.slice(0, 12)}
-                    </span>
-                  )}
-                </div>
               </div>
 
-              {/* Governance boundary marker between step 4 (approval) and execution */}
+              {/* Governance boundary marker */}
               {i < steps.length - 1
                 && step.status_after === 'AWAITING_APPROVAL'
                 && steps[i + 1]?.status_before === 'AWAITING_APPROVAL' && (

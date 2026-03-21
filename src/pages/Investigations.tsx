@@ -21,9 +21,9 @@ export function Investigations() {
     queryFn: () => investigationApi.list(),
   });
 
-  const { data: pendingIds } = useQuery({
-    queryKey: ['investigations', 'pending-ids'],
-    queryFn: investigationApi.pendingTraceIds,
+  const { data: pendingList } = useQuery({
+    queryKey: ['investigations', 'pending'],
+    queryFn: investigationApi.pendingList,
     refetchInterval: 30_000,
   });
 
@@ -42,7 +42,7 @@ export function Investigations() {
   });
 
   const totalActive = allInvestigations.filter((i) => STATUS_GROUPS.active.includes(i.status)).length;
-  const totalAwaiting = pendingIds?.length ?? 0;
+  const totalAwaiting = pendingList?.length ?? 0;
   const totalCompleted = allInvestigations.filter((i) => i.status === 'COMPLETED').length;
   const totalRejected = allInvestigations.filter((i) => i.status === 'REJECTED' || i.status === 'EXPIRED' || i.status === 'FAILED').length;
 
@@ -145,17 +145,17 @@ export function Investigations() {
         </Card>
       )}
 
-      {!isLoading && !error && filtered && (
+      {!isLoading && !error && (
         <div className="mt-6 bg-white dark:bg-white/[0.02] rounded-xl border border-gray-200 dark:border-white/10 overflow-hidden">
           <table className="w-full text-sm">
             <thead>
               <tr className="border-b border-gray-200 dark:border-white/10">
                 <th className="text-left py-3 px-4 text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Status</th>
                 <th className="text-left py-3 px-4 text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Jira Key</th>
-                <th className="text-left py-3 px-4 text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Type</th>
+                <th className="text-left py-3 px-4 text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Title</th>
+                <th className="text-left py-3 px-4 text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Confidence</th>
                 <th className="text-left py-3 px-4 text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Steps</th>
-                <th className="text-left py-3 px-4 text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Updated</th>
-                <th className="text-left py-3 px-4 text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Trace ID</th>
+                <th className="text-left py-3 px-4 text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Created</th>
                 <th className="w-8" />
               </tr>
             </thead>
@@ -186,13 +186,13 @@ export function Investigations() {
                       {inv.jira_key}
                     </a>
                   </td>
-                  <td className="py-3 px-4 text-gray-600 dark:text-gray-300">{inv.investigation_type || '—'}</td>
+                  <td className="py-3 px-4 text-gray-700 dark:text-gray-300 max-w-xs truncate">{inv.title}</td>
+                  <td className="py-3 px-4 text-gray-600 dark:text-gray-300">
+                    {inv.confidence != null ? `${Math.round(inv.confidence * 100)}%` : '—'}
+                  </td>
                   <td className="py-3 px-4 text-gray-600 dark:text-gray-300">{inv.step_count}</td>
                   <td className="py-3 px-4 text-gray-500 dark:text-gray-400 text-xs">
-                    {new Date(inv.updated_at).toLocaleString(undefined, { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' })}
-                  </td>
-                  <td className="py-3 px-4">
-                    <span className="font-mono text-xs text-gray-400 dark:text-gray-500">{inv.trace_id.slice(0, 24)}...</span>
+                    {new Date(inv.created_at).toLocaleString(undefined, { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' })}
                   </td>
                   <td className="py-3 px-4">
                     <Link
@@ -207,7 +207,6 @@ export function Investigations() {
             </tbody>
           </table>
 
-          {/* Result count */}
           {filtered.length > 0 && (
             <div className="px-4 py-3 border-t border-gray-200 dark:border-white/10">
               <span className="text-xs text-gray-500 dark:text-gray-400">

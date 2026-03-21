@@ -6,8 +6,8 @@ import { investigationApi } from '../../api/investigation';
 
 export function PendingBadge() {
   const { data } = useQuery({
-    queryKey: ['investigations', 'pending-ids'],
-    queryFn: investigationApi.pendingTraceIds,
+    queryKey: ['investigations', 'pending'],
+    queryFn: investigationApi.pendingList,
     refetchInterval: 30_000,
   });
 

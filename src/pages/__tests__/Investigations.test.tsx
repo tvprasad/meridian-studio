@@ -16,7 +16,7 @@ const server = setupServer(
     HttpResponse.json(listFixture),
   ),
   http.get('http://localhost:8000/ops/investigations/pending', () =>
-    HttpResponse.json(['OPS-1234-inv-20260320-143200']),
+    HttpResponse.json(listFixture.filter((i) => i.status === 'AWAITING_APPROVAL')),
   ),
 );
 
@@ -56,25 +56,32 @@ describe('Investigations list page', () => {
     expect(screen.getByText('Rejected / Expired')).toBeInTheDocument();
   });
 
-  it('renders investigation rows from fixture', async () => {
+  it('renders investigation rows with titles from fixture', async () => {
     renderInvestigations();
     await waitFor(() => {
       expect(screen.getByText('OPS-1234')).toBeInTheDocument();
     });
     expect(screen.getByText('OPS-1100')).toBeInTheDocument();
     expect(screen.getByText('OPS-1050')).toBeInTheDocument();
+    // Titles from InvestigationSummary
+    expect(screen.getByText('Payments ETL mismatch in settlement totals')).toBeInTheDocument();
+  });
+
+  it('renders confidence column', async () => {
+    renderInvestigations();
+    await waitFor(() => {
+      expect(screen.getByText('87%')).toBeInTheDocument();
+    });
+    expect(screen.getByText('92%')).toBeInTheDocument();
   });
 
   it('shows status badges for each investigation', async () => {
     renderInvestigations();
-    // Wait for table rows to render (OPS-1234 confirms data is loaded)
     await waitFor(() => {
       expect(screen.getByText('OPS-1234')).toBeInTheDocument();
     });
-    // Badge text appears in both KPI cards and table rows
     expect(screen.getAllByText('Awaiting Approval').length).toBeGreaterThanOrEqual(1);
     expect(screen.getAllByText('Completed').length).toBeGreaterThanOrEqual(1);
-    // 'Rejected' appears as a badge label in table row
     expect(screen.getAllByText('Rejected').length).toBeGreaterThanOrEqual(1);
   });
 
