@@ -3,7 +3,7 @@
 
 import { useEffect, useState, useCallback } from 'react';
 import { Outlet, NavLink, useLocation } from 'react-router-dom';
-import { LayoutDashboard, MessageSquare, Database, Settings, Github, Languages, Eye, Mic, FileSearch, Pin, PinOff, Sun, Moon, Bot, BarChart3, ChevronDown, ClipboardList } from 'lucide-react';
+import { LayoutDashboard, MessageSquare, Database, Settings, Github, Languages, Eye, Mic, FileSearch, Pin, PinOff, Sun, Moon, Bot, BarChart3, ChevronDown, ClipboardList, Server, Plus } from 'lucide-react';
 import { DiagnosticsPanel } from './DiagnosticsPanel';
 import { useDiagnostics } from '../../hooks/useDiagnosticsHook';
 import { version } from '../../../package.json';
@@ -12,6 +12,7 @@ import { UserProfile } from '../../auth/UserProfile';
 const SIDEBAR_PINNED_KEY = 'meridian-sidebar-pinned';
 const THEME_KEY = 'meridian-theme';
 const AI_LAB_OPEN_KEY = 'meridian-ai-lab-open';
+const ADMIN_OPEN_KEY = 'meridian-admin-open';
 
 const coreNavItems = [
   { to: '/', icon: LayoutDashboard, label: 'Dashboard' },
@@ -28,6 +29,11 @@ const aiNavItems = [
   { to: '/vision', icon: Eye, label: 'Vision' },
   { to: '/speech', icon: Mic, label: 'Speech' },
   { to: '/document', icon: FileSearch, label: 'Document' },
+];
+
+const adminNavItems = [
+  { to: '/admin/runtimes', icon: Server, label: 'Runtimes' },
+  { to: '/admin/provision', icon: Plus, label: 'Provision' },
 ];
 
 function NavItem({ to, icon: Icon, label, collapsed }: { to: string; icon: React.ElementType; label: string; collapsed: boolean }) {
@@ -109,6 +115,20 @@ export function Layout() {
     });
   }, []);
 
+  // Platform Admin collapsible — persisted in localStorage
+  const [adminOpen, setAdminOpen] = useState(() => {
+    const stored = localStorage.getItem(ADMIN_OPEN_KEY);
+    return stored === null ? false : stored === 'true';
+  });
+
+  const toggleAdmin = useCallback(() => {
+    setAdminOpen((prev) => {
+      const next = !prev;
+      localStorage.setItem(ADMIN_OPEN_KEY, String(next));
+      return next;
+    });
+  }, []);
+
   // Reset diagnostics & governance when navigating between AI service pages
   useEffect(() => {
     if (showDiagnostics) reset();
@@ -159,6 +179,22 @@ export function Layout() {
           )}
 
           {(aiLabOpen || !expanded) && aiNavItems.map((item) => (
+            <NavItem key={item.to} {...item} collapsed={!expanded} />
+          ))}
+
+          {expanded ? (
+            <button
+              onClick={toggleAdmin}
+              className="w-full px-6 pt-5 pb-1 flex items-center gap-2 hover:opacity-80 transition-opacity cursor-pointer"
+            >
+              <p className="text-[10px] font-semibold uppercase tracking-widest text-white/25">Platform Admin</p>
+              <ChevronDown className={`w-3 h-3 text-white/25 ml-auto transition-transform duration-200 ${adminOpen ? '' : '-rotate-90'}`} />
+            </button>
+          ) : (
+            <div className="mx-2 my-3 border-t border-white/10" />
+          )}
+
+          {(adminOpen || !expanded) && adminNavItems.map((item) => (
             <NavItem key={item.to} {...item} collapsed={!expanded} />
           ))}
         </nav>

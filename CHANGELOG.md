@@ -9,6 +9,19 @@ Versioning follows [Semantic Versioning](https://semver.org/).
 
 ## [Unreleased]
 
+### Added
+- **Runtime Provisioning UI (ADR-0014)** — governed runtime environment management for platform admins
+  - **Runtime Environments list page** (`/admin/runtimes`) — table with KPI cards (Total, Provisioning, Ready), cloud/region labels, provisioning badge with pulse animation
+  - **Provision Runtime page** (`/admin/provision`) — create form with environment name, cloud provider, region, cluster name, node type, node count; redirects to detail on success
+  - **Runtime Detail page** (`/admin/runtimes/:id`) — status badge, provisioning progress timeline (6-phase horizontal), configuration summary, metadata, progress log with step entries, cancel with confirmation dialog
+  - **ProvisioningTimeline** — 6-phase horizontal progress visualization: Queued, Provisioning Cluster, Installing Controllers, Installing Runtime, Deploying Meridian, Ready
+  - **ProvisioningBadge** — color-coded status badge with pulse animation for active phases
+  - **AdminGuard** — role-based access guard (operator/admin/platform-admin roles required when auth enabled)
+  - Active runtimes poll every 3 seconds; polling stops at terminal states (READY, FAILED, CANCELLED)
+  - Sidebar: "Platform Admin" collapsible section with Runtimes and Provision links
+  - Governance footer on all admin pages: "Studio never calls AWS directly — all infrastructure work is backend-managed"
+  - 13 new tests across 2 test files (146 total passing)
+
 ---
 
 ## [0.29.0] — 2026-03-21

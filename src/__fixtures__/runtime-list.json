@@ -1,0 +1,38 @@
+[
+  {
+    "id": "rt-001-abc",
+    "name": "staging-east",
+    "cloud": "aws",
+    "region": "us-east-1",
+    "status": "PROVISIONING_CLUSTER",
+    "created_by": "user-001",
+    "created_at": "2026-03-21T10:00:00.000Z",
+    "updated_at": "2026-03-21T10:02:30.000Z",
+    "current_step": "PROVISIONING_CLUSTER",
+    "error": null
+  },
+  {
+    "id": "rt-002-def",
+    "name": "prod-us",
+    "cloud": "aws",
+    "region": "us-west-2",
+    "status": "READY",
+    "created_by": "user-001",
+    "created_at": "2026-03-20T08:00:00.000Z",
+    "updated_at": "2026-03-20T08:15:00.000Z",
+    "current_step": "READY",
+    "error": null
+  },
+  {
+    "id": "rt-003-ghi",
+    "name": "dev-eu",
+    "cloud": "azure",
+    "region": "westeurope",
+    "status": "FAILED",
+    "created_by": "user-002",
+    "created_at": "2026-03-19T14:00:00.000Z",
+    "updated_at": "2026-03-19T14:10:00.000Z",
+    "current_step": "INSTALLING_CONTROLLERS",
+    "error": "Helm install timeout after 300s"
+  }
+]

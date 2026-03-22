@@ -16,6 +16,9 @@ import { AgentQuery } from './pages/AgentQuery';
 import { Investigations } from './pages/Investigations';
 import { InvestigationDetail } from './pages/InvestigationDetail';
 import { EvaluationQueries } from './pages/EvaluationQueries';
+import { Runtimes } from './pages/Runtimes';
+import { ProvisionRuntime } from './pages/ProvisionRuntime';
+import { RuntimeDetail } from './pages/RuntimeDetail';
 import { Standby } from './pages/Standby';
 import { DiagnosticsProvider } from './hooks/useDiagnostics';
 import { AuthProvider } from './auth/AuthProvider';
@@ -55,6 +58,9 @@ function App() {
             <Route path="investigations" element={<Investigations />} />
             <Route path="investigations/:traceId" element={<InvestigationDetail />} />
             <Route path="evaluation" element={<EvaluationQueries />} />
+            <Route path="admin/runtimes" element={<Runtimes />} />
+            <Route path="admin/provision" element={<ProvisionRuntime />} />
+            <Route path="admin/runtimes/:runtimeId" element={<RuntimeDetail />} />
           </Route>
         </Routes>
       </BrowserRouter>
