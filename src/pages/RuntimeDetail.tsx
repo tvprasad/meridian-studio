@@ -4,7 +4,7 @@
 import { useState } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { ArrowLeft, Copy, Check, Shield, Clock, XCircle, AlertTriangle } from 'lucide-react';
+import { ArrowLeft, Copy, Check, Shield, Clock, XCircle, AlertTriangle, RefreshCw } from 'lucide-react';
 import { Card } from '../components/ui/Card';
 import { ProvisioningBadge } from '../components/admin/ProvisioningBadge';
 import { ProvisioningTimeline } from '../components/admin/ProvisioningTimeline';
@@ -18,16 +18,10 @@ export function RuntimeDetail() {
   const [copiedId, setCopiedId] = useState(false);
   const [showCancelConfirm, setShowCancelConfirm] = useState(false);
 
-  const { data: rt, isLoading, error } = useQuery({
+  const { data: rt, isLoading, error, isFetching, refetch } = useQuery({
     queryKey: ['runtime', runtimeId],
     queryFn: () => runtimesApi.get(runtimeId!),
     enabled: !!runtimeId,
-    // Poll every 3s while active, stop when terminal
-    refetchInterval: (query) => {
-      const status = query.state.data?.status;
-      if (status && PROVISIONING_TERMINAL.has(status)) return false;
-      return 3_000;
-    },
   });
 
   const cancelMutation = useMutation({
@@ -105,6 +99,15 @@ export function RuntimeDetail() {
           </div>
           <div className="flex items-center gap-2">
             <button
+              onClick={() => refetch()}
+              disabled={isFetching}
+              title="Refresh"
+              className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs text-gray-500 dark:text-gray-400 bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors disabled:opacity-50"
+            >
+              <RefreshCw className={`w-3.5 h-3.5 ${isFetching ? 'animate-spin' : ''}`} />
+              {!isFetching && 'Refresh'}
+            </button>
+            <button
               onClick={copyId}
               className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-mono text-gray-500 dark:text-gray-400 bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors"
             >
@@ -178,9 +181,8 @@ export function RuntimeDetail() {
           <h2 className="text-sm font-semibold text-gray-900 dark:text-white mb-4">Provisioning Progress</h2>
           <ProvisioningTimeline currentStatus={rt.status} />
           {isActive && (
-            <p className="text-xs text-gray-400 dark:text-gray-500 mt-3 flex items-center gap-1">
-              <span className="w-1.5 h-1.5 rounded-full bg-blue-400 animate-pulse" />
-              Polling every 3 seconds...
+            <p className="text-xs text-gray-400 dark:text-gray-500 mt-3">
+              Use Refresh to check for progress updates. SSE streaming is planned.
             </p>
           )}
         </Card>

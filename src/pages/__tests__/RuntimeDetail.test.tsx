@@ -87,10 +87,10 @@ describe('RuntimeDetail page', () => {
     });
   });
 
-  it('shows polling indicator for active runtime', async () => {
+  it('shows refresh hint for active runtime', async () => {
     renderDetail();
     await waitFor(() => {
-      expect(screen.getByText(/Polling every 3 seconds/)).toBeInTheDocument();
+      expect(screen.getByText(/Use Refresh to check for progress/)).toBeInTheDocument();
     });
   });
 

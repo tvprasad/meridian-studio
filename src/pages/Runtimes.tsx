@@ -3,7 +3,7 @@
 
 import { useQuery } from '@tanstack/react-query';
 import { Link } from 'react-router-dom';
-import { Plus, ChevronRight, Server, Shield } from 'lucide-react';
+import { Plus, ChevronRight, Server, Shield, RefreshCw } from 'lucide-react';
 import { Card } from '../components/ui/Card';
 import { ProvisioningBadge } from '../components/admin/ProvisioningBadge';
 import { AdminGuard } from '../components/admin/AdminGuard';
@@ -11,10 +11,9 @@ import { runtimesApi, PROVISIONING_TERMINAL } from '../api/runtimes';
 import { CLOUD_LABELS } from '../data/provisioningStates';
 
 export function Runtimes() {
-  const { data: runtimes, isLoading, error } = useQuery({
+  const { data: runtimes, isLoading, error, isFetching, refetch } = useQuery({
     queryKey: ['runtimes'],
     queryFn: runtimesApi.list,
-    refetchInterval: 10_000,
   });
 
   const allRuntimes = runtimes ?? [];
@@ -28,16 +27,26 @@ export function Runtimes() {
           <div>
             <h1 className="text-2xl font-bold text-gray-900 dark:text-white">Runtime Environments</h1>
             <p className="text-gray-500 dark:text-gray-400 mt-1">
-              Governed runtime provisioning — platform-admin managed infrastructure.
+              Create and monitor runtime environments. All infrastructure work is handled by the backend.
             </p>
           </div>
-          <Link
-            to="/admin/provision"
-            className="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-primary-600 text-white text-sm font-medium hover:bg-primary-700 transition-colors"
-          >
-            <Plus className="w-4 h-4" />
-            Provision Runtime
-          </Link>
+          <div className="flex items-center gap-2">
+            <button
+              onClick={() => refetch()}
+              disabled={isFetching}
+              title="Refresh"
+              className="inline-flex items-center gap-1.5 px-3 py-2 rounded-lg text-sm text-gray-500 dark:text-gray-400 bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors disabled:opacity-50"
+            >
+              <RefreshCw className={`w-4 h-4 ${isFetching ? 'animate-spin' : ''}`} />
+            </button>
+            <Link
+              to="/admin/provision"
+              className="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-primary-600 text-white text-sm font-medium hover:bg-primary-700 transition-colors"
+            >
+              <Plus className="w-4 h-4" />
+              Provision Runtime
+            </Link>
+          </div>
         </div>
 
         {/* KPI row */}
