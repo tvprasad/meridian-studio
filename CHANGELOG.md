@@ -9,6 +9,10 @@ Versioning follows [Semantic Versioning](https://semver.org/).
 
 ## [Unreleased]
 
+---
+
+## [0.30.0] — 2026-03-21
+
 ### Added
 - **Runtime Provisioning UI (ADR-0014)** — governed runtime environment management for platform admins
   - **Runtime Environments list page** (`/admin/runtimes`) — table with KPI cards (Total, Provisioning, Ready), cloud/region labels, provisioning badge with pulse animation
