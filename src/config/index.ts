@@ -12,8 +12,4 @@ export const config = {
     apiScope: import.meta.env.VITE_AZURE_API_SCOPE || '',
   },
   appInsightsConnectionString: import.meta.env.VITE_APPINSIGHTS_CONNECTION_STRING || '',
-  adminEmails: (import.meta.env.VITE_ADMIN_EMAILS || '')
-    .split(',')
-    .map((e: string) => e.trim().toLowerCase())
-    .filter(Boolean),
 } as const;

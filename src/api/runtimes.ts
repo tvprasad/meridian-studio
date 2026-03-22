@@ -61,6 +61,21 @@ export interface CreateRuntimeRequest {
 
 import { api } from './client';
 
+// ── Admin identity ──────────────────────────────────────────────────
+
+export interface WhoAmIResponse {
+  is_admin: boolean;
+  email?: string;
+  roles?: string[];
+}
+
+export const adminApi = {
+  /** Check if the current user has platform-admin access. No admin identity in the bundle. */
+  whoami: () => api.get<WhoAmIResponse>('/admin/roles/whoami'),
+};
+
+// ── Runtimes ────────────────────────────────────────────────────────
+
 export const runtimesApi = {
   /** List all runtime environments (admin only). */
   list: () =>

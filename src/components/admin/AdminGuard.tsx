@@ -2,10 +2,11 @@
 // Licensed under the MIT License. See LICENSE for details.
 
 import { type ReactNode } from 'react';
-import { ShieldAlert } from 'lucide-react';
+import { ShieldAlert, Loader2 } from 'lucide-react';
+import { useQuery } from '@tanstack/react-query';
 import { useAuth } from '../../auth/useAuth';
 import { Card } from '../ui/Card';
-import { config } from '../../config';
+import { adminApi } from '../../api/runtimes';
 
 interface AdminGuardProps {
   children: ReactNode;
@@ -14,26 +15,36 @@ interface AdminGuardProps {
 /**
  * Role guard for platform-admin pages.
  *
- * Access is granted when ANY of the following is true:
- * 1. Auth is disabled (local dev — all users are operators)
- * 2. MSAL token contains operator/admin/platform-admin role
- * 3. User's email is in VITE_ADMIN_EMAILS allowlist
- *    (required for personal Microsoft accounts that don't support appRoles)
+ * Calls GET /admin/whoami to check access server-side.
+ * No admin identities stored in the client bundle.
+ *
+ * When auth is disabled, all users are operators (backend returns is_admin: true).
  */
 export function AdminGuard({ children }: AdminGuardProps) {
-  const { authEnabled, roles, user } = useAuth();
+  const { authEnabled, isAuthenticated } = useAuth();
+
+  const { data, isLoading, error } = useQuery({
+    queryKey: ['admin', 'whoami'],
+    queryFn: adminApi.whoami,
+    enabled: authEnabled && isAuthenticated,
+    staleTime: 5 * 60 * 1000, // cache for 5 minutes
+    retry: false,
+  });
 
   // Auth disabled — no RBAC enforcement
   if (!authEnabled) return <>{children}</>;
 
-  // Check role claim (works with work/school accounts)
-  const hasRole = roles.includes('operator') || roles.includes('admin') || roles.includes('platform-admin');
+  // Loading state
+  if (isLoading) {
+    return (
+      <div className="flex items-center justify-center py-16">
+        <Loader2 className="w-5 h-5 text-gray-400 animate-spin" />
+      </div>
+    );
+  }
 
-  // Check email allowlist (works with personal accounts)
-  const userEmail = (user?.username ?? '').toLowerCase();
-  const inAllowlist = config.adminEmails.length > 0 && config.adminEmails.includes(userEmail);
-
-  if (!hasRole && !inAllowlist) {
+  // Network error or 403 — treat as not admin
+  if (error || !data?.is_admin) {
     return (
       <Card className="border-l-4 border-l-red-400 max-w-lg mx-auto mt-12">
         <div className="flex items-center gap-3">
