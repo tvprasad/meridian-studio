@@ -63,10 +63,9 @@ async function request<T>(
   }
 
   if (!response.ok) {
-    if (response.status === 401 && config.authEnabled) {
-      const { getMsalInstance, loginRequest } = await import('../auth/msalConfig');
-      await getMsalInstance().acquireTokenPopup(loginRequest);
-    }
+    // 401 is handled by getAuthHeaders (acquireTokenSilent → acquireTokenRedirect).
+    // Do not trigger re-auth here — a 401 from the backend means the token
+    // was sent but rejected (e.g. not admin), not that the session expired.
     const errorData = await response.json().catch(() => ({}));
     throw new ApiError(
       errorData.detail || `Request failed: ${response.statusText}`,

@@ -17,7 +17,10 @@ export async function getAuthHeaders(): Promise<Record<string, string>> {
       ...loginRequest,
       account: accounts[0],
     });
-    return { Authorization: `Bearer ${response.accessToken}` };
+    // Use idToken — its audience matches the app's client ID (AUTH_CLIENT_ID).
+    // accessToken with OIDC scopes is a Microsoft Graph token with a
+    // different audience, which the backend correctly rejects.
+    return { Authorization: `Bearer ${response.idToken}` };
   } catch (error) {
     if (error instanceof InteractionRequiredAuthError) {
       await msalInstance.acquireTokenRedirect(loginRequest);
