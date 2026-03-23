@@ -27,9 +27,12 @@ const msalConfig: Configuration = {
   },
 };
 
+// Always include openid/profile/email so idToken is present in acquireTokenSilent
+// responses. Without openid, MSAL omits idToken from the response and
+// response.idToken is null — causing Bearer null on all API calls.
 export const loginRequest = {
   scopes: config.azure.apiScope
-    ? [config.azure.apiScope]
+    ? [config.azure.apiScope, 'openid', 'profile', 'email']
     : ['openid', 'profile', 'email'],
 };
 

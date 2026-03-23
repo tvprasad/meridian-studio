@@ -10,10 +10,8 @@ Versioning follows [Semantic Versioning](https://semver.org/).
 ## [Unreleased]
 
 ### Fixed
+- **msalConfig loginRequest scopes** — always include `openid profile email` alongside API scope so `idToken` is present in `acquireTokenSilent` responses; without `openid`, MSAL omits `idToken` and Studio sent `Bearer null` causing 401 on all endpoints
 - **getAuthHeaders** — send `idToken` instead of `accessToken` for personal Microsoft accounts; `accessToken` with custom API scope fails backend issuer check (`sts.windows.net` vs `login.microsoftonline.com`) — `idToken` issuer matches exactly
-
-### Security
-- Root cause confirmed: personal account `accessToken` issuer is `sts.windows.net/{tenant}` but backend validates against `login.microsoftonline.com/{tenant}/v2.0`; `idToken` passes issuer check and audience check (client ID) correctly
 
 ---
 
