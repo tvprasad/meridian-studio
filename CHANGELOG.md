@@ -13,9 +13,13 @@ Versioning follows [Semantic Versioning](https://semver.org/).
 - **AdminGuard** — replaced `VITE_ADMIN_EMAILS` client-side allowlist with server-side `GET /admin/roles/whoami` check; no admin identities in the JS bundle
 - **Runtime pages** — replaced automatic polling with manual Refresh button; zero background DB calls from provisioning UI
 - **Runtimes list description** — humanized to plain language
+- **getAuthHeaders** — reverted to `accessToken` now that `VITE_AZURE_API_SCOPE=api://011a079b-a2d8-4958-be7b-fde8fd362704/access` is configured; accessToken has correct audience for backend JWT validation and auto-refreshes silently via MSAL
 
 ### Added
 - 5 new AdminGuard tests (whoami success, failure, 403, loading, auth-disabled bypass)
+
+### Fixed
+- Token expiry causing silent 401s after 1 hour — idToken has fixed 1-hour lifetime with no refresh; accessToken with proper API scope refreshes automatically
 
 ### Security
 - Removed `VITE_ADMIN_EMAILS` environment variable — admin email allowlist was exposed in client-side bundle (information disclosure)

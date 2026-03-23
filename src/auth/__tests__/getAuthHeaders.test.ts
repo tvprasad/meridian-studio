@@ -47,7 +47,7 @@ describe('getAuthHeaders', () => {
   it('returns Authorization header when auth is enabled and token is acquired', async () => {
     mockConfig.authEnabled = true;
     mockGetAllAccounts.mockReturnValue([{ username: 'user@example.com' }]);
-    mockAcquireTokenSilent.mockResolvedValue({ accessToken: 'graph-token', idToken: 'test-token-abc' });
+    mockAcquireTokenSilent.mockResolvedValue({ accessToken: 'test-token-abc', idToken: 'id-token-xyz' });
 
     const headers = await getAuthHeaders();
 
