@@ -9,6 +9,10 @@ Versioning follows [Semantic Versioning](https://semver.org/).
 
 ## [Unreleased]
 
+---
+
+## [0.30.3] — 2026-03-23
+
 ### Fixed
 - **AuthProvider** — call `msalInstance.setActiveAccount()` after `handleRedirectPromise()` returns; previously the redirect result was discarded so `getActiveAccount()` always returned null, causing `getAuthHeaders` to send requests without a Bearer token
 - **AuthProvider** — on non-redirect page loads (refresh / direct navigation), restore active account from MSAL cache so `getActiveAccount()` returns a value on the first render
@@ -555,6 +559,13 @@ Versioning follows [Semantic Versioning](https://semver.org/).
 - GitHub and LinkedIn social links in sidebar footer
 
 [Unreleased]: https://github.com/tvprasad/meridian-studio/compare/v0.26.2...HEAD
+[0.30.3]: https://github.com/tvprasad/meridian-studio/compare/v0.30.2...v0.30.3
+[0.30.2]: https://github.com/tvprasad/meridian-studio/compare/v0.30.1...v0.30.2
+[0.30.1]: https://github.com/tvprasad/meridian-studio/compare/v0.30.0...v0.30.1
+[0.30.0]: https://github.com/tvprasad/meridian-studio/compare/v0.29.0...v0.30.0
+[0.29.0]: https://github.com/tvprasad/meridian-studio/compare/v0.28.0...v0.29.0
+[0.28.0]: https://github.com/tvprasad/meridian-studio/compare/v0.27.0...v0.28.0
+[0.27.0]: https://github.com/tvprasad/meridian-studio/compare/v0.26.2...v0.27.0
 [0.26.2]: https://github.com/tvprasad/meridian-studio/compare/v0.26.1...v0.26.2
 [0.26.1]: https://github.com/tvprasad/meridian-studio/compare/v0.26.0...v0.26.1
 [0.26.0]: https://github.com/tvprasad/meridian-studio/compare/v0.25.1...v0.26.0
