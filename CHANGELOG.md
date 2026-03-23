@@ -9,6 +9,10 @@ Versioning follows [Semantic Versioning](https://semver.org/).
 
 ## [Unreleased]
 
+---
+
+## [0.30.1] — 2026-03-23
+
 ### Changed
 - **AdminGuard** — replaced `VITE_ADMIN_EMAILS` client-side allowlist with server-side `GET /admin/roles/whoami` check; no admin identities in the JS bundle
 - **Runtime pages** — replaced automatic polling with manual Refresh button; zero background DB calls from provisioning UI
