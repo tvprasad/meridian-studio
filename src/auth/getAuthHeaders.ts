@@ -17,9 +17,11 @@ export async function getAuthHeaders(): Promise<Record<string, string>> {
       ...loginRequest,
       account: accounts[0],
     });
-    // Use accessToken — with the API scope configured (api://client-id/access),
-    // the accessToken audience matches AUTH_CLIENT_ID and auto-refreshes silently.
-    return { Authorization: `Bearer ${response.accessToken}` };
+    // Personal Microsoft accounts (gmail.com, outlook.com) cannot use custom
+    // API scopes for accessToken — the audience doesn't match AUTH_CLIENT_ID.
+    // idToken audience IS the client ID, so it validates correctly on the backend.
+    // Trade-off: idToken has 1-hour fixed lifetime; user re-authenticates after expiry.
+    return { Authorization: `Bearer ${response.idToken}` };
   } catch (error) {
     if (error instanceof InteractionRequiredAuthError) {
       await msalInstance.acquireTokenRedirect(loginRequest);

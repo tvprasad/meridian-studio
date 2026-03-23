@@ -9,6 +9,12 @@ Versioning follows [Semantic Versioning](https://semver.org/).
 
 ## [Unreleased]
 
+### Fixed
+- **getAuthHeaders** — send `idToken` instead of `accessToken` for personal Microsoft accounts; `accessToken` with custom API scope fails backend issuer check (`sts.windows.net` vs `login.microsoftonline.com`) — `idToken` issuer matches exactly
+
+### Security
+- Root cause confirmed: personal account `accessToken` issuer is `sts.windows.net/{tenant}` but backend validates against `login.microsoftonline.com/{tenant}/v2.0`; `idToken` passes issuer check and audience check (client ID) correctly
+
 ---
 
 ## [0.30.1] — 2026-03-23
