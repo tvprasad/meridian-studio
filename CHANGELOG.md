@@ -9,6 +9,9 @@ Versioning follows [Semantic Versioning](https://semver.org/).
 
 ## [Unreleased]
 
+### Fixed
+- **getAuthHeaders** — use `getActiveAccount()` with fallback to `getAllAccounts()[0]`; previously relying solely on `getAllAccounts()[0]` caused race where account was not yet set as active, resulting in missing Bearer token on first API call
+
 ---
 
 ## [0.30.2] — 2026-03-23

@@ -9,18 +9,18 @@ export async function getAuthHeaders(): Promise<Record<string, string>> {
   if (!config.authEnabled) return {};
 
   const msalInstance = getMsalInstance();
-  const accounts = msalInstance.getAllAccounts();
-  if (accounts.length === 0) return {};
+
+  // Prefer active account; fall back to first account in cache.
+  const account = msalInstance.getActiveAccount() ?? msalInstance.getAllAccounts()[0];
+  if (!account) return {};
 
   try {
     const response = await msalInstance.acquireTokenSilent({
       ...loginRequest,
-      account: accounts[0],
+      account,
     });
-    // Personal Microsoft accounts (gmail.com, outlook.com) cannot use custom
-    // API scopes for accessToken — the audience doesn't match AUTH_CLIENT_ID.
-    // idToken audience IS the client ID, so it validates correctly on the backend.
-    // Trade-off: idToken has 1-hour fixed lifetime; user re-authenticates after expiry.
+    // Use idToken — audience is AUTH_CLIENT_ID, issuer is login.microsoftonline.com.
+    // Personal account accessTokens use sts.windows.net issuer which the backend rejects.
     return { Authorization: `Bearer ${response.idToken}` };
   } catch (error) {
     if (error instanceof InteractionRequiredAuthError) {

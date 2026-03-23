@@ -16,9 +16,11 @@ vi.mock('../../config', () => ({ config: mockConfig }));
 const mockAcquireTokenSilent = vi.fn();
 const mockAcquireTokenRedirect = vi.fn();
 const mockGetAllAccounts = vi.fn();
+const mockGetActiveAccount = vi.fn();
 
 vi.mock('../msalConfig', () => ({
   getMsalInstance: () => ({
+    getActiveAccount: mockGetActiveAccount,
     getAllAccounts: mockGetAllAccounts,
     acquireTokenSilent: mockAcquireTokenSilent,
     acquireTokenRedirect: mockAcquireTokenRedirect,
@@ -32,6 +34,7 @@ const { getAuthHeaders } = await import('../getAuthHeaders');
 beforeEach(() => {
   vi.clearAllMocks();
   mockConfig.authEnabled = false;
+  mockGetActiveAccount.mockReturnValue(null);
 });
 
 describe('getAuthHeaders', () => {
