@@ -10,6 +10,8 @@ Versioning follows [Semantic Versioning](https://semver.org/).
 ## [Unreleased]
 
 ### Fixed
+- **AuthProvider** — call `msalInstance.setActiveAccount()` after `handleRedirectPromise()` returns; previously the redirect result was discarded so `getActiveAccount()` always returned null, causing `getAuthHeaders` to send requests without a Bearer token
+- **AuthProvider** — on non-redirect page loads (refresh / direct navigation), restore active account from MSAL cache so `getActiveAccount()` returns a value on the first render
 - **getAuthHeaders** — use `getActiveAccount()` with fallback to `getAllAccounts()[0]`; previously relying solely on `getAllAccounts()[0]` caused race where account was not yet set as active, resulting in missing Bearer token on first API call
 
 ---

@@ -97,7 +97,21 @@ function EnabledAuthProvider({ children }: { children: ReactNode }) {
     msalInstance
       .initialize()
       .then(() => msalInstance.handleRedirectPromise())
-      .then(() => setMsalReady(true))
+      .then((result) => {
+        // After redirect login, result.account is the signed-in account — set it active so
+        // getActiveAccount() returns a value before React Query fires any API calls.
+        if (result?.account) {
+          msalInstance.setActiveAccount(result.account);
+        } else {
+          // On non-redirect page loads (refresh / direct navigation), restore active account
+          // from MSAL cache if exactly one account exists.
+          const cached = msalInstance.getAllAccounts();
+          if (cached.length > 0) {
+            msalInstance.setActiveAccount(cached[0]);
+          }
+        }
+        setMsalReady(true);
+      })
       .catch((err) => {
         console.error('[MSAL] Redirect handling failed:', err);
         setMsalReady(true); // still render so app isn't stuck
