@@ -29,7 +29,9 @@ function makeAuth(overrides: Partial<AuthContextValue> = {}): AuthContextValue {
 }
 
 function renderGuard(auth: AuthContextValue) {
-  const queryClient = new QueryClient({ defaultOptions: { queries: { retry: false } } });
+  const queryClient = new QueryClient({
+    defaultOptions: { queries: { retry: false } },
+  });
   return render(
     <AuthContext.Provider value={auth}>
       <QueryClientProvider client={queryClient}>
@@ -91,8 +93,24 @@ describe('AdminGuard', () => {
       ),
     );
     renderGuard(makeAuth());
-    // Should not show content or error yet
     expect(screen.queryByTestId('protected-content')).not.toBeInTheDocument();
     expect(screen.queryByText('Access Restricted')).not.toBeInTheDocument();
+  });
+
+  it('shows session-not-ready message (not Access Restricted) when whoami returns 401', async () => {
+    server.use(
+      http.get('http://localhost:8000/admin/roles/whoami', () =>
+        HttpResponse.json({ detail: 'Missing Bearer token' }, { status: 401 }),
+      ),
+    );
+    renderGuard(makeAuth());
+    await waitFor(() => {
+      expect(screen.getByText('Session not ready')).toBeInTheDocument();
+    });
+    // Must NOT show "Access Restricted" for auth errors
+    expect(screen.queryByText('Access Restricted')).not.toBeInTheDocument();
+    expect(screen.queryByTestId('protected-content')).not.toBeInTheDocument();
+    // Retry button is present
+    expect(screen.getByRole('button', { name: /Retry/i })).toBeInTheDocument();
   });
 });
