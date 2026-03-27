@@ -9,6 +9,11 @@ Versioning follows [Semantic Versioning](https://semver.org/).
 
 ## [Unreleased]
 
+### Fixed
+- **getAuthHeaders** — acquire token with `VITE_AZURE_API_SCOPE` (`api://CLIENT_ID/.default`) instead of OIDC-only scopes; OIDC scopes target Microsoft Graph so the returned token has the wrong audience/signing key for the Meridian API, causing 401 on all `/admin/*` endpoints
+- **getAuthHeaders** — send `accessToken` (not `idToken`) so the token audience matches what the Meridian API validates
+- **AdminGuard test** — increase `waitFor` timeout to 6000ms to cover 2 retries × 1500ms `retryDelay` before "Session not ready" appears
+
 ---
 
 ## [0.30.3] — 2026-03-23

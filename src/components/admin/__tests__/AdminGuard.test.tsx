@@ -106,7 +106,7 @@ describe('AdminGuard', () => {
     renderGuard(makeAuth());
     await waitFor(() => {
       expect(screen.getByText('Session not ready')).toBeInTheDocument();
-    });
+    }, { timeout: 6000 }); // 2 retries × 1500ms retryDelay = 3000ms minimum
     // Must NOT show "Access Restricted" for auth errors
     expect(screen.queryByText('Access Restricted')).not.toBeInTheDocument();
     expect(screen.queryByTestId('protected-content')).not.toBeInTheDocument();

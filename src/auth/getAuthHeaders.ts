@@ -14,25 +14,23 @@ export async function getAuthHeaders(): Promise<Record<string, string>> {
   const account = msalInstance.getActiveAccount() ?? msalInstance.getAllAccounts()[0];
   if (!account) return {};
 
-  // Request only OIDC scopes — we need idToken, not an API access token.
-  // Using the API scope (api://xxx/.default) triggers InteractionRequiredAuthError
-  // for personal Microsoft accounts because app-role consent is not pre-granted at
-  // the tenant level, causing the catch block to fire and return {} (no token).
-  // OIDC scopes are always silently available for any account type.
-  const oidcScopes = ['openid', 'profile', 'email'];
+  // Acquire an access token scoped to the Meridian API.
+  // The scope must target the Meridian API's App Registration (VITE_AZURE_API_SCOPE =
+  // api://011a079b.../.default) so MSAL returns a token the API will accept.
+  // Requesting OIDC-only scopes (openid/profile/email) targets Microsoft Graph —
+  // the resulting token has the wrong audience/signing key and the API returns 401.
+  const apiScopes = config.azure.apiScope ? [config.azure.apiScope] : ['openid', 'profile', 'email'];
 
   try {
     const response = await msalInstance.acquireTokenSilent({
-      scopes: oidcScopes,
+      scopes: apiScopes,
       account,
     });
-    // Use idToken — audience is AUTH_CLIENT_ID, issuer is login.microsoftonline.com.
-    // Personal account accessTokens use sts.windows.net issuer which the backend rejects.
-    if (!response.idToken) return {};
-    return { Authorization: `Bearer ${response.idToken}` };
+    if (!response.accessToken) return {};
+    return { Authorization: `Bearer ${response.accessToken}` };
   } catch (error) {
     if (error instanceof InteractionRequiredAuthError) {
-      await msalInstance.acquireTokenRedirect({ scopes: oidcScopes });
+      await msalInstance.acquireTokenRedirect({ scopes: apiScopes });
     }
     return {};
   }
