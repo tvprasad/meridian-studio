@@ -9,6 +9,11 @@ Versioning follows [Semantic Versioning](https://semver.org/).
 
 ## [Unreleased]
 
+### Fixed
+- **getAuthHeaders** — revert to OIDC scopes + `idToken`; API scope (`api://CLIENT_ID/.default`) fails with `InteractionRequiredAuthError` because the app registration has no exposed API scopes, so no token is ever sent
+- **getAuthHeaders** — `idToken.aud` = plain client UUID which matches `AUTH_CLIENT_ID` on the backend; access tokens have `api://`-prefixed audience which the backend rejects
+- **VITE_AZURE_TENANT_ID** — changed GitHub variable from `common` to `fa0a1e39...`; with `common`, personal accounts receive `iss = .../9188040d.../v2.0` (MSA tenant) which the backend rejects; specific tenant forces `iss = .../fa0a1e39.../v2.0` matching `AUTH_TENANT_ID`
+
 ---
 
 ## [0.30.4] — 2026-03-27
