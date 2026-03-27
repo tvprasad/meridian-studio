@@ -9,6 +9,10 @@ Versioning follows [Semantic Versioning](https://semver.org/).
 
 ## [Unreleased]
 
+---
+
+## [0.30.4] — 2026-03-27
+
 ### Fixed
 - **getAuthHeaders** — acquire token with `VITE_AZURE_API_SCOPE` (`api://CLIENT_ID/.default`) instead of OIDC-only scopes; OIDC scopes target Microsoft Graph so the returned token has the wrong audience/signing key for the Meridian API, causing 401 on all `/admin/*` endpoints
 - **getAuthHeaders** — send `accessToken` (not `idToken`) so the token audience matches what the Meridian API validates
@@ -564,6 +568,7 @@ Versioning follows [Semantic Versioning](https://semver.org/).
 - GitHub and LinkedIn social links in sidebar footer
 
 [Unreleased]: https://github.com/tvprasad/meridian-studio/compare/v0.26.2...HEAD
+[0.30.4]: https://github.com/tvprasad/meridian-studio/compare/v0.30.3...v0.30.4
 [0.30.3]: https://github.com/tvprasad/meridian-studio/compare/v0.30.2...v0.30.3
 [0.30.2]: https://github.com/tvprasad/meridian-studio/compare/v0.30.1...v0.30.2
 [0.30.1]: https://github.com/tvprasad/meridian-studio/compare/v0.30.0...v0.30.1
