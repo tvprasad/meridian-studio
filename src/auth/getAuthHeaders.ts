@@ -14,19 +14,19 @@ export async function getAuthHeaders(): Promise<Record<string, string>> {
   const account = msalInstance.getActiveAccount() ?? msalInstance.getAllAccounts()[0];
   if (!account) return {};
 
-  // Acquire an idToken scoped to this app (OIDC scopes only).
+  // Acquire an idToken using OIDC scopes only.
   //
-  // The backend validates:
-  //   audience = AUTH_CLIENT_ID  (plain UUID — matches idToken.aud, NOT an accessToken aud)
-  //   issuer   = .../AUTH_TENANT_ID/v2.0
+  // Token flow for tvprasad@gmail.com (personal Microsoft account):
+  //   - Account is an external user (#EXT#) in the Azure AD tenant
+  //   - Personal account tokens always carry iss = .../9188040d.../v2.0 (MSA consumer tenant)
+  //     regardless of which authority endpoint was used to sign in
+  //   - idToken.aud = AUTH_CLIENT_ID (plain UUID) — matches backend validation
+  //   - Backend AUTH_TENANT_ID must be 9188040d... to accept MSA issuer
   //
-  // Using the API scope (api://CLIENT_ID/.default) fails with InteractionRequiredAuthError
-  // because the app registration has no exposed API scopes — MSAL cannot silently acquire
-  // a token for a scope the API hasn't declared.  OIDC scopes always succeed silently.
-  //
-  // VITE_AZURE_TENANT_ID must be the specific tenant (fa0a1e39...), NOT "common", so that
-  // idToken.iss matches the backend's expected issuer.  With "common", personal accounts
-  // receive iss=.../9188040d.../v2.0 (MSA tenant) which the backend rejects.
+  // API scope (api://CLIENT_ID/.default) is intentionally NOT used here:
+  //   - Access tokens have aud = "api://CLIENT_ID" (with api:// prefix)
+  //   - Backend validates audience = plain UUID — would fail with InvalidAudience
+  //   - OIDC scopes always succeed silently; API scope can cause InteractionRequiredAuthError
   const oidcScopes = ['openid', 'profile', 'email'];
 
   try {

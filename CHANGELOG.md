@@ -11,6 +11,15 @@ Versioning follows [Semantic Versioning](https://semver.org/).
 
 ---
 
+## [0.30.6] — 2026-03-27
+
+### Fixed
+- **getAuthHeaders** — correct comment: `VITE_AZURE_TENANT_ID` is `common` (not tenant-specific); personal account (`#EXT#` external user) tokens always carry `iss = .../9188040d.../v2.0` regardless of sign-in authority
+- **Backend `AUTH_TENANT_ID`** — changed to `9188040d-6c67-4c5b-b112-36a304b66dad` (MSA consumer tenant) via Azure Container App env var; previous value `fa0a1e39...` is the org tenant but personal account `idToken.iss` is always the MSA home tenant, causing `InvalidIssuerError` on every request
+- **`VITE_AZURE_TENANT_ID`** — reverted to `common` (was incorrectly changed to `fa0a1e39...` in v0.30.5); `common` and org-specific authority produce the same `iss` for personal accounts, and `common` is correct for multi-audience apps
+
+---
+
 ## [0.30.5] — 2026-03-27
 
 ### Fixed
@@ -577,6 +586,7 @@ Versioning follows [Semantic Versioning](https://semver.org/).
 - GitHub and LinkedIn social links in sidebar footer
 
 [Unreleased]: https://github.com/tvprasad/meridian-studio/compare/v0.26.2...HEAD
+[0.30.6]: https://github.com/tvprasad/meridian-studio/compare/v0.30.5...v0.30.6
 [0.30.5]: https://github.com/tvprasad/meridian-studio/compare/v0.30.4...v0.30.5
 [0.30.4]: https://github.com/tvprasad/meridian-studio/compare/v0.30.3...v0.30.4
 [0.30.3]: https://github.com/tvprasad/meridian-studio/compare/v0.30.2...v0.30.3
