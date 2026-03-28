@@ -17,7 +17,9 @@
       "t_retrieve_ms": 120,
       "t_generate_ms": 850,
       "t_total_ms": 970,
-      "source": "query"
+      "source": "query",
+      "answer_text": "To reset your password, navigate to the login page and click \"Forgot Password\". Enter your registered email address and you will receive a reset link within 5 minutes.",
+      "citations": "[{\"id\": \"doc-password-reset\", \"title\": \"Password Reset Guide\", \"source\": \"IT Knowledge Base\"}, {\"id\": \"doc-account-mgmt\", \"title\": \"Account Management\", \"source\": \"IT Knowledge Base\"}]"
     },
     {
       "id": "q-002",
@@ -32,7 +34,9 @@
       "t_retrieve_ms": 95,
       "t_generate_ms": null,
       "t_total_ms": 95,
-      "source": "query"
+      "source": "query",
+      "answer_text": null,
+      "citations": null
     },
     {
       "id": "q-003",
@@ -47,7 +51,9 @@
       "t_retrieve_ms": 140,
       "t_generate_ms": 1200,
       "t_total_ms": 1340,
-      "source": "agent"
+      "source": "agent",
+      "answer_text": "Login failures in us-east are caused by an expired TLS certificate on the auth-proxy-east-1 load balancer. The certificate expired on 2026-03-09. The on-call team has been paged and a hotfix is in progress.",
+      "citations": "[{\"id\": \"incident-2031\", \"title\": \"INC-2031: Auth proxy TLS cert expiry\", \"source\": \"ServiceNow\"}]"
     }
   ]
 }

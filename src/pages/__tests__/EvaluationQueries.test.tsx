@@ -2,7 +2,7 @@
 // Licensed under the MIT License. See LICENSE for details.
 
 import { describe, it, expect, beforeAll, afterAll, afterEach } from 'vitest';
-import { render, screen, waitFor, cleanup } from '@testing-library/react';
+import { render, screen, waitFor, cleanup, fireEvent } from '@testing-library/react';
 import { http, HttpResponse } from 'msw';
 import { setupServer } from 'msw/node';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
@@ -115,6 +115,81 @@ describe('EvaluationQueries — API error on initial load', () => {
     });
     // Metric cards should NOT show "No telemetry" — they should show skeleton or nothing
     expect(screen.queryByText('127')).not.toBeInTheDocument();
+  });
+});
+
+describe('EvaluationQueries — expandable rows', () => {
+  it('expands an OK row to show answer and citations', async () => {
+    renderEvaluation();
+    await waitFor(() => {
+      expect(screen.getByText('How do I reset my password?')).toBeInTheDocument();
+    });
+
+    // Row should not show answer text initially
+    expect(screen.queryByText(/navigate to the login page/)).not.toBeInTheDocument();
+
+    // Click the row
+    fireEvent.click(screen.getByText('How do I reset my password?'));
+
+    // Answer text should appear
+    await waitFor(() => {
+      expect(screen.getByText(/navigate to the login page/)).toBeInTheDocument();
+    });
+    // Citations should appear
+    expect(screen.getByText('Password Reset Guide')).toBeInTheDocument();
+    expect(screen.getByText('Account Management')).toBeInTheDocument();
+  });
+
+  it('expands a REFUSED row to show governed refusal message', async () => {
+    renderEvaluation();
+    await waitFor(() => {
+      expect(screen.getByText('What is the vacation policy for contractors?')).toBeInTheDocument();
+    });
+
+    fireEvent.click(screen.getByText('What is the vacation policy for contractors?'));
+
+    await waitFor(() => {
+      expect(screen.getByText(/confidence.*fell below the retrieval threshold/i)).toBeInTheDocument();
+    });
+    expect(screen.queryByText(/Password Reset Guide/)).not.toBeInTheDocument();
+  });
+
+  it('collapses an expanded row when clicked again', async () => {
+    renderEvaluation();
+    await waitFor(() => {
+      expect(screen.getByText('How do I reset my password?')).toBeInTheDocument();
+    });
+
+    const rowText = screen.getByText('How do I reset my password?');
+    fireEvent.click(rowText);
+    await waitFor(() => {
+      expect(screen.getByText(/navigate to the login page/)).toBeInTheDocument();
+    });
+
+    fireEvent.click(rowText);
+    await waitFor(() => {
+      expect(screen.queryByText(/navigate to the login page/)).not.toBeInTheDocument();
+    });
+  });
+
+  it('only shows one expanded row at a time', async () => {
+    renderEvaluation();
+    await waitFor(() => {
+      expect(screen.getByText('How do I reset my password?')).toBeInTheDocument();
+    });
+
+    fireEvent.click(screen.getByText('How do I reset my password?'));
+    await waitFor(() => {
+      expect(screen.getByText(/navigate to the login page/)).toBeInTheDocument();
+    });
+
+    fireEvent.click(screen.getByText('Why are login requests failing for region us-east?'));
+    await waitFor(() => {
+      expect(screen.getByText(/expired TLS certificate/)).toBeInTheDocument();
+    });
+
+    // First row should now be collapsed
+    expect(screen.queryByText(/navigate to the login page/)).not.toBeInTheDocument();
   });
 });
 

@@ -20,11 +20,13 @@ import {
   ArrowDown,
   X,
   ChevronDown,
+  ChevronRight as ChevronRightIcon,
   HelpCircle,
   ThumbsUp,
   ThumbsDown,
+  FileText,
 } from 'lucide-react';
-import type { EvaluationQueryEntry } from '../api/types';
+import type { EvaluationQueryEntry, QueryCitation } from '../api/types';
 
 const EVAL_FEEDBACK_KEY = 'meridian-eval-feedback';
 
@@ -232,8 +234,74 @@ function EvaluationGuide() {
   );
 }
 
+function parseCitations(raw: string | null | undefined): QueryCitation[] {
+  if (!raw) return [];
+  try {
+    const parsed = JSON.parse(raw);
+    return Array.isArray(parsed) ? (parsed as QueryCitation[]) : [];
+  } catch {
+    return [];
+  }
+}
+
+function ExpandedRow({ entry, colSpan }: { entry: EvaluationQueryEntry; colSpan: number }) {
+  const citations = parseCitations(entry.citations);
+  const isRefused = entry.status === 'REFUSED';
+
+  return (
+    <tr className="bg-gray-50/70 dark:bg-white/[0.02]">
+      <td colSpan={colSpan} className="px-6 py-4">
+        <div className="space-y-3 max-w-4xl">
+          {/* Question */}
+          {entry.question && (
+            <div>
+              <p className="text-xs font-medium text-gray-400 dark:text-gray-500 uppercase tracking-wider mb-1">Question</p>
+              <p className="text-sm text-gray-800 dark:text-gray-200">{entry.question}</p>
+            </div>
+          )}
+          {/* Answer */}
+          {isRefused ? (
+            <div className="flex items-start gap-2 text-sm text-red-600 dark:text-red-400">
+              <ShieldAlert className="w-4 h-4 shrink-0 mt-0.5" />
+              <span>No answer generated — confidence {entry.confidence != null ? `(${(entry.confidence * 100).toFixed(1)}%)` : ''} fell below the retrieval threshold. Governed refusal.</span>
+            </div>
+          ) : entry.answer_text ? (
+            <div>
+              <p className="text-xs font-medium text-gray-400 dark:text-gray-500 uppercase tracking-wider mb-1">Answer</p>
+              <p className="text-sm text-gray-800 dark:text-gray-200 leading-relaxed whitespace-pre-wrap">{entry.answer_text}</p>
+            </div>
+          ) : null}
+          {/* Citations */}
+          {citations.length > 0 && (
+            <div>
+              <p className="text-xs font-medium text-gray-400 dark:text-gray-500 uppercase tracking-wider mb-1.5">
+                Sources ({citations.length})
+              </p>
+              <div className="flex flex-wrap gap-2">
+                {citations.map((c, i) => (
+                  <div
+                    key={i}
+                    className="inline-flex items-center gap-1.5 text-xs px-2.5 py-1 rounded-full border border-gray-200 dark:border-white/10 bg-white dark:bg-white/[0.04] text-gray-600 dark:text-gray-300"
+                  >
+                    <FileText className="w-3 h-3 text-gray-400 shrink-0" />
+                    <span className="font-medium">{String(c.title ?? c.id ?? `Source ${i + 1}`)}</span>
+                    {c.source != null && (
+                      <span className="text-gray-400 dark:text-gray-500">· {String(c.source)}</span>
+                    )}
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+        </div>
+      </td>
+    </tr>
+  );
+}
+
 export function EvaluationQueries() {
   const [pageSize, setPageSize] = useState(DEFAULT_PAGE_SIZE);
+  const [expandedId, setExpandedId] = useState<string | null>(null);
   const [offset, setOffset] = useState(0);
   const [sortField, setSortField] = useState<SortField | null>(null);
   const [sortDir, setSortDir] = useState<SortDir>('desc');
@@ -477,6 +545,7 @@ export function EvaluationQueries() {
             <table className="w-full text-left">
               <thead>
                 <tr className="border-b border-gray-100 dark:border-white/10 text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+                  <th className="px-2 py-3 w-8" />
                   <th className={thClass} onClick={() => handleSort('timestamp')} title="When the query was processed">
                     <span className="inline-flex items-center gap-1">Time <SortIcon field="timestamp" sortField={sortField} sortDir={sortDir} /></span>
                   </th>
@@ -498,40 +567,58 @@ export function EvaluationQueries() {
                 </tr>
               </thead>
               <tbody className="divide-y divide-gray-50 dark:divide-white/5">
-                {filteredAndSorted.map((entry) => (
-                  <tr key={entry.id} className="hover:bg-gray-50/50 dark:hover:bg-white/[0.02] transition-colors">
-                    <td className="px-4 py-3 text-xs text-gray-500 dark:text-gray-400 whitespace-nowrap tabular-nums">
-                      {formatTimestamp(entry.timestamp)}
-                    </td>
-                    <td className="px-4 py-3 text-sm text-gray-900 dark:text-gray-200 max-w-xs truncate" title={entry.question ?? ''}>
-                      {entry.question ?? '—'}
-                    </td>
-                    <td className="px-4 py-3">
-                      <StatusBadge status={entry.status} />
-                    </td>
-                    <ConfidenceCells entry={entry} />
-                    <td className="px-4 py-3 text-sm tabular-nums text-gray-600 dark:text-gray-400">
-                      {entry.chunks_retrieved != null ? (
-                        <span title={`${entry.chunks_above ?? 0} above threshold of ${entry.chunks_retrieved}`}>
-                          {entry.chunks_above ?? 0}/{entry.chunks_retrieved}
-                        </span>
-                      ) : '—'}
-                    </td>
-                    <td className="px-4 py-3 text-sm tabular-nums text-gray-600 dark:text-gray-400 whitespace-nowrap">
-                      {entry.t_total_ms != null ? `${(entry.t_total_ms / 1000).toFixed(1)}s` : '—'}
-                    </td>
-                    <td className="px-4 py-3">
-                      <span className={`text-xs font-medium px-2 py-0.5 rounded-full ${
-                        entry.source === 'agent'
-                          ? 'bg-violet-50 text-violet-700 dark:bg-violet-900/30 dark:text-violet-400'
-                          : 'bg-blue-50 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400'
-                      }`}>
-                        {entry.source}
-                      </span>
-                    </td>
-                    <FeedbackCell entry={entry} />
-                  </tr>
-                ))}
+                {filteredAndSorted.map((entry) => {
+                  const isExpanded = expandedId === entry.id;
+                  const hasDetail = !!(entry.answer_text || entry.citations || entry.status === 'REFUSED');
+                  return (
+                    <>
+                      <tr
+                        key={entry.id}
+                        className={`transition-colors ${hasDetail ? 'cursor-pointer' : ''} ${isExpanded ? 'bg-gray-50/70 dark:bg-white/[0.02]' : 'hover:bg-gray-50/50 dark:hover:bg-white/[0.02]'}`}
+                        onClick={hasDetail ? () => setExpandedId(isExpanded ? null : entry.id) : undefined}
+                      >
+                        <td className="px-2 py-3 w-8">
+                          {hasDetail && (
+                            <ChevronRightIcon className={`w-3.5 h-3.5 text-gray-400 transition-transform ${isExpanded ? 'rotate-90' : ''}`} />
+                          )}
+                        </td>
+                        <td className="px-4 py-3 text-xs text-gray-500 dark:text-gray-400 whitespace-nowrap tabular-nums">
+                          {formatTimestamp(entry.timestamp)}
+                        </td>
+                        <td className="px-4 py-3 text-sm text-gray-900 dark:text-gray-200 max-w-xs truncate" title={entry.question ?? ''}>
+                          {entry.question ?? '—'}
+                        </td>
+                        <td className="px-4 py-3">
+                          <StatusBadge status={entry.status} />
+                        </td>
+                        <ConfidenceCells entry={entry} />
+                        <td className="px-4 py-3 text-sm tabular-nums text-gray-600 dark:text-gray-400">
+                          {entry.chunks_retrieved != null ? (
+                            <span title={`${entry.chunks_above ?? 0} above threshold of ${entry.chunks_retrieved}`}>
+                              {entry.chunks_above ?? 0}/{entry.chunks_retrieved}
+                            </span>
+                          ) : '—'}
+                        </td>
+                        <td className="px-4 py-3 text-sm tabular-nums text-gray-600 dark:text-gray-400 whitespace-nowrap">
+                          {entry.t_total_ms != null ? `${(entry.t_total_ms / 1000).toFixed(1)}s` : '—'}
+                        </td>
+                        <td className="px-4 py-3">
+                          <span className={`text-xs font-medium px-2 py-0.5 rounded-full ${
+                            entry.source === 'agent'
+                              ? 'bg-violet-50 text-violet-700 dark:bg-violet-900/30 dark:text-violet-400'
+                              : 'bg-blue-50 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400'
+                          }`}>
+                            {entry.source}
+                          </span>
+                        </td>
+                        <FeedbackCell entry={entry} />
+                      </tr>
+                      {isExpanded && (
+                        <ExpandedRow key={`${entry.id}-expanded`} entry={entry} colSpan={9} />
+                      )}
+                    </>
+                  );
+                })}
               </tbody>
             </table>
           </div>

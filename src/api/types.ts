@@ -140,6 +140,11 @@ export interface ServiceNowStatusResponse {
 // Evaluation Types
 // ===========================================
 
+export interface QueryCitation {
+  id: string | null;
+  [key: string]: unknown;
+}
+
 export interface EvaluationQueryEntry {
   id: string;
   trace_id: string;
@@ -155,6 +160,8 @@ export interface EvaluationQueryEntry {
   t_total_ms: number | null;
   source: string;
   feedback?: 'up' | 'down' | null;
+  answer_text?: string | null;
+  citations?: string | null;
 }
 
 export interface EvaluationQueriesResponse {
