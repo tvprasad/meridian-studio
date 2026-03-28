@@ -9,6 +9,10 @@ Versioning follows [Semantic Versioning](https://semver.org/).
 
 ## [Unreleased]
 
+---
+
+## [0.31.0] — 2026-03-28
+
 ### Added
 - **Query Telemetry Log expandable rows** — click any row to expand and see the full question, AI answer, and cited source chunks inline; REFUSED rows show the governed refusal reason with confidence score; rows collapse on second click; only one row expanded at a time
 - **`answer_text` and `citations` in `EvaluationQueryEntry`** — type extended with optional `answer_text?: string | null` and `citations?: string | null` fields returned by backend since migration 003
@@ -16,7 +20,7 @@ Versioning follows [Semantic Versioning](https://semver.org/).
 - **Evaluation fixture updated** — `evaluation-queries.json` includes realistic `answer_text` and `citations` payloads
 
 ### Tests
-- 4 new tests: expand OK row shows answer + citations, expand REFUSED row shows governed refusal, collapse on second click, only one row expanded at a time
+- 4 new tests: expand OK row shows answer + citations, expand REFUSED row shows governed refusal, collapse on second click, only one row expanded at a time (10 total in EvaluationQueries suite)
 
 ---
 
