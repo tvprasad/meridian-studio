@@ -179,11 +179,8 @@ export function DocumentIntelligence() {
           <FileSearch className="w-5 h-5 text-orange-600 dark:text-orange-400" />
         </div>
         <div>
-          <div className="flex items-center gap-3">
-            <h1 className="text-2xl font-bold text-gray-900 dark:text-white">Document Intelligence</h1>
-            <span className="text-[10px] font-semibold uppercase tracking-wide px-2 py-0.5 rounded-full bg-violet-100 dark:bg-violet-900/30 text-violet-600 dark:text-violet-400">AI Lab — Preview</span>
-          </div>
-          <p className="text-gray-500 dark:text-gray-400 text-sm mt-0.5">Extract structured content from documents including layout, form fields, tables, and key-value pairs. This is a standalone Cognitive AI capability, independent of the RAG query engine.</p>
+          <h1 className="text-2xl font-bold text-gray-900 dark:text-white">Document Preview</h1>
+          <p className="text-gray-500 dark:text-gray-400 text-sm mt-0.5">Preview what the ingestion pipeline will extract from a document. Useful for debugging extraction quality before ingesting.</p>
         </div>
       </div>
 

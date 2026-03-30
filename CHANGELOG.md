@@ -18,6 +18,8 @@ Versioning follows [Semantic Versioning](https://semver.org/).
 - **`answer_text` and `citations` in `EvaluationQueryEntry`** — type extended with optional `answer_text?: string | null` and `citations?: string | null` fields returned by backend since migration 003
 - **`QueryCitation` type** — new interface for parsed citation objects (`{ id: string | null; [key: string]: unknown }`)
 - **Evaluation fixture updated** — `evaluation-queries.json` includes realistic `answer_text` and `citations` payloads
+- **Document Preview** — Document Intelligence repurposed as a pipeline debugging tool; moved from AI Lab to core nav (next to Ingest); description updated to reflect its role in previewing extraction output
+- **Ingestion Pipeline Extract stage** — added Extract step between Upload and Chunk; visualizes OCR/text extraction in the pipeline stage indicator; stage timers adjusted to reflect realistic timing
 
 ### Tests
 - 4 new tests: expand OK row shows answer + citations, expand REFUSED row shows governed refusal, collapse on second click, only one row expanded at a time (10 total in EvaluationQueries suite)
@@ -504,7 +506,7 @@ Versioning follows [Semantic Versioning](https://semver.org/).
 - **Multi-turn chat** in Query Console — conversation history is sent with each query so follow-up questions ("What is so great about #1?") work naturally (ADR-0005)
 - **Dynamic example questions** — Query Console loads suggested questions from backend `/health` endpoint, falls back to `public/example-questions.json`, then hardcoded defaults
 - **Query Console** redesigned as a chat interface — persistent message history, user/assistant bubbles, typing indicator, example question chips, auto-scroll, Enter to send, confidence pill and trace ID shown inline per response
-- **Ingestion Pipeline** page replacing Document Upload — pipeline stage visualization (Upload → Chunk → Embed → Index), multi-file support, 120s timeout for large documents
+- **Ingestion Pipeline** page replacing Document Upload — pipeline stage visualization (Upload → Extract → Chunk → Embed → Index), multi-file support, 120s timeout for large documents
 - Collapsible "What should I ingest?" guidance on Ingestion Pipeline page
 - Icons and inline descriptions for all Settings fields (LLM Provider, Retrieval Provider, Retrieval Threshold)
 - Icons for all Cognitive AI Services entries on Settings page

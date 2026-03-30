@@ -12,7 +12,7 @@ import { Button } from '../components/ui/Button';
 import { meridianApi } from '../api/meridian';
 import { config } from '../config';
 import { type SettingsResponse } from '../api/types';
-import { CheckCircle, AlertCircle, BrainCircuit, Database, SlidersHorizontal, Thermometer, Languages, Eye, AudioLines, FileText, Loader2, Copy, Check, Link, Plug, MessageSquare, ChevronRight } from 'lucide-react';
+import { CheckCircle, AlertCircle, BrainCircuit, Database, SlidersHorizontal, Thermometer, Languages, Eye, AudioLines, Loader2, Copy, Check, Link, Plug, MessageSquare, ChevronRight } from 'lucide-react';
 
 const settingsSchema = z.object({
   llm_provider: z.enum(['local', 'azure']),
@@ -393,7 +393,6 @@ export function Settings() {
             { to: '/language', icon: Languages, label: 'Language Service', desc: 'Sentiment, entities, key phrases' },
             { to: '/vision', icon: Eye, label: 'Vision Service', desc: 'Image analysis, captions, OCR' },
             { to: '/speech', icon: AudioLines, label: 'Speech Service', desc: 'Transcription and text-to-speech' },
-            { to: '/document', icon: FileText, label: 'Document Intelligence', desc: 'Form recognition, table extraction' },
           ].map(({ to, icon: Icon, label, desc }) => (
             <li key={to}>
               <RouterLink
