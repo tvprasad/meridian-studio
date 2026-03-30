@@ -374,7 +374,7 @@ export function AuthGuard({ children }: { children: ReactNode }) {
         <div className="h-1 bg-gradient-to-r from-orange-400 via-violet-500 to-teal-400 shrink-0 relative z-10" />
 
         <div className="flex-1 flex flex-col items-center justify-center px-6 relative z-10">
-          <div className="text-center space-y-8 max-w-sm">
+          <div className="text-center space-y-8 max-w-2xl">
             {/* Logo + orchestrator hub rings */}
             <div className="space-y-4">
               <div className="relative mx-auto w-14 h-14">
@@ -412,8 +412,42 @@ export function AuthGuard({ children }: { children: ReactNode }) {
               </div>
             </div>
 
+            {/* Use case section */}
+            <div className="space-y-4">
+              <div>
+                <p className="text-sm font-semibold text-white/70">The questions blocking your AI deployment</p>
+                <p className="text-xs text-white/35 mt-1">Every regulated organization hits the same three walls. Meridian is built to answer them.</p>
+              </div>
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 text-left">
+                {[
+                  {
+                    headline: 'Your analysts use AI on documents. Legal blocks it before it ships.',
+                    question: '"How do we know the AI didn\'t fabricate that finding?"',
+                    tag: 'Document Intelligence',
+                  },
+                  {
+                    headline: 'Your workflows span multiple systems. One agent with access to everything is a liability.',
+                    question: '"Who approved that action, and can we prove every step to a regulator?"',
+                    tag: 'Multi-Agent Orchestration',
+                  },
+                  {
+                    headline: 'Your operations team can\'t process incident volume at the speed the business requires.',
+                    question: '"How do we let AI act faster without losing human control?"',
+                    tag: 'AI Operations',
+                  },
+                ].map(({ headline, question, tag }) => (
+                  <div key={tag} className="bg-white/5 border border-white/10 rounded-xl p-4 space-y-2">
+                    <p className="text-xs text-white/60 leading-relaxed">{headline}</p>
+                    <p className="text-xs text-white/80 italic leading-relaxed">{question}</p>
+                    <span className="inline-block text-[10px] uppercase tracking-wide px-2 py-0.5 rounded-full bg-violet-500/20 text-violet-400">{tag}</span>
+                  </div>
+                ))}
+              </div>
+              <p className="text-xs text-white/30">Meridian answers these questions.</p>
+            </div>
+
             {/* Sign-in card */}
-            <div className="bg-white/5 rounded-2xl border border-white/10 p-8 space-y-5 backdrop-blur-md shadow-2xl">
+            <div className="bg-white/5 rounded-2xl border border-white/10 p-8 space-y-5 backdrop-blur-md shadow-2xl max-w-sm mx-auto w-full">
               <p className="text-sm text-white/60">
                 Sign in with your Microsoft account to access the knowledge engine.
               </p>
@@ -434,17 +468,8 @@ export function AuthGuard({ children }: { children: ReactNode }) {
               />
             )}
 
-            {/* Trusted by */}
-            <div className="space-y-2">
-              <p className="text-[10px] uppercase tracking-widest text-white/20">Trusted by</p>
-              <div className="flex items-center justify-center gap-6">
-                {['Contoso', 'Northwind', 'Fabrikam', 'Tailspin'].map((name) => (
-                  <span key={name} className="text-[11px] font-medium tracking-wide text-white/15">
-                    {name}
-                  </span>
-                ))}
-              </div>
-            </div>
+            {/* Industry footer */}
+            <p className="text-[11px] text-white/25 text-center">Built for regulated environments. Healthcare. Federal. Financial services. Legal.</p>
 
             {/* Version */}
             <p className="text-xs text-white/20">v{version}</p>

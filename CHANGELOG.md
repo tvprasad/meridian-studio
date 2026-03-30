@@ -9,6 +9,12 @@ Versioning follows [Semantic Versioning](https://semver.org/).
 
 ## [Unreleased]
 
+### Added
+- **Sign-in use case section (ADR-0015)** — three compliance problem cards above the sign-in card: Document Intelligence, Multi-Agent Orchestration, AI Operations; section header and "Meridian answers these questions" footer; max-w-2xl outer container to accommodate three-column grid
+
+### Changed
+- **Sign-in "Trusted by" removed** — replaced placeholder company names (Contoso, Northwind, Fabrikam, Tailspin) with "Built for regulated environments. Healthcare. Federal. Financial services. Legal."
+
 ---
 
 ## [0.31.1] — 2026-03-28
