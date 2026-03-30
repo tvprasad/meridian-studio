@@ -11,6 +11,15 @@ Versioning follows [Semantic Versioning](https://semver.org/).
 
 ---
 
+## [0.31.1] — 2026-03-28
+
+### Changed
+- **Document Preview** — Document Intelligence repurposed as pipeline debugging tool; moved from AI Lab to core nav (between Ingest and Evaluation); description updated
+- **Ingestion Pipeline Extract stage** — added Extract step between Upload and Chunk; stage timers adjusted
+- **Cognitive AI Services** — reduced to 3 services (Language, Vision, Speech); Document Intelligence removed from AI Lab and Settings list
+
+---
+
 ## [0.31.0] — 2026-03-28
 
 ### Added
