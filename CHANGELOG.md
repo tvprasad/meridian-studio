@@ -9,6 +9,9 @@ Versioning follows [Semantic Versioning](https://semver.org/).
 
 ## [Unreleased]
 
+### Fixed
+- **Access token instead of ID token** — `getAuthHeaders` now acquires an access token using `VITE_AZURE_API_SCOPE`. Falls back to ID token for local dev when scope is unset. Resolves 403s on all protected endpoints for personal MSA accounts.
+
 ---
 
 ## [0.33.0] — 2026-04-05

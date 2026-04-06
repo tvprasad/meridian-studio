@@ -14,31 +14,29 @@ export async function getAuthHeaders(): Promise<Record<string, string>> {
   const account = msalInstance.getActiveAccount() ?? msalInstance.getAllAccounts()[0];
   if (!account) return {};
 
-  // Acquire an idToken using OIDC scopes only.
+  // Acquire an access token using the API scope.
   //
-  // Token flow for tvprasad@gmail.com (personal Microsoft account):
-  //   - Account is an external user (#EXT#) in the Azure AD tenant
-  //   - Personal account tokens always carry iss = .../9188040d.../v2.0 (MSA consumer tenant)
-  //     regardless of which authority endpoint was used to sign in
-  //   - idToken.aud = AUTH_CLIENT_ID (plain UUID) — matches backend validation
-  //   - Backend AUTH_TENANT_ID must be 9188040d... to accept MSA issuer
+  // The API scope (api://CLIENT_ID/access_as_user) produces an access token where:
+  //   - aud = AUTH_CLIENT_ID (plain UUID) — matches backend PyJWT audience validation
+  //   - scp = "access_as_user" — confirms this is an access token, not an ID token
+  //   - iss = .../9188040d.../v2.0 for personal MSA accounts (accepted by backend _valid_issuers)
   //
-  // API scope (api://CLIENT_ID/.default) is intentionally NOT used here:
-  //   - Access tokens have aud = "api://CLIENT_ID" (with api:// prefix)
-  //   - Backend validates audience = plain UUID — would fail with InvalidAudience
-  //   - OIDC scopes always succeed silently; API scope can cause InteractionRequiredAuthError
-  const oidcScopes = ['openid', 'profile', 'email'];
+  // OIDC scopes (openid/profile/email) are included so idToken is also present
+  // in the response — required for MSAL to maintain the signed-in session state.
+  const scopes = config.azure.apiScope
+    ? [config.azure.apiScope, 'openid', 'profile', 'email']
+    : ['openid', 'profile', 'email'];
 
   try {
-    const response = await msalInstance.acquireTokenSilent({
-      scopes: oidcScopes,
-      account,
-    });
-    if (!response.idToken) return {};
-    return { Authorization: `Bearer ${response.idToken}` };
+    const response = await msalInstance.acquireTokenSilent({ scopes, account });
+    // Prefer access token (present when API scope is configured).
+    // Fall back to idToken for local dev where VITE_AZURE_API_SCOPE is unset.
+    const token = response.accessToken || response.idToken;
+    if (!token) return {};
+    return { Authorization: `Bearer ${token}` };
   } catch (error) {
     if (error instanceof InteractionRequiredAuthError) {
-      await msalInstance.acquireTokenRedirect({ scopes: oidcScopes });
+      await msalInstance.acquireTokenRedirect({ scopes });
     }
     return {};
   }
