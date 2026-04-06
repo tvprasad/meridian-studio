@@ -9,6 +9,10 @@ Versioning follows [Semantic Versioning](https://semver.org/).
 
 ## [Unreleased]
 
+---
+
+## [0.33.2] — 2026-04-05
+
 ### Fixed
 - **VITE_AZURE_API_SCOPE wired through build pipeline** — added `ARG`/`ENV` to Dockerfile and `--build-arg` to `azure-deploy.yml` so the API scope is baked into the production bundle. Set `VITE_AZURE_API_SCOPE` in GitHub Actions variables to complete the fix.
 
@@ -636,7 +640,8 @@ Versioning follows [Semantic Versioning](https://semver.org/).
 - VPL logo in sidebar header
 - GitHub and LinkedIn social links in sidebar footer
 
-[Unreleased]: https://github.com/tvprasad/meridian-studio/compare/v0.33.1...HEAD
+[Unreleased]: https://github.com/tvprasad/meridian-studio/compare/v0.33.2...HEAD
+[0.33.2]: https://github.com/tvprasad/meridian-studio/compare/v0.33.1...v0.33.2
 [0.33.1]: https://github.com/tvprasad/meridian-studio/compare/v0.33.0...v0.33.1
 [0.33.0]: https://github.com/tvprasad/meridian-studio/compare/v0.32.0...v0.33.0
 [0.30.6]: https://github.com/tvprasad/meridian-studio/compare/v0.30.5...v0.30.6

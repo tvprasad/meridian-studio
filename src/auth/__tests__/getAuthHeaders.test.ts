@@ -47,17 +47,28 @@ describe('getAuthHeaders', () => {
     expect(mockGetAllAccounts).not.toHaveBeenCalled();
   });
 
-  it('returns Authorization header when auth is enabled and token is acquired', async () => {
+  it('returns access token when API scope is configured', async () => {
     mockConfig.authEnabled = true;
     mockGetAllAccounts.mockReturnValue([{ username: 'user@example.com' }]);
     mockAcquireTokenSilent.mockResolvedValue({ accessToken: 'access-token', idToken: 'test-id-token' });
 
     const headers = await getAuthHeaders();
 
-    expect(headers).toEqual({ Authorization: 'Bearer test-id-token' });
+    expect(headers).toEqual({ Authorization: 'Bearer access-token' });
     expect(mockAcquireTokenSilent).toHaveBeenCalledWith(
       expect.objectContaining({ account: { username: 'user@example.com' } }),
     );
+  });
+
+  it('falls back to ID token when no API scope is configured', async () => {
+    mockConfig.authEnabled = true;
+    mockConfig.azure.apiScope = '';
+    mockGetAllAccounts.mockReturnValue([{ username: 'user@example.com' }]);
+    mockAcquireTokenSilent.mockResolvedValue({ accessToken: '', idToken: 'test-id-token' });
+
+    const headers = await getAuthHeaders();
+
+    expect(headers).toEqual({ Authorization: 'Bearer test-id-token' });
   });
 
   it('returns empty object when no accounts exist', async () => {
