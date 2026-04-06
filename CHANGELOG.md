@@ -9,6 +9,10 @@ Versioning follows [Semantic Versioning](https://semver.org/).
 
 ## [Unreleased]
 
+---
+
+## [0.33.0] — 2026-04-05
+
 ### Added
 - **Temporary /auth/debug validation UI** — `AuthDebugCard` on Settings page calls `GET /auth/debug` and renders the JSON response inline; confirms role resolution path after backend auth fix deploy. Marked for removal after production validation.
 
@@ -622,7 +626,8 @@ Versioning follows [Semantic Versioning](https://semver.org/).
 - VPL logo in sidebar header
 - GitHub and LinkedIn social links in sidebar footer
 
-[Unreleased]: https://github.com/tvprasad/meridian-studio/compare/v0.26.2...HEAD
+[Unreleased]: https://github.com/tvprasad/meridian-studio/compare/v0.33.0...HEAD
+[0.33.0]: https://github.com/tvprasad/meridian-studio/compare/v0.32.0...v0.33.0
 [0.30.6]: https://github.com/tvprasad/meridian-studio/compare/v0.30.5...v0.30.6
 [0.30.5]: https://github.com/tvprasad/meridian-studio/compare/v0.30.4...v0.30.5
 [0.30.4]: https://github.com/tvprasad/meridian-studio/compare/v0.30.3...v0.30.4
