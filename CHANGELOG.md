@@ -9,6 +9,9 @@ Versioning follows [Semantic Versioning](https://semver.org/).
 
 ## [Unreleased]
 
+### Added
+- **Temporary /auth/debug validation UI** — `AuthDebugCard` on Settings page calls `GET /auth/debug` and renders the JSON response inline; confirms role resolution path after backend auth fix deploy. Marked for removal after production validation.
+
 ---
 
 ## [0.32.0] — 2026-03-28

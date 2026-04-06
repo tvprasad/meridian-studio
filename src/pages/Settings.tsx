@@ -9,7 +9,7 @@ import { z } from 'zod';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { Card } from '../components/ui/Card';
 import { Button } from '../components/ui/Button';
-import { meridianApi } from '../api/meridian';
+import { meridianApi, type AuthDebugResponse } from '../api/meridian';
 import { config } from '../config';
 import { type SettingsResponse } from '../api/types';
 import { CheckCircle, AlertCircle, BrainCircuit, Database, SlidersHorizontal, Thermometer, Languages, Eye, AudioLines, Loader2, Copy, Check, Link, Plug, MessageSquare, ChevronRight } from 'lucide-react';
@@ -173,6 +173,47 @@ function ConnectionDetails() {
           </p>
         </div>
       </div>
+    </Card>
+  );
+}
+
+// TEMPORARY: remove after /auth/debug validation — see plan quiet-crafting-puppy
+function AuthDebugCard() {
+  const [result, setResult] = useState<AuthDebugResponse | null>(null);
+  const [error, setError] = useState<string | null>(null);
+  const [loading, setLoading] = useState(false);
+
+  const run = useCallback(async () => {
+    setLoading(true);
+    setError(null);
+    try {
+      const data = await meridianApi.authDebug();
+      setResult(data);
+      console.log('[auth/debug]', data);
+    } catch (e) {
+      setError(e instanceof Error ? e.message : String(e));
+    } finally {
+      setLoading(false);
+    }
+  }, []);
+
+  return (
+    <Card className="mt-6 border border-amber-300 dark:border-amber-700">
+      <div className="flex items-center justify-between mb-3">
+        <div>
+          <h2 className="text-sm font-semibold text-amber-700 dark:text-amber-400">Auth Debug (temporary)</h2>
+          <p className="text-xs text-gray-500 dark:text-gray-400 mt-0.5">Confirms role resolution path after auth fix deploy. Remove after validation.</p>
+        </div>
+        <Button type="button" variant="ghost" onClick={run} loading={loading}>
+          Run
+        </Button>
+      </div>
+      {error && <p className="text-xs text-red-500 dark:text-red-400">{error}</p>}
+      {result && (
+        <pre className="text-xs font-mono bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-white/10 rounded-lg p-3 overflow-x-auto text-gray-800 dark:text-gray-200 mt-2">
+          {JSON.stringify(result, null, 2)}
+        </pre>
+      )}
     </Card>
   );
 }
@@ -381,6 +422,9 @@ export function Settings() {
       </form>
 
       <ConnectionDetails />
+
+      {/* TEMPORARY: remove after /auth/debug validation */}
+      <AuthDebugCard />
 
       <Card className="mt-6">
         <h2 className="text-lg font-semibold dark:text-white mb-4">Cognitive AI Services</h2>
