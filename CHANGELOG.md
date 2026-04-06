@@ -9,6 +9,10 @@ Versioning follows [Semantic Versioning](https://semver.org/).
 
 ## [Unreleased]
 
+---
+
+## [0.33.1] — 2026-04-05
+
 ### Fixed
 - **Access token instead of ID token** — `getAuthHeaders` now acquires an access token using `VITE_AZURE_API_SCOPE`. Falls back to ID token for local dev when scope is unset. Resolves 403s on all protected endpoints for personal MSA accounts.
 
@@ -629,7 +633,8 @@ Versioning follows [Semantic Versioning](https://semver.org/).
 - VPL logo in sidebar header
 - GitHub and LinkedIn social links in sidebar footer
 
-[Unreleased]: https://github.com/tvprasad/meridian-studio/compare/v0.33.0...HEAD
+[Unreleased]: https://github.com/tvprasad/meridian-studio/compare/v0.33.1...HEAD
+[0.33.1]: https://github.com/tvprasad/meridian-studio/compare/v0.33.0...v0.33.1
 [0.33.0]: https://github.com/tvprasad/meridian-studio/compare/v0.32.0...v0.33.0
 [0.30.6]: https://github.com/tvprasad/meridian-studio/compare/v0.30.5...v0.30.6
 [0.30.5]: https://github.com/tvprasad/meridian-studio/compare/v0.30.4...v0.30.5
