@@ -9,6 +9,9 @@ Versioning follows [Semantic Versioning](https://semver.org/).
 
 ## [Unreleased]
 
+### Fixed
+- **VITE_AZURE_API_SCOPE wired through build pipeline** — added `ARG`/`ENV` to Dockerfile and `--build-arg` to `azure-deploy.yml` so the API scope is baked into the production bundle. Set `VITE_AZURE_API_SCOPE` in GitHub Actions variables to complete the fix.
+
 ---
 
 ## [0.33.1] — 2026-04-05
