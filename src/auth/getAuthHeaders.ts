@@ -36,7 +36,11 @@ export async function getAuthHeaders(): Promise<Record<string, string>> {
     return { Authorization: `Bearer ${token}` };
   } catch (error) {
     if (error instanceof InteractionRequiredAuthError) {
-      await msalInstance.acquireTokenRedirect({ scopes });
+      // Do NOT redirect here — redirecting from a per-request helper causes a
+      // redirect loop because React Query fires multiple queries on mount.
+      // The AuthGuard login flow handles consent via loginRedirect with the
+      // full loginRequest (which includes the API scope).
+      console.warn('[getAuthHeaders] InteractionRequired — re-login needed for API scope consent');
     }
     return {};
   }

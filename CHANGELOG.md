@@ -9,6 +9,9 @@ Versioning follows [Semantic Versioning](https://semver.org/).
 
 ## [Unreleased]
 
+### Fixed
+- **Redirect loop on API scope consent** — `getAuthHeaders` no longer calls `acquireTokenRedirect` on `InteractionRequiredAuthError`. Redirecting from a per-request helper caused a loop because React Query fires multiple queries on mount. Consent is handled by the AuthGuard login flow (sign out and sign back in once to acquire API scope consent).
+
 ---
 
 ## [0.33.2] — 2026-04-05

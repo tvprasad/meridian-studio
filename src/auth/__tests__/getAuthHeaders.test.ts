@@ -81,19 +81,20 @@ describe('getAuthHeaders', () => {
     expect(mockAcquireTokenSilent).not.toHaveBeenCalled();
   });
 
-  it('triggers redirect and returns empty on InteractionRequiredAuthError', async () => {
+  it('returns empty and does not redirect on InteractionRequiredAuthError', async () => {
     mockConfig.authEnabled = true;
     mockGetAllAccounts.mockReturnValue([{ username: 'user@example.com' }]);
 
-    // Simulate InteractionRequiredAuthError
+    // Simulate InteractionRequiredAuthError (e.g. API scope not yet consented)
     const { InteractionRequiredAuthError } = await import('@azure/msal-browser');
     mockAcquireTokenSilent.mockRejectedValue(new InteractionRequiredAuthError('interaction_required'));
-    mockAcquireTokenRedirect.mockResolvedValue(undefined);
 
     const headers = await getAuthHeaders();
 
+    // Must NOT redirect — redirecting from a per-request helper causes a loop.
+    // Consent is handled by the AuthGuard login flow.
     expect(headers).toEqual({});
-    expect(mockAcquireTokenRedirect).toHaveBeenCalled();
+    expect(mockAcquireTokenRedirect).not.toHaveBeenCalled();
   });
 
   it('returns empty object on unexpected errors', async () => {
