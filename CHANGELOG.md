@@ -9,6 +9,10 @@ Versioning follows [Semantic Versioning](https://semver.org/).
 
 ## [Unreleased]
 
+---
+
+## [0.33.3] — 2026-04-05
+
 ### Fixed
 - **Redirect loop on API scope consent** — `getAuthHeaders` no longer calls `acquireTokenRedirect` on `InteractionRequiredAuthError`. Redirecting from a per-request helper caused a loop because React Query fires multiple queries on mount. Consent is handled by the AuthGuard login flow (sign out and sign back in once to acquire API scope consent).
 
@@ -643,7 +647,8 @@ Versioning follows [Semantic Versioning](https://semver.org/).
 - VPL logo in sidebar header
 - GitHub and LinkedIn social links in sidebar footer
 
-[Unreleased]: https://github.com/tvprasad/meridian-studio/compare/v0.33.2...HEAD
+[Unreleased]: https://github.com/tvprasad/meridian-studio/compare/v0.33.3...HEAD
+[0.33.3]: https://github.com/tvprasad/meridian-studio/compare/v0.33.2...v0.33.3
 [0.33.2]: https://github.com/tvprasad/meridian-studio/compare/v0.33.1...v0.33.2
 [0.33.1]: https://github.com/tvprasad/meridian-studio/compare/v0.33.0...v0.33.1
 [0.33.0]: https://github.com/tvprasad/meridian-studio/compare/v0.32.0...v0.33.0
