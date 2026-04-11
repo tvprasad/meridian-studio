@@ -3,6 +3,11 @@
 The operator interface for [Meridian](https://github.com/tvprasad/meridian) — a governed, self-hosted RAG platform. Meridian Studio provides a browser-based UI to query your knowledge base, upload documents, and manage configuration.
 
 [![CI](https://github.com/tvprasad/meridian-studio/actions/workflows/ci.yml/badge.svg)](https://github.com/tvprasad/meridian-studio/actions/workflows/ci.yml)
+[![Deploy](https://github.com/tvprasad/meridian-studio/actions/workflows/azure-deploy.yml/badge.svg)](https://github.com/tvprasad/meridian-studio/actions/workflows/azure-deploy.yml)
+[![Version](https://img.shields.io/badge/version-0.33.3-blue)](https://github.com/tvprasad/meridian-studio/releases)
+[![React](https://img.shields.io/badge/React-19-61DAFB?logo=react&logoColor=white)](https://react.dev)
+[![TypeScript](https://img.shields.io/badge/TypeScript-5.9-3178C6?logo=typescript&logoColor=white)](https://www.typescriptlang.org)
+[![Vite](https://img.shields.io/badge/Vite-7-646CFF?logo=vite&logoColor=white)](https://vitejs.dev)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 
 ---
@@ -80,6 +85,7 @@ The app will be available at `http://localhost:5173`.
 |---|---|---|
 | `VITE_API_BASE_URL` | `http://localhost:8000` | Meridian REST API base URL |
 | `VITE_MCP_BASE_URL` | `http://localhost:8001` | Meridian MCP server base URL |
+| `VITE_AIPOLARIS_URL` | `http://localhost:8002` | aiPolaris agent DAG base URL (ADR-011) |
 | `VITE_AUTH_ENABLED` | `false` | Enable Azure AD authentication |
 | `VITE_AZURE_CLIENT_ID` | — | Azure AD app registration client ID |
 | `VITE_AZURE_TENANT_ID` | — | Azure AD tenant ID |
