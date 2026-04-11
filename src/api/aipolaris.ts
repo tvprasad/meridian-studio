@@ -157,7 +157,7 @@ export async function streamPolarisQuery(
       body: JSON.stringify(body),
       signal,
     });
-  } catch (err) {
+  } catch {
     const apiErr = new Error('Failed to connect to aiPolaris') as AiPolarisError;
     apiErr.stage = 'planner';
     apiErr.hint = STAGE_ERROR_HINTS.planner;
@@ -192,7 +192,7 @@ export async function streamPolarisQuery(
 
   const decoder = new TextDecoder();
   let buffer = '';
-  let answerTokens: string[] = [];
+  const answerTokens: string[] = [];
   let citations: PolarisCitation[] = [];
   let latency_ms = 0;
   let firstToken = true;
