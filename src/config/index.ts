@@ -4,6 +4,7 @@
 export const config = {
   apiBaseUrl: import.meta.env.VITE_API_BASE_URL || 'http://localhost:8000',
   mcpBaseUrl: import.meta.env.VITE_MCP_BASE_URL || 'http://localhost:8001',
+  aipolarisBaseUrl: import.meta.env.VITE_AIPOLARIS_URL || 'http://localhost:8001',
   authEnabled: import.meta.env.VITE_AUTH_ENABLED === 'true',
   azure: {
     clientId: import.meta.env.VITE_AZURE_CLIENT_ID || '',

@@ -7,20 +7,37 @@ import { Link } from 'react-router-dom';
 import ReactMarkdown from 'react-markdown';
 import { meridianApi, type ChatMessage } from '../api/meridian';
 import type { QueryResponse } from '../api/types';
+import {
+  streamPolarisQuery, isComplexQuery,
+  type DagNodeState, type PolarisCitation,
+} from '../api/aipolaris';
 import { ConfidencePill } from '../components/ui/ConfidencePill';
+import { ModeToggle, type QueryMode } from '../components/ui/ModeToggle';
+import { StageProgress } from '../components/ui/StageProgress';
+import { SessionBadge } from '../components/ui/SessionBadge';
+import { DagTrace } from '../components/ui/DagTrace';
 import {
   Send, Settings, BrainCircuit, AlertTriangle, MessageCircle,
   RotateCcw, Copy, Check, WifiOff, ChevronDown, ChevronRight,
   FileText, ShieldCheck, ShieldAlert, Fingerprint,
-  ThumbsUp, ThumbsDown, HelpCircle,
+  ThumbsUp, ThumbsDown, HelpCircle, GitBranch,
 } from 'lucide-react';
 
 // ── Types & Constants ────────────────────────────────────────────────────────
+
+interface AgentMessageData {
+  dagNodes: DagNodeState[];
+  traceId: string;
+  sessionId: string;
+  citations: PolarisCitation[];
+  latencyMs: number;
+}
 
 interface Message {
   role: 'user' | 'assistant';
   content: string;
   metadata?: QueryResponse;
+  agentData?: AgentMessageData;
 }
 
 const STORAGE_KEY = 'meridian-chat-history';
@@ -50,7 +67,7 @@ const FOLLOW_UP_PROMPTS = [
 
 // ── Guide ────────────────────────────────────────────────────────────────────
 
-function QueryGuide() {
+function QueryGuide({ mode }: { mode: QueryMode }) {
   const [open, setOpen] = useState(false);
 
   return (
@@ -60,29 +77,52 @@ function QueryGuide() {
         className="inline-flex items-center gap-1.5 text-xs text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300 transition-colors"
       >
         <HelpCircle className="w-3.5 h-3.5" />
-        <span className="font-medium">How Ask Meridian works</span>
+        <span className="font-medium">
+          {mode === 'rag' ? 'How Ask Meridian works' : 'How Agent Query works'}
+        </span>
         <ChevronDown className={`w-3 h-3 transition-transform ${open ? 'rotate-180' : ''}`} />
       </button>
       {open && (
         <div className="mt-3 bg-white dark:bg-white/[0.03] border border-gray-200 dark:border-white/10 rounded-xl p-4 text-xs text-gray-600 dark:text-gray-400 leading-relaxed">
-          <dl className="space-y-2">
-            <div>
-              <dt className="font-medium text-gray-700 dark:text-gray-300">Retrieval</dt>
-              <dd>Your question is converted to an embedding and matched against the ingested knowledge base using vector search. The most relevant document chunks are retrieved with similarity scores.</dd>
-            </div>
-            <div>
-              <dt className="font-medium text-gray-700 dark:text-gray-300">Governance gate</dt>
-              <dd>If the best retrieval score falls below the confidence threshold (configurable in Settings), the system refuses to answer rather than guessing. This is a deliberate governance decision — not an error.</dd>
-            </div>
-            <div>
-              <dt className="font-medium text-gray-700 dark:text-gray-300">Grounded generation</dt>
-              <dd>When confidence passes the threshold, the LLM generates an answer grounded strictly in the retrieved documents, with source citations. It will not fabricate information beyond what was retrieved.</dd>
-            </div>
-            <div>
-              <dt className="font-medium text-gray-700 dark:text-gray-300">Multi-turn context</dt>
-              <dd>Conversation history is sent with each question, so follow-up queries like "tell me more" or "what about X?" are interpreted in context of the previous exchange.</dd>
-            </div>
-          </dl>
+          {mode === 'rag' ? (
+            <dl className="space-y-2">
+              <div>
+                <dt className="font-medium text-gray-700 dark:text-gray-300">Retrieval</dt>
+                <dd>Your question is converted to an embedding and matched against the ingested knowledge base using vector search. The most relevant document chunks are retrieved with similarity scores.</dd>
+              </div>
+              <div>
+                <dt className="font-medium text-gray-700 dark:text-gray-300">Governance gate</dt>
+                <dd>If the best retrieval score falls below the confidence threshold (configurable in Settings), the system refuses to answer rather than guessing. This is a deliberate governance decision — not an error.</dd>
+              </div>
+              <div>
+                <dt className="font-medium text-gray-700 dark:text-gray-300">Grounded generation</dt>
+                <dd>When confidence passes the threshold, the LLM generates an answer grounded strictly in the retrieved documents, with source citations. It will not fabricate information beyond what was retrieved.</dd>
+              </div>
+              <div>
+                <dt className="font-medium text-gray-700 dark:text-gray-300">Multi-turn context</dt>
+                <dd>Conversation history is sent with each question, so follow-up queries like "tell me more" or "what about X?" are interpreted in context of the previous exchange.</dd>
+              </div>
+            </dl>
+          ) : (
+            <dl className="space-y-2">
+              <div>
+                <dt className="font-medium text-gray-700 dark:text-gray-300">Planner</dt>
+                <dd>The Planner decomposes your question into 1–4 focused retrieval sub-tasks, each targeting a different aspect of the answer.</dd>
+              </div>
+              <div>
+                <dt className="font-medium text-gray-700 dark:text-gray-300">Retriever</dt>
+                <dd>The Retriever runs hybrid semantic + keyword search for each sub-task against the aiPolaris knowledge index. Results are ranked and filtered by a reranker score threshold.</dd>
+              </div>
+              <div>
+                <dt className="font-medium text-gray-700 dark:text-gray-300">Synthesizer</dt>
+                <dd>The Synthesizer assembles the final answer from retrieved chunks, citing every claim. If chunks are insufficient, it refuses rather than fabricates.</dd>
+              </div>
+              <div>
+                <dt className="font-medium text-gray-700 dark:text-gray-300">Session memory</dt>
+                <dd>When a session is active, follow-up questions are interpreted in context of the previous exchange. Sessions are memory-only — nothing is written to disk.</dd>
+              </div>
+            </dl>
+          )}
         </div>
       )}
     </div>
@@ -244,24 +284,18 @@ function RetrievalPanel({ metadata, defaultOpen }: { metadata: QueryResponse; de
       </button>
       {open && (
         <div className="px-4 pb-3 space-y-2 border-t border-gray-100 dark:border-white/10">
-          {/* Trackbars */}
           <div className="space-y-1.5 pt-2">
             {scores.map((score, i) => (
               <RetrievalScoreBar key={i} score={score} threshold={threshold} index={i} />
             ))}
           </div>
-          {/* Summary stats */}
           <div className="flex items-center gap-4 pt-2 border-t border-gray-100 dark:border-white/10 text-[11px] text-gray-400">
             <span className="flex items-center gap-1">
               <Fingerprint className="w-3 h-3" />
               {metadata.trace_id}
             </span>
-            <span>
-              Best: {(Math.max(...scores) * 100).toFixed(1)}%
-            </span>
-            <span>
-              Avg: {((scores.reduce((a, b) => a + b, 0) / scores.length) * 100).toFixed(1)}%
-            </span>
+            <span>Best: {(Math.max(...scores) * 100).toFixed(1)}%</span>
+            <span>Avg: {((scores.reduce((a, b) => a + b, 0) / scores.length) * 100).toFixed(1)}%</span>
           </div>
         </div>
       )}
@@ -364,6 +398,82 @@ function AssistantMessage({ msg, isLatest, isStreamingMsg, onSuggestionClick }: 
   );
 }
 
+function AgentAssistantMessage({ msg, isLatest, isStreamingMsg, onSuggestionClick }: {
+  msg: Message;
+  isLatest: boolean;
+  isStreamingMsg?: boolean;
+  onSuggestionClick: (q: string) => void;
+}) {
+  const showFollowUps = isLatest && !isStreamingMsg && !!msg.content;
+
+  return (
+    <div>
+      <div className="flex items-start gap-3 max-w-3xl">
+        <div className="shrink-0 w-8 h-8 rounded-full bg-purple-100 dark:bg-purple-900/30 flex items-center justify-center mt-0.5">
+          <GitBranch className="w-4 h-4 text-purple-600 dark:text-purple-400" />
+        </div>
+        <div className="flex-1 min-w-0">
+          {msg.content ? (
+            <div className="bg-white dark:bg-white/10 border border-purple-200 dark:border-purple-500/20 rounded-2xl rounded-tl-sm px-4 py-3 shadow-sm">
+              <div className="text-sm text-gray-800 dark:text-gray-200 leading-relaxed prose prose-sm prose-gray dark:prose-invert max-w-none">
+                <ReactMarkdown>{msg.content}</ReactMarkdown>
+                {isStreamingMsg && <span className="inline-block w-2 h-4 bg-purple-500 animate-pulse ml-0.5 align-text-bottom rounded-sm" />}
+              </div>
+            </div>
+          ) : isStreamingMsg ? (
+            <div className="bg-white dark:bg-white/10 border border-purple-200 dark:border-purple-500/20 rounded-2xl rounded-tl-sm px-4 py-3 shadow-sm">
+              <div className="flex items-center gap-1.5">
+                <span className="w-2 h-2 bg-purple-400 dark:bg-purple-500 rounded-full animate-bounce [animation-delay:0ms]" />
+                <span className="w-2 h-2 bg-purple-400 dark:bg-purple-500 rounded-full animate-bounce [animation-delay:150ms]" />
+                <span className="w-2 h-2 bg-purple-400 dark:bg-purple-500 rounded-full animate-bounce [animation-delay:300ms]" />
+              </div>
+            </div>
+          ) : null}
+          {msg.content && !isStreamingMsg && (
+            <div className="flex items-center gap-3 mt-1.5 px-1">
+              <CopyButton text={msg.content} />
+              {msg.agentData?.traceId && (
+                <FeedbackButtons traceId={msg.agentData.traceId} />
+              )}
+              {msg.agentData && (
+                <span className="text-[11px] text-gray-400 dark:text-gray-500 flex items-center gap-1">
+                  <Fingerprint className="w-3 h-3" />
+                  {msg.agentData.traceId.slice(0, 8)}
+                </span>
+              )}
+            </div>
+          )}
+        </div>
+      </div>
+
+      {/* DAG trace — shown for agent messages */}
+      {msg.agentData && (
+        <div className="max-w-3xl pl-11 mt-2">
+          <DagTrace nodes={msg.agentData.dagNodes} traceId={msg.agentData.traceId} />
+        </div>
+      )}
+
+      {showFollowUps && (
+        <div className="flex flex-wrap gap-2 mt-4 justify-center">
+          <div className="w-full flex items-center justify-center gap-1.5 mb-1">
+            <MessageCircle className="w-3 h-3 text-gray-400 dark:text-gray-500" />
+            <p className="text-xs text-gray-400 dark:text-gray-500">Keep the conversation going:</p>
+          </div>
+          {FOLLOW_UP_PROMPTS.map((q) => (
+            <button
+              key={q}
+              onClick={() => onSuggestionClick(q)}
+              className="text-sm px-4 py-2.5 rounded-2xl border border-purple-200 dark:border-purple-700 text-purple-700 dark:text-purple-300 bg-purple-50 dark:bg-purple-900/30 hover:bg-purple-600 hover:text-white hover:border-purple-600 transition-colors shadow-sm cursor-pointer"
+            >
+              {q}
+            </button>
+          ))}
+        </div>
+      )}
+    </div>
+  );
+}
+
 function UserMessage({ content }: { content: string }) {
   return (
     <div className="flex justify-end">
@@ -374,17 +484,34 @@ function UserMessage({ content }: { content: string }) {
   );
 }
 
-function ThinkingIndicator() {
+function ThinkingIndicator({ mode }: { mode: QueryMode }) {
   return (
     <div className="flex items-start gap-3">
-      <div className="shrink-0 w-8 h-8 rounded-full bg-primary-100 dark:bg-primary-900/30 flex items-center justify-center mt-0.5">
-        <BrainCircuit className="w-4 h-4 text-primary-600 dark:text-primary-400" />
+      <div className={`shrink-0 w-8 h-8 rounded-full flex items-center justify-center mt-0.5 ${
+        mode === 'agent'
+          ? 'bg-purple-100 dark:bg-purple-900/30'
+          : 'bg-primary-100 dark:bg-primary-900/30'
+      }`}>
+        {mode === 'agent'
+          ? <GitBranch className="w-4 h-4 text-purple-600 dark:text-purple-400" />
+          : <BrainCircuit className="w-4 h-4 text-primary-600 dark:text-primary-400" />
+        }
       </div>
-      <div className="bg-white dark:bg-white/10 border border-gray-200 dark:border-white/10 rounded-2xl rounded-tl-sm px-4 py-3 shadow-sm">
+      <div className={`border rounded-2xl rounded-tl-sm px-4 py-3 shadow-sm bg-white dark:bg-white/10 ${
+        mode === 'agent'
+          ? 'border-purple-200 dark:border-purple-500/20'
+          : 'border-gray-200 dark:border-white/10'
+      }`}>
         <div className="flex items-center gap-1.5">
-          <span className="w-2 h-2 bg-gray-400 dark:bg-gray-500 rounded-full animate-bounce [animation-delay:0ms]" />
-          <span className="w-2 h-2 bg-gray-400 dark:bg-gray-500 rounded-full animate-bounce [animation-delay:150ms]" />
-          <span className="w-2 h-2 bg-gray-400 dark:bg-gray-500 rounded-full animate-bounce [animation-delay:300ms]" />
+          <span className={`w-2 h-2 rounded-full animate-bounce [animation-delay:0ms] ${
+            mode === 'agent' ? 'bg-purple-400 dark:bg-purple-500' : 'bg-gray-400 dark:bg-gray-500'
+          }`} />
+          <span className={`w-2 h-2 rounded-full animate-bounce [animation-delay:150ms] ${
+            mode === 'agent' ? 'bg-purple-400 dark:bg-purple-500' : 'bg-gray-400 dark:bg-gray-500'
+          }`} />
+          <span className={`w-2 h-2 rounded-full animate-bounce [animation-delay:300ms] ${
+            mode === 'agent' ? 'bg-purple-400 dark:bg-purple-500' : 'bg-gray-400 dark:bg-gray-500'
+          }`} />
         </div>
       </div>
     </div>
@@ -394,7 +521,7 @@ function ThinkingIndicator() {
 // ── Main Component ───────────────────────────────────────────────────────────
 
 export function Query() {
-  // Load persisted chat history from localStorage
+  // Persisted RAG chat history
   const [messages, setMessages] = useState<Message[]>(() => {
     try {
       const stored = localStorage.getItem(STORAGE_KEY);
@@ -405,7 +532,18 @@ export function Query() {
   const bottomRef = useRef<HTMLDivElement>(null);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
 
-  // Persist messages to localStorage on change
+  // Mode + agent state (memory-only per ADR-011)
+  const [mode, setMode] = useState<QueryMode>('rag');
+  const [polarisSessionId, setPolarisSessionId] = useState<string | null>(null);
+  const [liveDagNodes, setLiveDagNodes] = useState<DagNodeState[]>([]);
+
+  // AbortController for cancelling in-flight agent queries
+  const agentAbortRef = useRef<AbortController | null>(null);
+
+  // Complexity hint — show when user has typed 20+ chars
+  const complexityHint = input.trim().length >= 20 && isComplexQuery(input);
+
+  // Persist RAG messages
   useEffect(() => {
     localStorage.setItem(STORAGE_KEY, JSON.stringify(messages));
   }, [messages]);
@@ -429,11 +567,12 @@ export function Query() {
 
   const [isStreaming, setIsStreaming] = useState(false);
 
+  // ── RAG streaming query ───────────────────────────────────────────────────
+
   const streamQuery = useCallback(async (question: string, history?: ChatMessage[]) => {
     setIsStreaming(true);
     try {
-      // Add a placeholder assistant message that we'll update incrementally
-      const placeholderIndex = messages.length + 1; // +1 for the user message added before calling this
+      const placeholderIndex = messages.length + 1;
       let accumulatedText = '';
       let metadata: QueryResponse | undefined;
 
@@ -448,10 +587,8 @@ export function Query() {
               threshold: event.data.threshold,
               retrieval_scores: event.data.retrieval_scores,
             };
-            // Add the assistant message with metadata but empty content (tokens incoming)
             setMessages((prev) => {
               const updated = [...prev];
-              // Only add if we haven't added the assistant message yet
               if (updated.length === placeholderIndex) {
                 updated.push({ role: 'assistant', content: '', metadata });
               }
@@ -472,7 +609,6 @@ export function Query() {
             break;
 
           case 'done':
-            // Final update — ensure metadata has answer
             setMessages((prev) => {
               const updated = [...prev];
               const lastIdx = updated.length - 1;
@@ -487,7 +623,6 @@ export function Query() {
             break;
 
           case 'error':
-            // REFUSED or UNINITIALIZED — render as a single message
             setMessages((prev) => {
               const updated = [...prev];
               const errorResponse: QueryResponse = {
@@ -498,7 +633,6 @@ export function Query() {
                 threshold: event.data.threshold,
                 refusal_reason: event.data.refusal_reason,
               };
-              // If we already have a placeholder, update it; otherwise add
               if (updated.length > placeholderIndex - 1 && updated[updated.length - 1].role === 'assistant') {
                 updated[updated.length - 1] = { role: 'assistant', content: '', metadata: errorResponse };
               } else {
@@ -510,7 +644,6 @@ export function Query() {
         }
       }
     } catch {
-      // Streaming failed — fall back to non-streaming
       try {
         const data = await meridianApi.query(question, history);
         setMessages((prev) => [
@@ -532,29 +665,149 @@ export function Query() {
     }
   }, [messages.length]);
 
+  // ── Agent streaming query ─────────────────────────────────────────────────
+
+  const streamAgentQuery = useCallback(async (question: string) => {
+    setIsStreaming(true);
+    setLiveDagNodes([]);
+
+    agentAbortRef.current?.abort();
+    const abort = new AbortController();
+    agentAbortRef.current = abort;
+
+    // Add placeholder agent message (will be updated with tokens + dagNodes)
+    const placeholderMsg: Message = {
+      role: 'assistant',
+      content: '',
+      agentData: {
+        dagNodes: [],
+        traceId: '',
+        sessionId: polarisSessionId ?? '',
+        citations: [],
+        latencyMs: 0,
+      },
+    };
+    setMessages((prev) => [...prev, placeholderMsg]);
+
+    let accumulatedText = '';
+
+    try {
+      const result = await streamPolarisQuery(
+        question,
+        polarisSessionId,
+        (token) => {
+          accumulatedText += token;
+          setMessages((prev) => {
+            const updated = [...prev];
+            const lastIdx = updated.length - 1;
+            if (lastIdx >= 0 && updated[lastIdx].role === 'assistant') {
+              updated[lastIdx] = { ...updated[lastIdx], content: accumulatedText };
+            }
+            return updated;
+          });
+        },
+        (nodes) => {
+          setLiveDagNodes([...nodes]);
+          // Also update the message's dagNodes so it's correct when complete
+          setMessages((prev) => {
+            const updated = [...prev];
+            const lastIdx = updated.length - 1;
+            if (lastIdx >= 0 && updated[lastIdx].role === 'assistant' && updated[lastIdx].agentData) {
+              updated[lastIdx] = {
+                ...updated[lastIdx],
+                agentData: { ...updated[lastIdx].agentData!, dagNodes: [...nodes] },
+              };
+            }
+            return updated;
+          });
+        },
+        abort.signal,
+      );
+
+      // Finalize message with complete result
+      setPolarisSessionId(result.session_id);
+      setMessages((prev) => {
+        const updated = [...prev];
+        const lastIdx = updated.length - 1;
+        if (lastIdx >= 0 && updated[lastIdx].role === 'assistant') {
+          updated[lastIdx] = {
+            role: 'assistant',
+            content: result.answer,
+            agentData: {
+              dagNodes: result.dagNodes,
+              traceId: result.trace_id,
+              sessionId: result.session_id,
+              citations: result.citations,
+              latencyMs: result.latency_ms,
+            },
+          };
+        }
+        return updated;
+      });
+    } catch (err) {
+      if ((err as Error).name === 'AbortError') return;
+      const errMsg = (err as Error).message ?? 'Agent query failed';
+      setMessages((prev) => {
+        const updated = [...prev];
+        const lastIdx = updated.length - 1;
+        if (lastIdx >= 0 && updated[lastIdx].role === 'assistant') {
+          updated[lastIdx] = {
+            ...updated[lastIdx],
+            content: '',
+            agentData: {
+              ...(updated[lastIdx].agentData ?? { traceId: '', sessionId: '', citations: [], latencyMs: 0, dagNodes: [] }),
+              // Keep whatever dag nodes we have so the error state is visible
+            },
+          };
+        }
+        // Append an error note
+        updated.push({ role: 'assistant', content: `Agent error: ${errMsg}` });
+        return updated;
+      });
+    } finally {
+      setIsStreaming(false);
+      setLiveDagNodes([]);
+    }
+  }, [polarisSessionId]);
+
+  // ── Auto-scroll ────────────────────────────────────────────────────────────
+
   useEffect(() => {
     bottomRef.current?.scrollIntoView({ behavior: 'smooth' });
-  }, [messages, isStreaming]);
+  }, [messages, isStreaming, liveDagNodes]);
+
+  // ── Submit ─────────────────────────────────────────────────────────────────
 
   const handleSubmit = useCallback(() => {
     const q = input.trim();
     if (!q || isStreaming) return;
 
-    const history: ChatMessage[] = messages
-      .filter((m) => m.content)
-      .map((m) => ({ role: m.role, content: m.content }));
-
     setMessages((prev) => [...prev, { role: 'user', content: q }]);
     setInput('');
-    streamQuery(q, history.length ? history : undefined);
+
+    if (mode === 'agent') {
+      streamAgentQuery(q);
+    } else {
+      const history: ChatMessage[] = messages
+        .filter((m) => m.content)
+        .map((m) => ({ role: m.role, content: m.content }));
+      streamQuery(q, history.length ? history : undefined);
+    }
+
     if (textareaRef.current) textareaRef.current.style.height = 'auto';
-  }, [input, messages, isStreaming, streamQuery]);
+  }, [input, messages, isStreaming, mode, streamQuery, streamAgentQuery]);
 
   const handleNewChat = useCallback(() => {
+    agentAbortRef.current?.abort();
     setMessages([]);
     setInput('');
+    setLiveDagNodes([]);
     localStorage.removeItem(STORAGE_KEY);
     textareaRef.current?.focus();
+  }, []);
+
+  const handleClearSession = useCallback(() => {
+    setPolarisSessionId(null);
   }, []);
 
   const handleKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
@@ -574,7 +827,6 @@ export function Query() {
     e.target.style.height = `${Math.min(e.target.scrollHeight, 160)}px`;
   };
 
-  // Global keyboard shortcut: Ctrl+K — new chat (resets conversation) or focuses input
   useEffect(() => {
     const onGlobalKey = (e: KeyboardEvent) => {
       if ((e.ctrlKey || e.metaKey) && e.key === 'k') {
@@ -592,14 +844,59 @@ export function Query() {
 
   const isEmpty = messages.length === 0;
 
+  // ── Input bar (shared, rendered in two places) ─────────────────────────────
+
+  const inputBar = (
+    <div className={`bg-white dark:bg-white/[0.03] border rounded-2xl shadow-md transition-all ${
+      mode === 'agent'
+        ? 'border-purple-200 dark:border-purple-500/20 focus-within:border-purple-400 focus-within:ring-2 focus-within:ring-purple-100 dark:focus-within:ring-purple-900/30 focus-within:shadow-lg'
+        : 'border-gray-200 dark:border-white/15 focus-within:border-primary-400 focus-within:ring-2 focus-within:ring-primary-100 dark:focus-within:ring-primary-900/30 focus-within:shadow-lg'
+    }`}>
+      <textarea
+        ref={textareaRef}
+        rows={1}
+        className="block w-full resize-none px-4 pt-3.5 pb-2 text-sm text-gray-800 dark:text-gray-200 placeholder-gray-400 dark:placeholder-gray-500 focus:outline-none bg-transparent"
+        placeholder={mode === 'agent' ? 'Ask a multi-step question...' : 'Ask a question...'}
+        value={input}
+        onChange={handleInput}
+        onKeyDown={handleKeyDown}
+        disabled={isStreaming}
+      />
+      <div className="flex items-center justify-between px-3 pb-3">
+        <div className="flex items-center gap-2">
+          <kbd className="hidden sm:inline-flex items-center gap-0.5 px-1.5 py-0.5 rounded border border-gray-200 dark:border-white/10 bg-gray-50 dark:bg-white/5 text-[10px] font-mono text-gray-400">
+            Enter
+          </kbd>
+          <span className="hidden sm:inline text-[10px] text-gray-400 dark:text-gray-500">to send</span>
+        </div>
+        <button
+          onClick={handleSubmit}
+          disabled={!input.trim() || isStreaming}
+          className={`inline-flex items-center justify-center w-8 h-8 rounded-xl text-white disabled:opacity-30 disabled:cursor-not-allowed transition-colors ${
+            mode === 'agent'
+              ? 'bg-purple-600 hover:bg-purple-700'
+              : 'bg-primary-600 hover:bg-primary-700'
+          }`}
+          title="Send (Enter)"
+        >
+          <Send className="w-4 h-4" />
+        </button>
+      </div>
+    </div>
+  );
+
   return (
     <div className="flex flex-col h-[calc(100vh-7rem)]">
       {/* Header */}
       <div className="shrink-0 flex items-start justify-between gap-4">
-        <div>
+        <div className="flex-1">
           <h1 className="text-2xl font-bold text-gray-900 dark:text-white">Ask Meridian</h1>
-          <p className="text-gray-500 dark:text-gray-400 mt-1">Ask questions in plain language. Meridian searches your ingested documents, evaluates confidence against a governance threshold, and returns a grounded answer — or explains why it can't.</p>
-          {health && (
+          <p className="text-gray-500 dark:text-gray-400 mt-1">
+            {mode === 'rag'
+              ? 'Ask questions in plain language. Meridian searches your ingested documents, evaluates confidence against a governance threshold, and returns a grounded answer — or explains why it can\'t.'
+              : 'Agent Query routes your question through a Planner → Retriever → Synthesizer DAG. Click any completed node to inspect its output.'}
+          </p>
+          {mode === 'rag' && health && (
             <p className="mt-2 text-xs text-gray-400 flex items-center gap-1.5">
               Using
               <span className="font-medium text-gray-600 dark:text-gray-300">{PROVIDER_LABELS[health.llm_provider] ?? health.llm_provider}</span>
@@ -612,7 +909,7 @@ export function Query() {
               </Link>
             </p>
           )}
-          <QueryGuide />
+          <QueryGuide mode={mode} />
         </div>
         {!isEmpty && (
           <button
@@ -626,10 +923,30 @@ export function Query() {
         )}
       </div>
 
+      {/* Mode toggle + session badge */}
+      <div className="shrink-0 mt-4 flex flex-wrap items-center gap-3">
+        <ModeToggle
+          mode={mode}
+          onChange={setMode}
+          complexityHint={complexityHint}
+          disabled={isStreaming}
+        />
+        {mode === 'agent' && polarisSessionId && (
+          <SessionBadge sessionId={polarisSessionId} onClear={handleClearSession} />
+        )}
+      </div>
+
       {/* Offline banner */}
-      {isHealthError && (
+      {isHealthError && mode === 'rag' && (
         <div className="shrink-0 mt-4">
           <OfflineBanner />
+        </div>
+      )}
+
+      {/* Live stage progress (agent mode, during streaming) */}
+      {mode === 'agent' && isStreaming && liveDagNodes.length > 0 && (
+        <div className="shrink-0">
+          <StageProgress nodes={liveDagNodes} />
         </div>
       )}
 
@@ -637,17 +954,36 @@ export function Query() {
       <div className="flex-1 mt-6 overflow-y-auto min-h-0">
         {isEmpty ? (
           <div className="flex flex-col items-center justify-center h-full text-center">
-            <div className="w-14 h-14 rounded-full bg-primary-50 dark:bg-primary-900/30 flex items-center justify-center mb-4">
-              <BrainCircuit className="w-7 h-7 text-primary-500 dark:text-primary-400" />
+            <div className={`w-14 h-14 rounded-full flex items-center justify-center mb-4 ${
+              mode === 'agent'
+                ? 'bg-purple-50 dark:bg-purple-900/30'
+                : 'bg-primary-50 dark:bg-primary-900/30'
+            }`}>
+              {mode === 'agent'
+                ? <GitBranch className="w-7 h-7 text-purple-500 dark:text-purple-400" />
+                : <BrainCircuit className="w-7 h-7 text-primary-500 dark:text-primary-400" />
+              }
             </div>
-            <h3 className="text-gray-700 dark:text-gray-200 font-medium">Ask anything about your documents</h3>
-            <p className="text-sm text-gray-400 dark:text-gray-500 mt-1 mb-6">Meridian will search the knowledge base and ground its answer in your content.</p>
+            <h3 className="text-gray-700 dark:text-gray-200 font-medium">
+              {mode === 'agent'
+                ? 'Ask a multi-step question'
+                : 'Ask anything about your documents'}
+            </h3>
+            <p className="text-sm text-gray-400 dark:text-gray-500 mt-1 mb-6">
+              {mode === 'agent'
+                ? 'The agent will plan, retrieve, and synthesize a grounded answer with citations.'
+                : 'Meridian will search the knowledge base and ground its answer in your content.'}
+            </p>
             <div className="flex flex-wrap gap-2 justify-center max-w-lg mb-8">
               {exampleQuestions.map((q) => (
                 <button
                   key={q}
                   onClick={() => { setInput(q); textareaRef.current?.focus(); }}
-                  className="text-xs px-3 py-1.5 rounded-full border border-gray-200 dark:border-white/15 text-gray-600 dark:text-gray-300 hover:border-primary-300 hover:text-primary-600 dark:hover:text-primary-400 transition-colors bg-white dark:bg-white/5"
+                  className={`text-xs px-3 py-1.5 rounded-full border bg-white dark:bg-white/5 transition-colors ${
+                    mode === 'agent'
+                      ? 'border-purple-200 dark:border-purple-700/50 text-purple-600 dark:text-purple-300 hover:border-purple-300 hover:text-purple-700 dark:hover:text-purple-200'
+                      : 'border-gray-200 dark:border-white/15 text-gray-600 dark:text-gray-300 hover:border-primary-300 hover:text-primary-600 dark:hover:text-primary-400'
+                  }`}
                 >
                   {q}
                 </button>
@@ -655,33 +991,8 @@ export function Query() {
             </div>
 
             {/* Input bar — centered in empty state */}
-            <div className="w-full max-w-2xl bg-white dark:bg-white/[0.03] border border-gray-200 dark:border-white/15 rounded-2xl shadow-md focus-within:border-primary-400 focus-within:ring-2 focus-within:ring-primary-100 dark:focus-within:ring-primary-900/30 focus-within:shadow-lg transition-all">
-              <textarea
-                ref={textareaRef}
-                rows={1}
-                className="block w-full resize-none px-4 pt-3.5 pb-2 text-sm text-gray-800 dark:text-gray-200 placeholder-gray-400 dark:placeholder-gray-500 focus:outline-none bg-transparent"
-                placeholder="Ask a question..."
-                value={input}
-                onChange={handleInput}
-                onKeyDown={handleKeyDown}
-                disabled={isStreaming}
-              />
-              <div className="flex items-center justify-between px-3 pb-3">
-                <div className="flex items-center gap-2">
-                  <kbd className="hidden sm:inline-flex items-center gap-0.5 px-1.5 py-0.5 rounded border border-gray-200 dark:border-white/10 bg-gray-50 dark:bg-white/5 text-[10px] font-mono text-gray-400">
-                    Enter
-                  </kbd>
-                  <span className="hidden sm:inline text-[10px] text-gray-400 dark:text-gray-500">to send</span>
-                </div>
-                <button
-                  onClick={handleSubmit}
-                  disabled={!input.trim() || isStreaming}
-                  className="inline-flex items-center justify-center w-8 h-8 rounded-xl bg-primary-600 text-white hover:bg-primary-700 disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
-                  title="Send (Enter)"
-                >
-                  <Send className="w-4 h-4" />
-                </button>
-              </div>
+            <div className="w-full max-w-2xl">
+              {inputBar}
             </div>
             <p className="text-[10px] text-gray-400 dark:text-gray-600 mt-3">
               AI-generated, document-grounded answers. Useful as a co-pilot, not a replacement for your judgment.
@@ -695,6 +1006,20 @@ export function Query() {
 
               if (msg.role === 'user') return <UserMessage key={i} content={msg.content} />;
 
+              // Agent message
+              if (msg.agentData !== undefined) {
+                return (
+                  <AgentAssistantMessage
+                    key={i}
+                    msg={msg}
+                    isLatest={isLatest}
+                    isStreamingMsg={isLatest && isStreaming}
+                    onSuggestionClick={handleChipClick}
+                  />
+                );
+              }
+
+              // RAG message
               return (
                 <div key={i}>
                   <AssistantMessage
@@ -722,7 +1047,9 @@ export function Query() {
                 </div>
               );
             })}
-            {isStreaming && (messages.length === 0 || messages[messages.length - 1].role === 'user') && <ThinkingIndicator />}
+            {isStreaming && (messages.length === 0 || messages[messages.length - 1].role === 'user') && (
+              <ThinkingIndicator mode={mode} />
+            )}
             <div ref={bottomRef} />
           </div>
         )}
@@ -731,33 +1058,8 @@ export function Query() {
       {/* Input bar — bottom-pinned during conversation */}
       {!isEmpty && (
         <>
-          <div className="shrink-0 mt-4 bg-white dark:bg-white/[0.03] border border-gray-200 dark:border-white/15 rounded-2xl shadow-md focus-within:border-primary-400 focus-within:ring-2 focus-within:ring-primary-100 dark:focus-within:ring-primary-900/30 focus-within:shadow-lg transition-all">
-            <textarea
-              ref={textareaRef}
-              rows={1}
-              className="block w-full resize-none px-4 pt-3.5 pb-2 text-sm text-gray-800 dark:text-gray-200 placeholder-gray-400 dark:placeholder-gray-500 focus:outline-none bg-transparent"
-              placeholder="Ask a follow-up..."
-              value={input}
-              onChange={handleInput}
-              onKeyDown={handleKeyDown}
-              disabled={isStreaming}
-            />
-            <div className="flex items-center justify-between px-3 pb-3">
-              <div className="flex items-center gap-2">
-                <kbd className="hidden sm:inline-flex items-center gap-0.5 px-1.5 py-0.5 rounded border border-gray-200 dark:border-white/10 bg-gray-50 dark:bg-white/5 text-[10px] font-mono text-gray-400">
-                  Enter
-                </kbd>
-                <span className="hidden sm:inline text-[10px] text-gray-400 dark:text-gray-500">to send</span>
-              </div>
-              <button
-                onClick={handleSubmit}
-                disabled={!input.trim() || isStreaming}
-                className="inline-flex items-center justify-center w-8 h-8 rounded-xl bg-primary-600 text-white hover:bg-primary-700 disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
-                title="Send (Enter)"
-              >
-                <Send className="w-4 h-4" />
-              </button>
-            </div>
+          <div className="shrink-0 mt-4">
+            {inputBar}
           </div>
           <p className="shrink-0 text-center text-[10px] text-gray-400 dark:text-gray-600 mt-2 leading-relaxed">
             AI-generated, document-grounded answers. Useful as a co-pilot, not a replacement for your judgment.
