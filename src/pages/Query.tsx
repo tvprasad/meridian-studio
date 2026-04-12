@@ -87,39 +87,39 @@ function QueryGuide({ mode }: { mode: QueryMode }) {
           {mode === 'rag' ? (
             <dl className="space-y-2">
               <div>
-                <dt className="font-medium text-gray-700 dark:text-gray-300">Retrieval</dt>
-                <dd>Your question is converted to an embedding and matched against the ingested knowledge base using vector search. The most relevant document chunks are retrieved with similarity scores.</dd>
+                <dt className="font-medium text-gray-700 dark:text-gray-300">Semantic retrieval</dt>
+                <dd>Your question is converted to an embedding and matched against the ingested knowledge base using vector search. The most relevant document chunks are returned with calibrated confidence scores.</dd>
               </div>
               <div>
                 <dt className="font-medium text-gray-700 dark:text-gray-300">Governance gate</dt>
-                <dd>If the best retrieval score falls below the confidence threshold (configurable in Settings), the system refuses to answer rather than guessing. This is a deliberate governance decision — not an error.</dd>
+                <dd>If the highest confidence score falls below the configured threshold, the system refuses to answer rather than speculating. This is a deliberate governance control, not an error. The threshold is adjustable in Settings.</dd>
               </div>
               <div>
                 <dt className="font-medium text-gray-700 dark:text-gray-300">Grounded generation</dt>
-                <dd>When confidence passes the threshold, the LLM generates an answer grounded strictly in the retrieved documents, with source citations. It will not fabricate information beyond what was retrieved.</dd>
+                <dd>When confidence clears the threshold, the model generates an answer grounded strictly in the retrieved documents and cites every source. It will not introduce information beyond what was retrieved.</dd>
               </div>
               <div>
-                <dt className="font-medium text-gray-700 dark:text-gray-300">Multi-turn context</dt>
-                <dd>Conversation history is sent with each question, so follow-up queries like "tell me more" or "what about X?" are interpreted in context of the previous exchange.</dd>
+                <dt className="font-medium text-gray-700 dark:text-gray-300">Audit trail</dt>
+                <dd>Every query, confidence score, retrieval result, and generated response is logged to the evaluation store. Reviewable in full on the Evaluation page.</dd>
               </div>
             </dl>
           ) : (
             <dl className="space-y-2">
               <div>
                 <dt className="font-medium text-gray-700 dark:text-gray-300">Planner</dt>
-                <dd>The Planner decomposes your question into 1–4 focused retrieval sub-tasks, each targeting a different aspect of the answer.</dd>
+                <dd>The Planner decomposes your question into focused retrieval sub-tasks, each targeting a distinct aspect of the answer. Complex questions are broken down before any retrieval begins.</dd>
               </div>
               <div>
                 <dt className="font-medium text-gray-700 dark:text-gray-300">Retriever</dt>
-                <dd>The Retriever runs hybrid semantic + keyword search for each sub-task against the aiPolaris knowledge index. Results are ranked and filtered by a reranker score threshold.</dd>
+                <dd>The Retriever executes vector search against the knowledge base for each sub-task. Chunks are scored by similarity and low-confidence results are filtered before synthesis.</dd>
               </div>
               <div>
                 <dt className="font-medium text-gray-700 dark:text-gray-300">Synthesizer</dt>
-                <dd>The Synthesizer assembles the final answer from retrieved chunks, citing every claim. If chunks are insufficient, it refuses rather than fabricates.</dd>
+                <dd>The Synthesizer assembles a single coherent answer from the retrieved chunks, citing every claim. If the retrieved evidence is insufficient, it declines to answer rather than fabricate.</dd>
               </div>
               <div>
-                <dt className="font-medium text-gray-700 dark:text-gray-300">Session memory</dt>
-                <dd>When a session is active, follow-up questions are interpreted in context of the previous exchange. Sessions are memory-only — nothing is written to disk.</dd>
+                <dt className="font-medium text-gray-700 dark:text-gray-300">Session context</dt>
+                <dd>Follow-up questions are resolved in context of the current session. Sessions are held in memory only — nothing is written to disk and context resets when the session is cleared.</dd>
               </div>
             </dl>
           )}
@@ -893,8 +893,8 @@ export function Query() {
           <h1 className="text-2xl font-bold text-gray-900 dark:text-white">Ask Meridian</h1>
           <p className="text-gray-500 dark:text-gray-400 mt-1">
             {mode === 'rag'
-              ? 'Ask questions in plain language. Meridian searches your ingested documents, evaluates confidence against a governance threshold, and returns a grounded answer — or explains why it can\'t.'
-              : 'Agent Query routes your question through a Planner → Retriever → Synthesizer DAG. Click any completed node to inspect its output.'}
+              ? 'Ask questions in plain language. Meridian retrieves the most relevant content from your knowledge base, evaluates confidence against the governance threshold, and returns a grounded, cited answer — or declines if the evidence is insufficient.'
+              : 'Agent Query decomposes your question and routes it through a Planner → Retriever → Synthesizer pipeline. Each stage is fully traceable — click any completed node to inspect its inputs, outputs, and confidence scores.'}
           </p>
           {mode === 'rag' && health && (
             <p className="mt-2 text-xs text-gray-400 flex items-center gap-1.5">

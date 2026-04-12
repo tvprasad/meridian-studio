@@ -1,6 +1,6 @@
 # Meridian Studio
 
-The operator interface for [Meridian](https://github.com/tvprasad/meridian) — a governed, self-hosted RAG platform. Meridian Studio provides a browser-based UI to query your knowledge base, upload documents, and manage configuration.
+The operator interface for [Meridian](https://github.com/tvprasad/meridian) — a governed, enterprise RAG platform. Meridian Studio provides a browser-based interface for querying the knowledge base, running agentic workflows via the aiPolaris Planner → Retriever → Synthesizer DAG, ingesting documents, and managing configuration.
 
 [![CI](https://github.com/tvprasad/meridian-studio/actions/workflows/ci.yml/badge.svg)](https://github.com/tvprasad/meridian-studio/actions/workflows/ci.yml)
 [![Deploy](https://github.com/tvprasad/meridian-studio/actions/workflows/azure-deploy.yml/badge.svg)](https://github.com/tvprasad/meridian-studio/actions/workflows/azure-deploy.yml)
@@ -19,8 +19,8 @@ The operator interface for [Meridian](https://github.com/tvprasad/meridian) — 
 | Page | Purpose |
 |---|---|
 | **Dashboard** | Live snapshot of pipeline status, document count, and active providers |
-| **Ask Meridian** | Multi-turn chat interface for querying the knowledge base with confidence scoring, citations, follow-up prompts, and markdown rendering |
-| **AI Operations Agent** | ReAct reasoning agent with step-by-step tool execution timeline for complex operational queries |
+| **Ask Meridian** | Query interface with two modes: RAG Query (stateless, confidence-gated retrieval with citations and audit logging) and Agent Query (aiPolaris Planner → Retriever → Synthesizer DAG with per-node trace inspection and session context) |
+| **AI Operations Agent** | ReAct reasoning agent with step-by-step tool execution timeline for complex operational queries against ServiceNow and internal knowledge |
 | **Ingestion Pipeline** | Multi-stage document ingestion (Upload → Extract → Chunk → Embed → Index) with ServiceNow connector |
 | **Evaluation** | Aggregate metrics dashboard (total queries, avg confidence, refusal rate, latency P50/P95) and paginated query log with sortable columns and filter dropdowns |
 | **Settings** | Switch LLM/retrieval providers, adjust temperature, view connection details with copy-ready config snippets for Claude Desktop and Semantic Kernel |
@@ -209,8 +209,9 @@ See [ADR-0003](adr/0003-testing-framework.md) for the testing strategy.
 
 ## Related
 
-- [meridian](https://github.com/tvprasad/meridian) — the backend RAG engine
+- [meridian](https://github.com/tvprasad/meridian) — governed RAG control plane (backend)
 - [meridian-infra](https://github.com/tvprasad/meridian-infra) — Terraform IaC for Azure deployment
+- aiPolaris — agentic orchestration engine (Planner → Retriever → Synthesizer DAG, GCCH-ready)
 
 ---
 
