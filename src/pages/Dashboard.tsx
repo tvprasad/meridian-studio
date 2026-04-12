@@ -11,6 +11,7 @@ import {
   ChevronRight,
 } from 'lucide-react';
 import { type SettingsResponse } from '../api/types';
+import { CccdPanel } from '../components/ui/CccdPanel';
 
 const PROVIDER_LABELS: Record<string, string> = {
   local: 'Local (Ollama)',
@@ -203,6 +204,8 @@ export function Dashboard() {
           </div>
         </dl>
       </Card>
+
+      <CccdPanel calibrationEnabled={health?.calibration_enabled} />
 
       <Card className="mt-8">
         <div className="flex items-center justify-between">

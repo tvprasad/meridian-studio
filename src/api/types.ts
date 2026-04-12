@@ -81,6 +81,7 @@ export interface HealthResponse {
   llm_provider: string;
   retrieval_provider: string;
   retrieval_threshold: number;
+  calibration_enabled?: boolean;
   suggested_questions?: string[];
 }
 
