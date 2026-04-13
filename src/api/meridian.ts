@@ -6,18 +6,6 @@ import { config } from '../config';
 import { getAuthHeaders } from '../auth/getAuthHeaders';
 import type { QueryResponse, HealthResponse, SettingsResponse, McpTool, UpdateSettingsPayload, IngestResponse, ServiceNowIngestRequest, ServiceNowIngestResponse, ServiceNowStatusResponse, AgentQueryResponse, EvaluationQueriesResponse, EvaluationMetricsResponse, StreamEvent } from './types';
 
-// TEMPORARY: remove after /auth/debug validation — see plan quiet-crafting-puppy
-export interface AuthDebugResponse {
-  oid: string;
-  username: string;
-  roles: string[];
-  claims: {
-    roles: string[] | null;
-    groups: string[] | null;
-    preferred_username: string | null;
-    email: string | null;
-  };
-}
 
 export interface ChatMessage {
   role: 'user' | 'assistant';
@@ -185,10 +173,6 @@ export const meridianApi = {
   // PATCH /evaluation/queries/{trace_id}/feedback — submit human rating
   submitFeedback: (traceId: string, rating: 'up' | 'down' | null) =>
     api.post<void>(`/evaluation/queries/${traceId}/feedback`, { rating }),
-
-  // TEMPORARY: GET /auth/debug — confirms role resolution path after auth fix deploy
-  // Remove after production validation confirms roles: ["operator"] for previously-failing users.
-  authDebug: () => api.get<AuthDebugResponse>('/auth/debug'),
 
   // GET MCP server health — lightweight reachability check
   mcpHealth: async (): Promise<{ reachable: boolean }> => {
