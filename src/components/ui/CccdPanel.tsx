@@ -12,7 +12,7 @@ interface CccdPanelProps {
  * Read-only panel surfacing the CCCD framework status on the Dashboard.
  * CCCD (Continuous Calibration, Continuous Development) is Meridian's
  * feedback loop that keeps confidence scoring accurate as the knowledge
- * base evolves. See docs/cccd.md for the full specification.
+ * base evolves.
  */
 export function CccdPanel({ calibrationEnabled }: CccdPanelProps) {
   return (
@@ -23,37 +23,27 @@ export function CccdPanel({ calibrationEnabled }: CccdPanelProps) {
         </div>
         <div className="flex-1 min-w-0">
           <p className="text-sm font-medium text-gray-800 dark:text-gray-200">
-            CCCD Framework
+            CCCD — Continuous Calibration, Continuous Development
           </p>
           <p className="text-xs text-gray-500 dark:text-gray-400 mt-0.5">
-            Confidence scoring recalibrates as the knowledge base evolves.
+            Confidence scoring recalibrates as the knowledge base evolves, keeping retrieval accuracy aligned with ground truth over time.
           </p>
-          <div className="mt-3 flex items-center gap-4">
-            <div>
-              <span className="text-xs text-gray-400 dark:text-gray-500">Calibration</span>
-              <span
-                className={`ml-2 inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide ${
-                  calibrationEnabled
-                    ? 'bg-green-500/15 text-green-400'
-                    : 'bg-gray-500/15 text-gray-400'
-                }`}
-              >
-                <span
-                  className={`w-1.5 h-1.5 rounded-full ${
-                    calibrationEnabled ? 'bg-green-400' : 'bg-gray-400'
-                  }`}
-                />
-                {calibrationEnabled ? 'Enabled' : 'Disabled'}
-              </span>
-            </div>
-            <a
-              href="https://github.com/tvprasad/meridian/blob/main/docs/cccd.md"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="text-xs text-blue-500 hover:text-blue-400 underline underline-offset-2 transition-colors"
+          <div className="mt-3">
+            <span className="text-xs text-gray-400 dark:text-gray-500">Calibration</span>
+            <span
+              className={`ml-2 inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide ${
+                calibrationEnabled
+                  ? 'bg-green-500/15 text-green-400'
+                  : 'bg-gray-500/15 text-gray-400'
+              }`}
             >
-              docs/cccd.md
-            </a>
+              <span
+                className={`w-1.5 h-1.5 rounded-full ${
+                  calibrationEnabled ? 'bg-green-400' : 'bg-gray-400'
+                }`}
+              />
+              {calibrationEnabled ? 'Enabled' : 'Disabled'}
+            </span>
           </div>
         </div>
       </div>
