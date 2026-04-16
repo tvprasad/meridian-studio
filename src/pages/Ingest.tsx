@@ -199,8 +199,9 @@ function ServiceNowTab({ onSyncSuccess }: { onSyncSuccess: () => void }) {
           <h3 className="text-sm font-semibold text-gray-700 dark:text-gray-200 mb-4">Filters (optional)</h3>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             <div>
-              <label className="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-1">Knowledge Base</label>
+              <label htmlFor="ingest-kb-name" className="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-1">Knowledge Base</label>
               <input
+                id="ingest-kb-name"
                 type="text"
                 placeholder="e.g. IT Knowledge Base"
                 value={kbName}
@@ -209,8 +210,9 @@ function ServiceNowTab({ onSyncSuccess }: { onSyncSuccess: () => void }) {
               />
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-1">Category</label>
+              <label htmlFor="ingest-category" className="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-1">Category</label>
               <input
+                id="ingest-category"
                 type="text"
                 placeholder="e.g. Networking"
                 value={category}
@@ -219,8 +221,9 @@ function ServiceNowTab({ onSyncSuccess }: { onSyncSuccess: () => void }) {
               />
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-1">Article Limit</label>
+              <label htmlFor="ingest-limit" className="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-1">Article Limit</label>
               <input
+                id="ingest-limit"
                 type="number"
                 min="1"
                 placeholder="All articles"
@@ -398,8 +401,10 @@ export function Ingest() {
       )}
 
       {/* Source tabs */}
-      <div className="flex gap-1 mt-6 border-b border-gray-200 dark:border-white/10">
+      <div role="tablist" aria-label="Ingest source" className="flex gap-1 mt-6 border-b border-gray-200 dark:border-white/10">
         <button
+          role="tab"
+          aria-selected={source === 'file'}
           onClick={() => setSource('file')}
           className={`px-4 py-2 text-sm font-medium rounded-t-lg transition-colors -mb-px flex items-center gap-2 ${
             source === 'file'
@@ -411,6 +416,8 @@ export function Ingest() {
           File Upload
         </button>
         <button
+          role="tab"
+          aria-selected={source === 'servicenow'}
           onClick={() => setSource('servicenow')}
           className={`px-4 py-2 text-sm font-medium rounded-t-lg transition-colors -mb-px flex items-center gap-2 ${
             source === 'servicenow'

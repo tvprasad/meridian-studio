@@ -35,6 +35,9 @@ The MCP `tools/call` endpoint expects: `{ name: "query_knowledge_base", argument
 - Always end with `Co-Authored-By: Claude Opus 4.6 <noreply@anthropic.com>`
 - Update CHANGELOG.md under `[Unreleased]` in every commit with code changes
 
+### Before declaring any task done
+Run `/verify`. No exceptions. Re-reads changed files, runs tests (`npm test`), checks for secrets. Only report done after VERDICT: READY TO SHIP.
+
 ### Before every commit
 1. `npm run lint` — 0 errors (warnings OK)
 2. `npm test` — all tests pass

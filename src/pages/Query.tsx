@@ -144,7 +144,7 @@ function CopyButton({ text }: { text: string }) {
     <button
       onClick={handleCopy}
       title="Copy answer"
-      className="inline-flex items-center gap-1 text-xs text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 transition-colors"
+      className="inline-flex items-center gap-1 text-xs text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 transition-colors focus-visible:ring-2 focus-visible:ring-primary-500 rounded"
     >
       {copied ? <Check className="w-3.5 h-3.5 text-emerald-500" /> : <Copy className="w-3.5 h-3.5" />}
       {copied ? 'Copied' : 'Copy'}
@@ -186,7 +186,7 @@ function FeedbackButtons({ traceId }: { traceId: string }) {
       <button
         onClick={() => toggle('up')}
         title="Helpful"
-        className={`p-0.5 rounded transition-colors ${
+        className={`p-0.5 rounded transition-colors focus-visible:ring-2 focus-visible:ring-primary-500 ${
           feedback === 'up'
             ? 'text-emerald-500'
             : 'text-gray-400 hover:text-gray-600 dark:text-gray-500 dark:hover:text-gray-300'
@@ -197,7 +197,7 @@ function FeedbackButtons({ traceId }: { traceId: string }) {
       <button
         onClick={() => toggle('down')}
         title="Not helpful"
-        className={`p-0.5 rounded transition-colors ${
+        className={`p-0.5 rounded transition-colors focus-visible:ring-2 focus-visible:ring-primary-500 ${
           feedback === 'down'
             ? 'text-red-500'
             : 'text-gray-400 hover:text-gray-600 dark:text-gray-500 dark:hover:text-gray-300'
@@ -229,6 +229,11 @@ function RetrievalScoreBar({ score, threshold, index }: { score: number; thresho
         />
         {/* Score bar */}
         <div
+          role="progressbar"
+          aria-valuemin={0}
+          aria-valuemax={1}
+          aria-valuenow={score}
+          aria-label="Retrieval confidence score"
           className={`h-full rounded-full transition-all duration-500 ${
             passes
               ? 'bg-gradient-to-r from-emerald-400 to-emerald-500'
@@ -335,9 +340,9 @@ function AssistantMessage({ msg, isLatest, isStreamingMsg, onSuggestionClick }: 
         </div>
         <div className="flex-1 min-w-0">
           {isRefused ? (
-            <div className="bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-700 rounded-2xl rounded-tl-sm px-4 py-3">
+            <div role="alert" aria-atomic="true" className="bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-700 rounded-2xl rounded-tl-sm px-4 py-3">
               <div className="flex items-center gap-2 mb-1">
-                <AlertTriangle className="w-4 h-4 text-amber-500 shrink-0" />
+                <AlertTriangle className="w-4 h-4 text-amber-500 shrink-0" aria-hidden="true" />
                 <span className="text-xs font-medium text-amber-700 dark:text-amber-400">
                   {score != null && score < 0.2 ? 'Outside the knowledge base' : 'Not enough evidence to answer'}
                 </span>
@@ -486,7 +491,7 @@ function UserMessage({ content }: { content: string }) {
 
 function ThinkingIndicator({ mode }: { mode: QueryMode }) {
   return (
-    <div className="flex items-start gap-3">
+    <div role="status" aria-label={mode === 'agent' ? 'Agent is reasoning' : 'Generating response'} className="flex items-start gap-3">
       <div className={`shrink-0 w-8 h-8 rounded-full flex items-center justify-center mt-0.5 ${
         mode === 'agent'
           ? 'bg-purple-100 dark:bg-purple-900/30'
@@ -856,6 +861,7 @@ export function Query() {
         ref={textareaRef}
         rows={1}
         className="block w-full resize-none px-4 pt-3.5 pb-2 text-sm text-gray-800 dark:text-gray-200 placeholder-gray-400 dark:placeholder-gray-500 focus:outline-none bg-transparent"
+        aria-label={mode === 'agent' ? 'Ask a multi-step question' : 'Ask a question'}
         placeholder={mode === 'agent' ? 'Ask a multi-step question...' : 'Ask a question...'}
         value={input}
         onChange={handleInput}
@@ -951,7 +957,7 @@ export function Query() {
       )}
 
       {/* Messages area */}
-      <div className="flex-1 mt-6 overflow-y-auto min-h-0">
+      <div className="flex-1 mt-6 overflow-y-auto min-h-0" aria-live="polite" aria-atomic="false" aria-label="Query response">
         {isEmpty ? (
           <div className="flex flex-col items-center justify-center h-full text-center">
             <div className={`w-14 h-14 rounded-full flex items-center justify-center mb-4 ${

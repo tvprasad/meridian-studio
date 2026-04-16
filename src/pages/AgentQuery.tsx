@@ -327,7 +327,7 @@ function AgentAnswer({ result, isLatest, onFollowUpClick }: {
 
 function ThinkingIndicator() {
   return (
-    <div className="flex items-start gap-3">
+    <div role="status" aria-label="Agent is reasoning" className="flex items-start gap-3">
       <div className="shrink-0 w-8 h-8 rounded-full bg-violet-100 dark:bg-violet-900/30 flex items-center justify-center mt-0.5">
         <Bot className="w-4 h-4 text-violet-600 dark:text-violet-400" />
       </div>
@@ -452,7 +452,7 @@ export function AgentQuery() {
       </div>
 
       {/* Messages area */}
-      <div className="flex-1 mt-6 overflow-y-auto min-h-0">
+      <div className="flex-1 mt-6 overflow-y-auto min-h-0" aria-live="polite" aria-atomic="false" aria-label="Agent response">
         {isEmpty ? (
           <div className="flex flex-col items-center justify-center h-full text-center">
             <div className="w-14 h-14 rounded-full bg-violet-50 dark:bg-violet-900/30 flex items-center justify-center mb-4">
@@ -480,6 +480,7 @@ export function AgentQuery() {
                 ref={textareaRef}
                 rows={1}
                 className="block w-full resize-none px-4 pt-3.5 pb-2 text-sm text-gray-800 dark:text-gray-200 placeholder-gray-400 dark:placeholder-gray-500 focus:outline-none bg-transparent"
+                aria-label="Ask an operations question"
                 placeholder="Ask an operations question..."
                 value={input}
                 onChange={handleInput}
@@ -531,9 +532,9 @@ export function AgentQuery() {
                 {entry.error && (
                   <div className="flex items-start gap-3">
                     <div className="shrink-0 w-8 h-8 rounded-full bg-red-100 dark:bg-red-900/30 flex items-center justify-center mt-0.5">
-                      <AlertCircle className="w-4 h-4 text-red-600 dark:text-red-400" />
+                      <AlertCircle className="w-4 h-4 text-red-600 dark:text-red-400" aria-hidden="true" />
                     </div>
-                    <div className="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-2xl rounded-tl-sm px-4 py-3">
+                    <div role="alert" aria-atomic="true" className="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-2xl rounded-tl-sm px-4 py-3">
                       <p className="text-sm text-red-800 dark:text-red-300">{entry.error}</p>
                     </div>
                   </div>
@@ -558,6 +559,7 @@ export function AgentQuery() {
               ref={textareaRef}
               rows={1}
               className="block w-full resize-none px-4 pt-3.5 pb-2 text-sm text-gray-800 dark:text-gray-200 placeholder-gray-400 dark:placeholder-gray-500 focus:outline-none bg-transparent"
+              aria-label="Ask a follow-up question"
               placeholder="Ask a follow-up..."
               value={input}
               onChange={handleInput}

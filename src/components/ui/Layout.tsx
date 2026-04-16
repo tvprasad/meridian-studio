@@ -136,6 +136,13 @@ export function Layout() {
 
   return (
     <div className="min-h-screen flex">
+      <a
+        href="#main-content"
+        className="sr-only focus:not-sr-only focus:absolute focus:z-50 focus:top-4 focus:left-4 focus:px-4 focus:py-2 focus:rounded-lg focus:bg-white focus:text-black focus:font-medium focus:shadow-lg focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-primary-500"
+      >
+        Skip to main content
+      </a>
+
       {/* Sidebar */}
       <aside
         className={`bg-black text-white flex flex-col shrink-0 transition-all duration-200 ease-in-out ${expanded ? 'w-64' : 'w-14'}`}
@@ -143,11 +150,11 @@ export function Layout() {
         onMouseLeave={() => { if (!pinned) setHovered(false); }}
       >
         {/* Iridescent top accent strip — warm core to cool edge */}
-        <div className="h-0.5 bg-gradient-to-r from-orange-400 via-violet-500 to-teal-400 shrink-0" />
+        <div className="h-0.5 bg-gradient-to-r from-orange-400 via-violet-500 to-teal-400 shrink-0" aria-hidden="true" />
         <div className={`border-b border-white/10 ${expanded ? 'p-6' : 'py-4 px-2'}`}>
           <div className={`flex items-center ${expanded ? 'gap-3' : 'justify-center'}`}>
             <a href="https://vplsolutions.com" target="_blank" rel="noopener noreferrer" className="w-8 h-8 rounded-lg overflow-hidden shrink-0 shadow-lg block">
-              <img src="/vpllogo.jfif" alt="VPL" className="w-full h-full object-contain" />
+              <img src="/vpllogo.jfif" alt="VPL Solutions" className="w-full h-full object-contain" />
             </a>
             {expanded && (
               <div className="iridescent-group flex-1 min-w-0">
@@ -160,7 +167,7 @@ export function Layout() {
           </div>
         </div>
 
-        <nav className="mt-2 flex-1 overflow-y-auto">
+        <nav className="mt-2 flex-1 overflow-y-auto" aria-label="Main navigation">
           {coreNavItems.map((item) => (
             <NavItem key={item.to} {...item} collapsed={!expanded} />
           ))}
@@ -168,6 +175,8 @@ export function Layout() {
           {expanded ? (
             <button
               onClick={toggleAiLab}
+              aria-expanded={aiLabOpen}
+              aria-label="AI Lab section"
               className="w-full px-6 pt-5 pb-1 flex items-center gap-2 hover:opacity-80 transition-opacity cursor-pointer"
             >
               <p className="text-[10px] font-semibold uppercase tracking-widest text-white/25">AI Lab</p>
@@ -185,6 +194,8 @@ export function Layout() {
           {expanded ? (
             <button
               onClick={toggleAdmin}
+              aria-expanded={adminOpen}
+              aria-label="Platform Admin section"
               className="w-full px-6 pt-5 pb-1 flex items-center gap-2 hover:opacity-80 transition-opacity cursor-pointer"
             >
               <p className="text-[10px] font-semibold uppercase tracking-widest text-white/25">Platform Admin</p>
@@ -204,6 +215,7 @@ export function Layout() {
           <button
             onClick={togglePin}
             title={pinned ? 'Unpin sidebar' : 'Pin sidebar'}
+            aria-label={pinned ? 'Unpin sidebar' : 'Pin sidebar'}
             className="flex items-center gap-2 text-xs text-white/50 hover:text-white/90 transition-colors"
           >
             {pinned ? (
@@ -221,6 +233,7 @@ export function Layout() {
           <button
             onClick={toggleTheme}
             title={dark ? 'Switch to light mode' : 'Switch to dark mode'}
+            aria-label={dark ? 'Switch to light mode' : 'Switch to dark mode'}
             className="flex items-center gap-2 text-xs text-white/50 hover:text-white/90 transition-colors"
           >
             {dark ? (
@@ -257,14 +270,20 @@ export function Layout() {
       </aside>
 
       {/* Main content */}
-      <main className="flex-1 overflow-auto flex flex-col bg-gray-50 dark:bg-gray-950">
+      <main id="main-content" className="flex-1 overflow-auto flex flex-col bg-gray-50 dark:bg-gray-950">
         <div className="flex-1 p-8">
           <Outlet />
         </div>
-        <footer className="px-8 py-3 border-t border-gray-100 dark:border-white/10">
-          <p className="text-[8px] text-gray-400/70 dark:text-gray-600 leading-relaxed">
+        <footer className="px-8 py-3 border-t border-gray-100 dark:border-white/10 flex items-center justify-between gap-4">
+          <p className="text-[8px] text-gray-400/70 dark:text-gray-500 leading-relaxed" aria-hidden="true">
             Microsoft Azure, Amazon Web Services (AWS), and all other third-party product names, logos, and brands are trademarks or registered trademarks of their respective owners. Their use here does not imply endorsement or affiliation.
           </p>
+          <span
+            className="shrink-0 text-[9px] font-semibold tracking-widest border border-teal-500/30 text-teal-500/60 dark:text-teal-400/60 rounded px-1.5 py-0.5 whitespace-nowrap"
+            title="Conforms to WCAG 2.1 Level AA and Section 508"
+          >
+            WCAG 2.1 AA
+          </span>
         </footer>
       </main>
 

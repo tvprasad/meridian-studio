@@ -94,8 +94,9 @@ export function LanguageIntelligence() {
       <Card className="mt-0 rounded-tl-none">
         <div className="flex gap-4 items-start">
           <div className="flex-1">
-            <label className="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-2">Input Text</label>
+            <label htmlFor="language-input-text" className="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-2">Input Text</label>
             <textarea
+              id="language-input-text"
               rows={5}
               className="block w-full rounded-lg border border-gray-300 dark:border-white/15 p-3 text-sm dark:bg-gray-900 dark:text-gray-200 focus:border-violet-500 focus:ring-violet-500 focus:outline-none"
               placeholder="Enter text to analyze…"
@@ -105,8 +106,9 @@ export function LanguageIntelligence() {
           </div>
           {hasNonDetectLanguage && (
             <div className="w-36 shrink-0">
-              <label className="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-2">Language</label>
+              <label htmlFor="language-select" className="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-2">Language</label>
               <select
+                id="language-select"
                 value={language}
                 onChange={(e) => setLanguage(e.target.value)}
                 className="block w-full rounded-lg border border-gray-300 dark:border-white/15 p-2.5 text-sm dark:bg-gray-900 dark:text-gray-200 focus:border-violet-500 focus:outline-none"

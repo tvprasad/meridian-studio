@@ -9,6 +9,8 @@ The operator interface for [Meridian](https://github.com/tvprasad/meridian) — 
 [![TypeScript](https://img.shields.io/badge/TypeScript-5.9-3178C6?logo=typescript&logoColor=white)](https://www.typescriptlang.org)
 [![Vite](https://img.shields.io/badge/Vite-7-646CFF?logo=vite&logoColor=white)](https://vitejs.dev)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
+[![WCAG 2.1 AA](https://img.shields.io/badge/WCAG_2.1-AA_Conformant-00A550?style=flat)](ACCESSIBILITY.md)
+[![Section 508](https://img.shields.io/badge/Section_508-Conformant-00A550?style=flat)](ACCESSIBILITY.md)
 
 ---
 

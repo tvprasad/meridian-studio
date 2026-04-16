@@ -206,11 +206,12 @@ export function DocumentIntelligence() {
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-2">Model</label>
+            <label htmlFor="doc-model" className="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-2">Model</label>
             <select
+              id="doc-model"
               value={modelId}
               onChange={(e) => setModelId(e.target.value)}
-              className="block w-full rounded-lg border border-gray-300 dark:border-white/15 p-2.5 text-sm dark:bg-gray-900 dark:text-gray-200 focus:border-orange-500 focus:outline-none"
+              className="block w-full rounded-lg border border-gray-300 dark:border-white/15 p-2.5 text-sm dark:bg-gray-900 dark:text-gray-200 focus:border-orange-500 focus:outline-none focus:ring-2 focus:ring-primary-500"
             >
               {MODELS.map(({ value, label }) => (
                 <option key={value} value={value}>{label}</option>

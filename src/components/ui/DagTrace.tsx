@@ -87,7 +87,7 @@ const STAGE_CONFIG: Record<DagStage, StageConfig> = {
 
 function PlannerDrawer({ subTasks }: { subTasks?: string[] }) {
   if (!subTasks?.length) return (
-    <p className="text-xs text-gray-400 dark:text-gray-600 italic">No sub-tasks recorded.</p>
+    <p className="text-xs text-gray-400 dark:text-gray-500 italic">No sub-tasks recorded.</p>
   );
   return (
     <div className="space-y-1.5">
@@ -108,7 +108,7 @@ function PlannerDrawer({ subTasks }: { subTasks?: string[] }) {
 
 function RetrieverDrawer({ chunks }: { chunks?: PolarisChunk[] }) {
   if (!chunks?.length) return (
-    <p className="text-xs text-gray-400 dark:text-gray-600 italic">No chunks retrieved.</p>
+    <p className="text-xs text-gray-400 dark:text-gray-500 italic">No chunks retrieved.</p>
   );
   return (
     <div className="space-y-2.5">
@@ -138,7 +138,7 @@ function RetrieverDrawer({ chunks }: { chunks?: PolarisChunk[] }) {
           <p className="text-[11px] text-gray-500 dark:text-gray-400 leading-snug line-clamp-2">
             {chunk.content}
           </p>
-          <div className="flex items-center gap-1 text-[10px] text-gray-400 dark:text-gray-600">
+          <div className="flex items-center gap-1 text-[10px] text-gray-400 dark:text-gray-500">
             <Hash className="w-2.5 h-2.5" />
             <span className="font-mono truncate">{chunk.source}</span>
           </div>
@@ -150,7 +150,7 @@ function RetrieverDrawer({ chunks }: { chunks?: PolarisChunk[] }) {
 
 function SynthesizerDrawer({ citations }: { citations?: PolarisCitation[] }) {
   if (!citations?.length) return (
-    <p className="text-xs text-gray-400 dark:text-gray-600 italic">No citations available.</p>
+    <p className="text-xs text-gray-400 dark:text-gray-500 italic">No citations available.</p>
   );
   return (
     <div className="space-y-2">
@@ -166,7 +166,7 @@ function SynthesizerDrawer({ citations }: { citations?: PolarisCitation[] }) {
           <p className="text-[11px] text-gray-500 dark:text-gray-400 leading-snug italic line-clamp-3 pl-4">
             "{citation.excerpt}"
           </p>
-          <div className="flex items-center gap-1 text-[10px] text-gray-400 dark:text-gray-600 pl-4">
+          <div className="flex items-center gap-1 text-[10px] text-gray-400 dark:text-gray-500 pl-4">
             <Hash className="w-2.5 h-2.5" />
             <span className="font-mono truncate">{citation.source}</span>
           </div>
@@ -212,8 +212,9 @@ function NodeCard({ node, isExpanded, onToggle }: NodeCardProps) {
         onClick={isClickable ? onToggle : undefined}
         role={isClickable ? 'button' : undefined}
         tabIndex={isClickable ? 0 : undefined}
-        onKeyDown={isClickable ? (e) => e.key === 'Enter' && onToggle() : undefined}
+        onKeyDown={isClickable ? (e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); onToggle(); } } : undefined}
         aria-expanded={isClickable ? isExpanded : undefined}
+        aria-label={isClickable ? `${node.stage.charAt(0).toUpperCase() + node.stage.slice(1)} stage — ${node.status}. ${isExpanded ? 'Collapse' : 'Expand'} details` : undefined}
       >
         {/* Status icon */}
         <div className={[
@@ -230,7 +231,7 @@ function NodeCard({ node, isExpanded, onToggle }: NodeCardProps) {
           ) : node.status === 'error' ? (
             <XCircle className="w-3.5 h-3.5 text-red-500" />
           ) : (
-            <Icon className="w-3.5 h-3.5 text-gray-300 dark:text-gray-600" />
+            <Icon className="w-3.5 h-3.5 text-gray-300 dark:text-gray-500" />
           )}
         </div>
 
@@ -239,7 +240,7 @@ function NodeCard({ node, isExpanded, onToggle }: NodeCardProps) {
           <div className="flex items-center gap-1.5">
             <span className={[
               'text-xs font-semibold',
-              node.status === 'idle'  ? 'text-gray-400 dark:text-gray-600' :
+              node.status === 'idle'  ? 'text-gray-400 dark:text-gray-500' :
               node.status === 'error' ? 'text-red-600 dark:text-red-400' :
                                         cfg.textDone,
             ].join(' ')}>
@@ -255,7 +256,7 @@ function NodeCard({ node, isExpanded, onToggle }: NodeCardProps) {
             <div className="flex items-center gap-2 mt-0.5">
               <span className="text-[10px] text-gray-400 dark:text-gray-500">{node.sublabel}</span>
               {node.latency_ms !== null && (
-                <span className="flex items-center gap-0.5 text-[10px] text-gray-300 dark:text-gray-600">
+                <span className="flex items-center gap-0.5 text-[10px] text-gray-300 dark:text-gray-500">
                   <Clock className="w-2.5 h-2.5" />
                   {Math.round(node.latency_ms)}ms
                 </span>
@@ -266,7 +267,7 @@ function NodeCard({ node, isExpanded, onToggle }: NodeCardProps) {
 
         {/* Expand chevron */}
         {isClickable && (
-          <div className="shrink-0 text-gray-300 dark:text-gray-600">
+          <div className="shrink-0 text-gray-300 dark:text-gray-500">
             {isExpanded
               ? <ChevronUp className="w-3.5 h-3.5" />
               : <ChevronDown className="w-3.5 h-3.5" />
@@ -306,7 +307,7 @@ function ConnectorArrow({ active }: { active: boolean }) {
       ].join(' ')} />
       <ArrowRight className={[
         'w-3 h-3 -ml-1 transition-colors duration-500',
-        active ? 'text-gray-300 dark:text-gray-600' : 'text-gray-150 dark:text-gray-800',
+        active ? 'text-gray-300 dark:text-gray-500' : 'text-gray-150 dark:text-gray-800',
       ].join(' ')} />
     </div>
   );
