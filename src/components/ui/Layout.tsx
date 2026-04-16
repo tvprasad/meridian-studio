@@ -277,7 +277,7 @@ export function Layout() {
                 <path d="M8 1L2 4v4c0 3.5 2.5 6.3 6 7 3.5-.7 6-3.5 6-7V4L8 1z" stroke="currentColor" strokeWidth="1.5" strokeLinejoin="round"/>
                 <path d="M5.5 8l2 2 3-3" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
               </svg>
-              WCAG 2.1 AA · Section 508
+              WCAG 2.1 AA · Section 508 · Section 508
             </a>
           </div>
         )}
@@ -292,12 +292,17 @@ export function Layout() {
           <p className="text-[8px] text-gray-400/70 dark:text-gray-500 leading-relaxed" aria-hidden="true">
             Microsoft Azure, Amazon Web Services (AWS), and all other third-party product names, logos, and brands are trademarks or registered trademarks of their respective owners. Their use here does not imply endorsement or affiliation.
           </p>
-          <span
-            className="shrink-0 text-[9px] font-semibold tracking-widest border border-teal-500/30 text-teal-500/60 dark:text-teal-400/60 rounded px-1.5 py-0.5 whitespace-nowrap"
-            title="Conforms to WCAG 2.1 Level AA and Section 508"
+          <a
+            href="/accessibility.html"
+            className="shrink-0 inline-flex items-center gap-1.5 text-[10px] font-semibold tracking-wide border border-teal-500/30 text-teal-400/70 hover:text-teal-400 hover:border-teal-500/55 rounded px-2 py-0.5 whitespace-nowrap transition-colors"
+            aria-label="WCAG 2.1 AA and Section 508 conformant — view accessibility statement"
           >
-            WCAG 2.1 AA
-          </span>
+            <svg width="10" height="10" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+              <path d="M8 1L2 4v4c0 3.5 2.5 6.3 6 7 3.5-.7 6-3.5 6-7V4L8 1z" stroke="currentColor" strokeWidth="1.5" strokeLinejoin="round"/>
+              <path d="M5.5 8l2 2 3-3" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+            </svg>
+            WCAG 2.1 AA · Section 508
+          </a>
         </footer>
       </main>
 

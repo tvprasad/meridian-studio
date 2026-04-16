@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Accessibility Statement — Meridian Studio</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --bg: #030712;
+      --panel: #0f172a;
+      --border: rgba(255,255,255,0.08);
+      --teal: #2dd4bf;
+      --teal-dim: rgba(45,212,191,0.25);
+      --text-primary: #f1f5f9;
+      --text-secondary: rgba(241,245,249,0.6);
+      --text-muted: rgba(241,245,249,0.35);
+      --font-mono: 'IBM Plex Mono', 'Courier New', monospace;
+      --font-body: 'Figtree', 'Segoe UI', system-ui, sans-serif;
+    }
+    html { background: var(--bg); color: var(--text-primary); font-family: var(--font-body); line-height: 1.7; }
+    body { min-height: 100vh; padding: 48px 24px 80px; }
+    .wrap { max-width: 720px; margin: 0 auto; }
+    a.back { display: inline-flex; align-items: center; gap: 6px; font-size: 13px; color: var(--teal); text-decoration: none; margin-bottom: 40px; opacity: 0.8; }
+    a.back:hover { opacity: 1; }
+    .eyebrow { font-family: var(--font-mono); font-size: 11px; letter-spacing: 0.16em; text-transform: uppercase; color: var(--teal); margin-bottom: 12px; }
+    h1 { font-size: clamp(24px, 4vw, 36px); font-weight: 700; letter-spacing: -0.02em; margin-bottom: 8px; }
+    .meta { font-size: 13px; color: var(--text-muted); margin-bottom: 48px; }
+    .badge-row { display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 48px; }
+    .badge {
+      display: inline-flex; align-items: center; gap: 6px;
+      font-family: var(--font-mono); font-size: 12px; font-weight: 600; letter-spacing: 0.06em;
+      color: var(--teal); border: 1px solid var(--teal-dim);
+      border-radius: 6px; padding: 5px 12px;
+    }
+    section { margin-bottom: 40px; }
+    h2 { font-size: 15px; font-weight: 700; letter-spacing: 0.04em; text-transform: uppercase; color: var(--teal); margin-bottom: 16px; font-family: var(--font-mono); }
+    p { font-size: 15px; color: var(--text-secondary); margin-bottom: 12px; }
+    table { width: 100%; border-collapse: collapse; font-size: 14px; margin-bottom: 12px; }
+    th { text-align: left; font-family: var(--font-mono); font-size: 11px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--text-muted); padding: 8px 12px; border-bottom: 1px solid var(--border); }
+    td { padding: 10px 12px; border-bottom: 1px solid var(--border); color: var(--text-secondary); vertical-align: top; }
+    td:first-child { font-family: var(--font-mono); font-size: 12px; color: var(--text-muted); white-space: nowrap; }
+    .complete { color: #4ade80; font-family: var(--font-mono); font-size: 12px; }
+    .na { color: var(--text-muted); font-family: var(--font-mono); font-size: 12px; }
+    ul { list-style: none; padding: 0; }
+    ul li { font-size: 15px; color: var(--text-secondary); padding: 4px 0 4px 16px; position: relative; }
+    ul li::before { content: '—'; position: absolute; left: 0; color: var(--teal); opacity: 0.5; }
+    a { color: var(--teal); }
+    .contact-box { background: var(--panel); border: 1px solid var(--border); border-radius: 8px; padding: 20px 24px; }
+    .contact-box p { margin: 0; }
+    .contact-box a { font-weight: 600; }
+    footer { margin-top: 64px; padding-top: 24px; border-top: 1px solid var(--border); font-size: 12px; color: var(--text-muted); }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <a class="back" href="/">
+      <svg width="14" height="14" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+        <path d="M10 4L6 8l4 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+      Back to Meridian Studio
+    </a>
+
+    <div class="eyebrow">Accessibility</div>
+    <h1>Accessibility Statement</h1>
+    <p class="meta">studio.vplsolutions.com &nbsp;·&nbsp; Last updated: April 2026 &nbsp;·&nbsp; VPL Solutions, LLC</p>
+
+    <div class="badge-row">
+      <span class="badge">
+        <svg width="13" height="13" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+          <path d="M8 1L2 4v4c0 3.5 2.5 6.3 6 7 3.5-.7 6-3.5 6-7V4L8 1z" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/>
+          <path d="M5.5 8l2 2 3-3" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+        WCAG 2.1 Level AA
+      </span>
+      <span class="badge">
+        <svg width="13" height="13" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+          <path d="M8 1L2 4v4c0 3.5 2.5 6.3 6 7 3.5-.7 6-3.5 6-7V4L8 1z" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/>
+          <path d="M5.5 8l2 2 3-3" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+        Section 508 Conformant
+      </span>
+    </div>
+
+    <section>
+      <h2>Target Standard</h2>
+      <p>Meridian Studio targets <strong>WCAG 2.1 Level AA</strong> conformance. Section 508 of the Rehabilitation Act adopts WCAG 2.1 AA as its technical baseline. Manual verification was performed using VoiceOver on iOS Safari.</p>
+    </section>
+
+    <section>
+      <h2>Conformance Status</h2>
+      <table>
+        <thead>
+          <tr><th>Sprint</th><th>Scope</th><th>Status</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>S1</td><td>Landmark structure, skip navigation, sidebar nav labels, aria-expanded toggles</td><td class="complete">Complete</td></tr>
+          <tr><td>S2</td><td>Form labels — Ingest, Language Intelligence, Document Intelligence</td><td class="complete">Complete</td></tr>
+          <tr><td>S3</td><td>Live regions — RAG streaming, Agent streaming, REFUSED state</td><td class="complete">Complete</td></tr>
+          <tr><td>S4</td><td>Keyboard operability — DAG trace nodes, textarea aria-labels</td><td class="complete">Complete</td></tr>
+          <tr><td>S5</td><td>Contrast audit (DagTrace metadata), reduced-motion CSS block</td><td class="complete">Complete</td></tr>
+          <tr><td>S6</td><td>Focus management — no modal dialogs in Studio scope</td><td class="na">N/A</td></tr>
+          <tr><td>S7</td><td>Accessibility statement</td><td class="complete">Complete</td></tr>
+          <tr><td>S8</td><td>AT manual verification — VoiceOver / iOS Safari</td><td class="complete">Complete</td></tr>
+        </tbody>
+      </table>
+    </section>
+
+    <section>
+      <h2>Known Limitations</h2>
+      <ul>
+        <li>Studio is an authenticated operator tool; public access is not provided.</li>
+        <li>DAG Trace panel contains complex SVG visualizations; screen-reader equivalents provided via text labels on each node.</li>
+        <li>Trademark disclaimer in footer is <code>aria-hidden</code> — legal boilerplate, not content.</li>
+        <li>WCAG 2.2 delta items targeted for a future sprint.</li>
+      </ul>
+    </section>
+
+    <section>
+      <h2>Scope</h2>
+      <p>This statement covers the Meridian Studio operator interface at studio.vplsolutions.com. It does not cover the Meridian API backend or MCP server.</p>
+    </section>
+
+    <section>
+      <h2>Technical Approach</h2>
+      <ul>
+        <li>React 19 + TypeScript, Tailwind CSS v4 — no component library</li>
+        <li>ARIA implemented directly, no abstraction layer</li>
+        <li>Streaming AI output: <code>aria-live="polite" aria-atomic="false"</code></li>
+        <li>REFUSED responses: <code>role="alert"</code></li>
+        <li>Animations suppressed via <code>prefers-reduced-motion</code> CSS block</li>
+      </ul>
+    </section>
+
+    <section>
+      <h2>Report an Issue</h2>
+      <div class="contact-box">
+        <p>If you encounter an accessibility barrier in Meridian Studio, contact us at <a href="mailto:studio@vplsolutions.com">studio@vplsolutions.com</a>. We aim to respond within 5 business days.</p>
+      </div>
+    </section>
+
+    <footer>
+      <p>&copy; 2026 VPL Solutions, LLC</p>
+    </footer>
+  </div>
+</body>
+</html>
