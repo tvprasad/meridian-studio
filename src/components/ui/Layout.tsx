@@ -265,20 +265,6 @@ export function Layout() {
               v{version}
               <Github className="w-3 h-3" />
             </a>
-            {/* Accessibility badge */}
-            <a
-              href="/ACCESSIBILITY.md"
-              target="_blank"
-              rel="noreferrer"
-              className="inline-flex items-center gap-1.5 text-[10px] font-semibold tracking-wide border border-teal-500/30 text-teal-400/70 hover:text-teal-400 hover:border-teal-500/55 rounded px-2 py-0.5 transition-colors"
-              aria-label="WCAG 2.1 AA and Section 508 conformant — view accessibility statement"
-            >
-              <svg width="10" height="10" viewBox="0 0 16 16" fill="none" aria-hidden="true">
-                <path d="M8 1L2 4v4c0 3.5 2.5 6.3 6 7 3.5-.7 6-3.5 6-7V4L8 1z" stroke="currentColor" strokeWidth="1.5" strokeLinejoin="round"/>
-                <path d="M5.5 8l2 2 3-3" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
-              </svg>
-              WCAG 2.1 AA · Section 508 · Section 508
-            </a>
           </div>
         )}
       </aside>
