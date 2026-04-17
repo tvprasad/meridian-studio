@@ -265,28 +265,18 @@ export function Layout() {
               v{version}
               <Github className="w-3 h-3" />
             </a>
-            {/* Accessibility badge */}
-            <a
-              href="/accessibility.html"
-              className="inline-flex items-center gap-1.5 text-[10px] font-semibold tracking-wide border border-teal-500/30 text-teal-400/70 hover:text-teal-400 hover:border-teal-500/55 rounded px-2 py-0.5 transition-colors"
-              aria-label="WCAG 2.1 AA and Section 508 conformant — view accessibility statement"
-            >
-              <svg width="10" height="10" viewBox="0 0 16 16" fill="none" aria-hidden="true">
-                <path d="M8 1L2 4v4c0 3.5 2.5 6.3 6 7 3.5-.7 6-3.5 6-7V4L8 1z" stroke="currentColor" strokeWidth="1.5" strokeLinejoin="round"/>
-                <path d="M5.5 8l2 2 3-3" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
-              </svg>
-              WCAG 2.1 AA · Section 508
-            </a>
           </div>
         )}
       </aside>
 
       {/* Main content */}
-      <main id="main-content" className="flex-1 overflow-auto flex flex-col bg-gray-50 dark:bg-gray-950">
-        <div className="flex-1 p-8">
+      <div className="flex-1 flex flex-col overflow-hidden">
+      <main id="main-content" className="flex-1 overflow-auto bg-gray-50 dark:bg-gray-950">
+        <div className="p-8">
           <Outlet />
         </div>
-        <footer className="px-8 py-3 border-t border-gray-100 dark:border-white/10 flex items-center justify-between gap-4">
+      </main>
+        <footer className="shrink-0 px-8 py-3 border-t border-gray-100 dark:border-white/10 flex items-center justify-between gap-4 bg-gray-50 dark:bg-gray-950">
           <p className="text-[8px] text-gray-400/70 dark:text-gray-500 leading-relaxed" aria-hidden="true">
             Microsoft Azure, Amazon Web Services (AWS), and all other third-party product names, logos, and brands are trademarks or registered trademarks of their respective owners. Their use here does not imply endorsement or affiliation.
           </p>
@@ -302,7 +292,7 @@ export function Layout() {
             WCAG 2.1 AA · Section 508
           </a>
         </footer>
-      </main>
+      </div>
 
       {/* Right sidebar — Diagnostics & Governance (AI pages only) */}
       {showDiagnostics && <DiagnosticsPanel />}
