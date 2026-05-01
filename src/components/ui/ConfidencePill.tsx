@@ -17,7 +17,7 @@ export function ConfidencePill({ score, rawScore, threshold }: ConfidencePillPro
       passes ? 'bg-emerald-50 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-400' : 'bg-red-50 text-red-600 dark:bg-red-900/30 dark:text-red-400'
     }`}>
       {isCalibrated ? (
-        <span title={`Raw: ${(rawScore * 100).toFixed(1)}% — Calibrated: ${pct}%`}>
+        <span aria-label={`Raw confidence: ${(rawScore * 100).toFixed(1)}%, calibrated to: ${pct}%`}>
           {(rawScore * 100).toFixed(1)}% → {pct}%
         </span>
       ) : (

@@ -428,7 +428,7 @@ export function AuthGuard({ children }: { children: ReactNode }) {
                   {
                     headline: 'Your workflows span multiple systems. One agent with access to everything is a liability.',
                     question: '"Who approved that action, and can we prove every step to a regulator?"',
-                    tag: 'Multi-Agent Orchestration',
+                    tag: 'Bounded Agent Execution',
                   },
                   {
                     headline: 'Your operations team can\'t process incident volume at the speed the business requires.',

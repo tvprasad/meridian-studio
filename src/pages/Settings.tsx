@@ -294,6 +294,7 @@ export function Settings() {
                 max="1"
                 step="0.05"
                 {...form.register('retrieval_threshold', { valueAsNumber: true })}
+                aria-valuetext={`${(threshold * 100).toFixed(0)}%`}
                 className="mt-2 block w-full accent-primary-600"
               />
               <div className="flex justify-between text-xs text-gray-400 dark:text-gray-500 mt-1">
@@ -324,6 +325,7 @@ export function Settings() {
                 max="2"
                 step="0.1"
                 {...form.register('temperature', { valueAsNumber: true })}
+                aria-valuetext={`Temperature: ${temperature.toFixed(1)}`}
                 className="mt-2 block w-full accent-primary-600"
               />
               <div className="flex justify-between text-xs text-gray-400 dark:text-gray-500 mt-1">

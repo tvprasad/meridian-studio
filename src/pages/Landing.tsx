@@ -30,7 +30,7 @@ const CORE_CAPABILITIES = [
   {
     icon: Bot,
     title: 'AI Operations Agent',
-    desc: 'ReAct reasoning agent that searches ServiceNow incidents, changes, and your knowledge base with full step-by-step transparency.',
+    desc: 'Approval-gated agent that searches ServiceNow incidents, changes, and your knowledge base. No production action executes without explicit operator sign-off. Every step is logged.',
   },
   {
     icon: BarChart3,
@@ -40,7 +40,7 @@ const CORE_CAPABILITIES = [
   {
     icon: Shield,
     title: 'Governance & Diagnostics',
-    desc: 'Every query is traced, scored, and auditable. Refusals are transparent with confidence thresholds.',
+    desc: 'Every query is traced, scored, and auditable. Low-confidence answers are refused, not returned. Refusals are structured and explainable.',
   },
 ];
 
@@ -108,9 +108,9 @@ export function Landing() {
             <span className="text-white/90">anything.</span>
           </h1>
           <p className="mt-6 text-lg text-white/60 max-w-xl mx-auto leading-relaxed">
-            Meridian is a RAG-powered knowledge engine with built-in governance.
-            Ingest documents, ask questions in plain language, and get grounded
-            answers with confidence scoring and full traceability.
+            Governed retrieval and AI operations for enterprise and federal environments.
+            Every answer is confidence-gated — low-evidence queries are refused, not hallucinated.
+            Every step is logged, scored, and auditable.
           </p>
           <div className="mt-10 flex items-center justify-center gap-4">
             <Link
@@ -136,7 +136,7 @@ export function Landing() {
       {/* Core capabilities */}
       <section className="max-w-6xl mx-auto w-full px-6 pb-16">
         <h2 className="text-center text-2xl font-bold text-white/90 mb-12">
-          Everything you need for enterprise AI
+          Control precedes generation. Governance precedes automation.
         </h2>
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
           {CORE_CAPABILITIES.map(({ icon: Icon, title, desc }) => (

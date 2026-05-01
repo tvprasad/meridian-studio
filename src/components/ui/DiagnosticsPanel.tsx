@@ -34,6 +34,8 @@ export function DiagnosticsPanel() {
         <div>
           <button
             onClick={() => setDiagOpen(!diagOpen)}
+            aria-expanded={diagOpen}
+            aria-controls="diagnostics-panel-diag"
             className="flex items-center gap-2 w-full text-left text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wide hover:text-gray-700 dark:hover:text-gray-300 transition-colors"
           >
             {diagOpen ? <ChevronDown className="w-3 h-3" /> : <ChevronRight className="w-3 h-3" />}
@@ -42,7 +44,7 @@ export function DiagnosticsPanel() {
           </button>
 
           {diagOpen && lastCall && (
-            <div className="mt-3 space-y-2.5 text-sm">
+            <div id="diagnostics-panel-diag" className="mt-3 space-y-2.5 text-sm">
               <div>
                 <p className="text-[10px] text-gray-400 uppercase tracking-wide">Last Call</p>
                 <p className="text-gray-700 dark:text-gray-200 font-medium">{lastCall.service}:{lastCall.operation}</p>
@@ -80,6 +82,8 @@ export function DiagnosticsPanel() {
         <div>
           <button
             onClick={() => setGovOpen(!govOpen)}
+            aria-expanded={govOpen}
+            aria-controls="diagnostics-panel-gov"
             className="flex items-center gap-2 w-full text-left text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wide hover:text-gray-700 dark:hover:text-gray-300 transition-colors"
           >
             {govOpen ? <ChevronDown className="w-3 h-3" /> : <ChevronRight className="w-3 h-3" />}
@@ -88,7 +92,7 @@ export function DiagnosticsPanel() {
           </button>
 
           {govOpen && (
-            <div className="mt-3 space-y-3 text-sm">
+            <div id="diagnostics-panel-gov" className="mt-3 space-y-3 text-sm">
               <div className="grid grid-cols-2 gap-3">
                 <div>
                   <p className="text-[10px] text-gray-400 uppercase tracking-wide">Total Calls</p>

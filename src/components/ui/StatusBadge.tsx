@@ -39,6 +39,7 @@ export function StatusBadge({ status }: StatusBadgeProps) {
       <span
         className={`w-1.5 h-1.5 rounded-full shrink-0 ${dots[status]} ${status === 'OK' ? 'animate-pulse' : ''}`}
         style={{ boxShadow: glows[status] }}
+        aria-hidden="true"
       />
       {status}
     </span>

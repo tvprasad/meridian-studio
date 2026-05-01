@@ -55,7 +55,7 @@ export function Investigations() {
 
       {/* KPI cards */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mt-6">
-        <button onClick={() => setFilterGroup('active')} className="text-left">
+        <button onClick={() => setFilterGroup('active')} aria-label="Filter by active investigations" className="text-left">
           <Card className={`border-l-4 border-l-blue-400 ${filterGroup === 'active' ? 'ring-2 ring-blue-400' : ''}`}>
             <div className="flex items-center justify-between">
               <div>
@@ -66,7 +66,7 @@ export function Investigations() {
             </div>
           </Card>
         </button>
-        <button onClick={() => setFilterGroup('awaiting')} className="text-left">
+        <button onClick={() => setFilterGroup('awaiting')} aria-label="Filter by awaiting approval" className="text-left">
           <Card className={`border-l-4 border-l-amber-400 ${filterGroup === 'awaiting' ? 'ring-2 ring-amber-400' : ''}`}>
             <div className="flex items-center justify-between">
               <div>
@@ -77,7 +77,7 @@ export function Investigations() {
             </div>
           </Card>
         </button>
-        <button onClick={() => { setFilterGroup('all'); }} className="text-left">
+        <button onClick={() => { setFilterGroup('all'); }} aria-label="Show all investigations (completed)" className="text-left">
           <Card className={`border-l-4 border-l-emerald-400 ${filterGroup === 'all' ? 'ring-2 ring-emerald-400' : ''}`}>
             <div className="flex items-center justify-between">
               <div>
@@ -88,7 +88,7 @@ export function Investigations() {
             </div>
           </Card>
         </button>
-        <button onClick={() => setFilterGroup('terminal')} className="text-left">
+        <button onClick={() => setFilterGroup('terminal')} aria-label="Filter by rejected or expired investigations" className="text-left">
           <Card className={`border-l-4 border-l-red-400 ${filterGroup === 'terminal' ? 'ring-2 ring-red-400' : ''}`}>
             <div className="flex items-center justify-between">
               <div>
