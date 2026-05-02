@@ -100,7 +100,7 @@ export function Landing() {
       <section className="flex-1 flex flex-col items-center justify-center text-center px-6 py-20">
         <div className="max-w-3xl">
           <p className="text-sm font-medium tracking-wide uppercase text-violet-400 mb-4">
-            Governed AI Platform
+            Governed RAG Control Plane
           </p>
           <h1 className="text-5xl sm:text-6xl font-extrabold leading-tight">
             <span className="iridescent-text">Ask your documents</span>
@@ -108,9 +108,9 @@ export function Landing() {
             <span className="text-white/90">anything.</span>
           </h1>
           <p className="mt-6 text-lg text-white/60 max-w-xl mx-auto leading-relaxed">
-            Governed retrieval and AI operations for enterprise and federal environments.
-            Every answer is confidence-gated — low-evidence queries are refused, not hallucinated.
-            Every step is logged, scored, and auditable.
+            A control plane for AI execution. Routes requests to the right agent or tool,
+            then enforces governance on every call. Low-confidence answers are refused, not hallucinated.
+            Every routing decision, tool call, and outcome is traceable.
           </p>
           <div className="mt-10 flex items-center justify-center gap-4">
             <Link
