@@ -11,6 +11,13 @@ Versioning follows [Semantic Versioning](https://semver.org/).
 
 ---
 
+## [0.34.0] — 2026-05-15
+
+### Added
+- **VITE_AIPOLARIS_URL wired through build pipeline** — added `--build-arg` to `azure-deploy.yml` so the aiPolaris API URL is baked into the production bundle. Set `VITE_AIPOLARIS_URL` in GitHub Actions variables to complete the fix. Resolves Agent Query `ERR_CONNECTION_REFUSED` caused by fallback to `localhost:8001`.
+
+---
+
 ## [0.33.3] — 2026-04-05
 
 ### Fixed
@@ -688,6 +695,7 @@ Versioning follows [Semantic Versioning](https://semver.org/).
 [0.10.0]: https://github.com/tvprasad/meridian-studio/compare/v0.9.1...v0.10.0
 [0.9.1]: https://github.com/tvprasad/meridian-studio/compare/v0.9.0...v0.9.1
 [0.9.0]: https://github.com/tvprasad/meridian-studio/compare/v0.8.0...v0.9.0
+[0.34.0]: https://github.com/tvprasad/meridian-studio/compare/v0.33.3...v0.34.0
 [0.8.0]: https://github.com/tvprasad/meridian-studio/compare/v0.7.0...v0.8.0
 [0.7.0]: https://github.com/tvprasad/meridian-studio/compare/v0.6.1...v0.7.0
 [0.6.1]: https://github.com/tvprasad/meridian-studio/compare/v0.6.0...v0.6.1
