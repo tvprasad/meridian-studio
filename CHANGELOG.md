@@ -11,6 +11,14 @@ Versioning follows [Semantic Versioning](https://semver.org/).
 
 ---
 
+## [0.34.1] — 2026-05-15
+
+### Fixed
+- **Evaluation metrics error state** — split loading/error condition so a failed aggregation query shows an explicit error message instead of silently hiding the metrics section
+- **AuthGuard agent label** — renamed tag from `Bounded Agent Execution` to `Meridian Agent`
+
+---
+
 ## [0.34.0] — 2026-05-15
 
 ### Added
@@ -695,6 +703,7 @@ Versioning follows [Semantic Versioning](https://semver.org/).
 [0.10.0]: https://github.com/tvprasad/meridian-studio/compare/v0.9.1...v0.10.0
 [0.9.1]: https://github.com/tvprasad/meridian-studio/compare/v0.9.0...v0.9.1
 [0.9.0]: https://github.com/tvprasad/meridian-studio/compare/v0.8.0...v0.9.0
+[0.34.1]: https://github.com/tvprasad/meridian-studio/compare/v0.34.0...v0.34.1
 [0.34.0]: https://github.com/tvprasad/meridian-studio/compare/v0.33.3...v0.34.0
 [0.8.0]: https://github.com/tvprasad/meridian-studio/compare/v0.7.0...v0.8.0
 [0.7.0]: https://github.com/tvprasad/meridian-studio/compare/v0.6.1...v0.7.0
