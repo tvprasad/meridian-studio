@@ -379,7 +379,7 @@ export function EvaluationQueries() {
       <EvaluationGuide />
 
       {/* Metrics summary cards */}
-      {isLoading || (metricsError && !metrics) ? (
+      {isLoading ? (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mt-8">
           {Array.from({ length: 4 }).map((_, i) => (
             <div key={i} className="bg-white dark:bg-white/[0.05] rounded-xl border border-gray-200 dark:border-white/10 p-6 animate-pulse">
@@ -389,6 +389,11 @@ export function EvaluationQueries() {
               </div>
             </div>
           ))}
+        </div>
+      ) : metricsError && !metrics ? (
+        <div className="mt-8 flex items-center gap-2 text-sm text-red-500 dark:text-red-400">
+          <AlertCircle className="w-4 h-4 shrink-0" />
+          <span>Metrics unavailable — the aggregation query failed or timed out. Query log is still available below.</span>
         </div>
       ) : metrics && metrics.total_queries != null ? (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mt-8">
